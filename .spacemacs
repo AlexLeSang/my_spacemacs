@@ -277,4 +277,8 @@ you should place your code here."
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [tab] 'clang-format-buffer))
+  (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
+  (setenv "NO_PROXY" "127.0.0.1")
+  (setenv "no_proxy" "127.0.0.1")
+  (setq projectile-enable-caching t)
   )
