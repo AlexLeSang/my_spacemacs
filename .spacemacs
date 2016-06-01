@@ -23,10 +23,16 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     auto-completion
+     (auto-completion
+      :variables
+      auto-completion-enable-snippets-in-popup t
+      auto-completion-enable-help-tooltip t
+      auto-completion-enable-sort-by-usage t)
      better-defaults
      emacs-lisp
-     (git :variables git-magit-status-fullscreen t)
+     (git
+      :variables
+      git-magit-status-fullscreen t)
      ;; markdown
      ;; org
      ;; (shell :variables
@@ -36,9 +42,15 @@ values."
      syntax-checking
      version-control
      latex
-     c-c++
+     (c-c++
+      :variables
+      c-c++-default-mode-for-headers 'c++-mode
+      c-c++-enable-clang-support t
+      )
      gtags
-     (python :variables python-test-runner 'pytest)
+     (python
+      :variables
+      python-test-runner 'pytest)
      semantic
      themes-megapack
      )
@@ -258,4 +270,11 @@ you should place your code here."
   (setq helm-buffer-max-length nil)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
+  (global-company-mode)
+  ;; Bind clang-format-region to C-M-tab in all modes:
+  (global-set-key [C-M-tab] 'clang-format-region)
+  ;; Bind clang-format-buffer to tab on the c++-mode only:
+  (add-hook 'c++-mode-hook 'clang-format-bindings)
+  (defun clang-format-bindings ()
+    (define-key c++-mode-map [tab] 'clang-format-buffer))
   )
