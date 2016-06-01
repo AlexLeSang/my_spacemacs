@@ -258,4 +258,8 @@ you should place your code here."
   (setq helm-buffer-max-length nil)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
+  (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
+  (setenv "NO_PROXY" "127.0.0.1")
+  (setenv "no_proxy" "127.0.0.1")
+  (setq projectile-enable-caching t)
   )
