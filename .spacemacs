@@ -26,6 +26,8 @@ values."
      ;; ----------------------------------------------------------------
      (auto-completion
       :variables
+      auto-completion-complete-with-key-sequence nil
+      auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-enable-snippets-in-popup t
       auto-completion-enable-help-tooltip t
       auto-completion-enable-sort-by-usage t)
@@ -62,7 +64,7 @@ values."
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '()
    ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(company)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
    ;; are declared in a layer which is not a member of
    ;; the list `dotspacemacs-configuration-layers'. (default t)
@@ -115,8 +117,8 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zenburn
-                         monokai
+   dotspacemacs-themes '(monokai
+                         zenburn
                          spacemacs-dark
                          spacemacs-light
                          solarized-light
@@ -260,6 +262,9 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+  (setq-default c-default-style "bsd")
+  (setq-default c-basic-offset 4)
+  (setq-default tab-width 4)
   )
 
 (defun dotspacemacs/user-config ()
@@ -272,15 +277,20 @@ you should place your code here."
   (setq helm-buffer-max-length nil)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
-  (global-company-mode)
+  (global-auto-complete-mode)
   ;; Bind clang-format-region to C-M-tab in all modes:
-  (global-set-key [C-M-tab] 'clang-format-region)
+  ;;(global-set-key [C-M-tab] 'clang-format-region)
   ;; Bind clang-format-buffer to tab on the c++-mode only:
-  (add-hook 'c++-mode-hook 'clang-format-bindings)
-  (defun clang-format-bindings ()
-    (define-key c++-mode-map [tab] 'clang-format-buffer))
+  ;;(add-hook 'c++-mode-hook 'clang-format-bindings)
+  ;;(defun clang-format-bindings ()
+  ;;  (define-key c++-mode-map [tab] 'clang-format-buffer))
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
   (setq projectile-enable-caching t)
+  (global-set-key (kbd "<f5>") 'projectile-compile-project)
+  (global-set-key (kbd "<f6>") 'projectile-test-project)
+  (global-set-key (kbd "<f8>") 'neotree-find-project-root)
+  (setq projectile-switch-project-action 'neotree-projectile-action)
+  (setq neo-theme 'nerd)
   )
