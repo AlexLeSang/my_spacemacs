@@ -26,10 +26,11 @@ values."
      ;; ----------------------------------------------------------------
      (auto-completion
       :variables
-      auto-completion-complete-with-key-sequence nil
-      auto-completion-complete-with-key-sequence-delay 0.0
+      auto-completion-complete-with-key-sequence-delay 0.001
+      auto-completion-tab-key-behavior 'cycle
+      auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
-      auto-completion-enable-help-tooltip t
+      auto-completion-enable-company-help-tooltip t
       auto-completion-enable-sort-by-usage t)
      better-defaults
      emacs-lisp
@@ -45,6 +46,7 @@ values."
      syntax-checking
      version-control
      latex
+     clojure
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -117,13 +119,9 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(monokai
-                         zenburn
-                         spacemacs-dark
-                         spacemacs-light
-                         solarized-light
-                         solarized-dark
-                         leuven)
+   dotspacemacs-themes '(spacemacs-dark
+                         monokai
+                         zenburn)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
@@ -291,6 +289,30 @@ you should place your code here."
   (global-set-key (kbd "<f5>") 'projectile-compile-project)
   (global-set-key (kbd "<f6>") 'projectile-test-project)
   (global-set-key (kbd "<f8>") 'neotree-find-project-root)
-  (setq projectile-switch-project-action 'neotree-projectile-action)
+  ;; (setq projectile-switch-project-action 'neotree-projectile-action)
   (setq neo-theme 'nerd)
+  (global-company-mode)
+  (add-hook 'company-mode-hook
+            (lambda()
+              (global-set-key (kbd "C-'") 'company-complete)
+              ))
+  '(company-backends
+    (quote
+     ((company-tern :with company-yasnippet)
+      (company-elisp :with company-yasnippet)
+      (company-bbdb :with company-yasnippet)
+      (company-nxml :with company-yasnippet)
+      (company-css :with company-yasnippet)
+      (company-eclim :with company-yasnippet)
+      (company-semantic :with company-yasnippet)
+      (company-clang :with company-yasnippet)
+      (company-xcode :with company-yasnippet)
+      (company-ropemacs :with company-yasnippet)
+      (company-cmake :with company-yasnippet)
+      (company-capf :with company-yasnippet)
+      (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
+      (company-oddmuse :with company-yasnippet)
+      (company-files :with company-yasnippet)
+      (company-anaconda :with company-yasnippet)
+      (company-dabbrev :with company-yasnippet))))
   )
