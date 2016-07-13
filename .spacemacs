@@ -208,7 +208,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -289,7 +289,8 @@ you should place your code here."
   (global-set-key (kbd "<f5>") 'projectile-compile-project)
   (global-set-key (kbd "<f6>") 'projectile-test-project)
   (global-set-key (kbd "<f8>") 'neotree-find-project-root)
-  ;; (setq projectile-switch-project-action 'neotree-projectile-action)
+  (global-set-key [C-tab] 'evil-next-buffer)
+  (global-set-key [C-S-<iso-lefttab>] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (global-company-mode)
   (add-hook 'company-mode-hook
