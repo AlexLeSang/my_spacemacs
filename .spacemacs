@@ -46,7 +46,7 @@ values."
      syntax-checking
      version-control
      latex
-     clojure
+     ;;clojure
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -290,8 +290,9 @@ you should place your code here."
   (global-set-key (kbd "<f6>") 'projectile-test-project)
   (global-set-key (kbd "<f8>") 'neotree-find-project-root)
   (global-set-key [C-tab] 'evil-next-buffer)
-  (global-set-key [C-S-<iso-lefttab>] 'evil-prev-buffer)
+  (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
+  (indent-guide-global-mode t)
   (global-company-mode)
   (add-hook 'company-mode-hook
             (lambda()
