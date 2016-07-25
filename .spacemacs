@@ -34,6 +34,7 @@ values."
       auto-completion-enable-company-help-tooltip t
       auto-completion-enable-sort-by-usage t)
      better-defaults
+     evil-snipe
      emacs-lisp
      (git
       :variables
@@ -45,7 +46,10 @@ values."
      ;;        shell-default-position 'bottom)
      spell-checking
      syntax-checking
-     version-control
+     (version-control
+      :variables
+      version-control-diff-tool 'diff-hl
+      version-control-global-margin t)
      latex
      ;;clojure
      (c-c++
