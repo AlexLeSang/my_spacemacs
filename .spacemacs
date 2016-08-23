@@ -24,10 +24,12 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      javascript
+     spotify
      shell
+     semantic
      (auto-completion
       :variables
-      auto-completion-complete-with-key-sequence-delay 0.001
+      auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
@@ -62,7 +64,6 @@ values."
      (python
       :variables
       python-test-runner 'pytest)
-     semantic
      themes-megapack
      )
    ;; List of additional packages that will be installed without being
@@ -124,9 +125,11 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(monokai
+   dotspacemacs-themes '(
+                         zenburn
+                         monokai
                          spacemacs-dark
-                         zenburn)
+                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
@@ -281,12 +284,6 @@ you should place your code here."
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
   (global-auto-complete-mode)
-  ;; Bind clang-format-region to C-M-tab in all modes:
-  ;;(global-set-key [C-M-tab] 'clang-format-region)
-  ;; Bind clang-format-buffer to tab on the c++-mode only:
-  ;;(add-hook 'c++-mode-hook 'clang-format-bindings)
-  ;;(defun clang-format-bindings ()
-  ;;  (define-key c++-mode-map [tab] 'clang-format-buffer))
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
@@ -294,15 +291,23 @@ you should place your code here."
   (global-set-key (kbd "<f5>") 'projectile-compile-project)
   (global-set-key (kbd "<f6>") 'projectile-test-project)
   (global-set-key (kbd "<f8>") 'neotree-find-project-root)
+  (global-set-key (kbd "<f9>") 'spotify-playpause)
   (global-set-key [C-tab] 'evil-next-buffer)
   (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
-  (global-company-mode)
+  (global-company-mode t)
   (add-hook 'company-mode-hook
             (lambda()
               (global-set-key (kbd "C-'") 'company-complete)
               ))
+  (setq company-dabbrev-downcase 0)
+  (setq company-idle-delay 0)
+  (with-eval-after-load 'company
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-j") #'company-select-next)
+    (define-key company-active-map (kbd "C-k") #'company-select-previous))
   '(company-backends
     (quote
      ((company-tern :with company-yasnippet)
@@ -323,3 +328,30 @@ you should place your code here."
       (company-anaconda :with company-yasnippet)
       (company-dabbrev :with company-yasnippet))))
   )
+
+;; Example of .dir-locals.el
+;; (
+;;  (c++-mode .
+;;            (
+;;             (flycheck-clang-include-path . (
+;;                                             "."
+;;                                             "/home/halushko/Projects/DM/src"
+;;                                             "/usr/include"
+;;                                             "/usr/local/include/compute"
+;;                                             )
+;;                                          )
+;;             (company-clang-arguments . (
+;;                                         "-std=c++11"
+;;                                         "-I/home/halushko/Projects/DM/src/"
+;;                                         "-I/usr/include/"
+;;                                         "-I/usr/local/include/compute/"
+;;                                       )
+;;                                    )
+;;             (flycheck-clang-language-standard . "c++11")
+;;             ;; (flycheck-clang-definitions . (
+;;             ;;                                  "VERSION=\"4.5p\""
+;;             ;;                                  )
+;;             ;;                               )
+;;             )
+;;            )
+;;  )
