@@ -43,9 +43,12 @@ values."
       git-magit-status-fullscreen t)
      ;; markdown
      ;; org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     (shell
+      :variables
+      shell-default-shell 'term
+      shell-default-term-shell "/usr/bin/zsh"
+      shell-default-height 30
+      shell-default-position 'bottom)
      spell-checking
      syntax-checking
      (version-control
@@ -284,6 +287,7 @@ you should place your code here."
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
   (global-auto-complete-mode)
+  (global-flycheck-mode)
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
