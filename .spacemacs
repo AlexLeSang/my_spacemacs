@@ -31,7 +31,6 @@ values."
       :variables
       auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
-      auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
       auto-completion-enable-company-help-tooltip t
       auto-completion-enable-sort-by-usage t)
@@ -130,6 +129,7 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          zenburn
+                         wombat
                          monokai
                          spacemacs-dark
                          )
@@ -284,29 +284,47 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq helm-buffer-max-length nil)
+  (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
   (global-auto-complete-mode)
-  (global-flycheck-mode)
+  (global-flycheck-mode t)
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
   (setq projectile-enable-caching t)
-  (global-set-key (kbd "<f5>") 'projectile-compile-project)
-  (global-set-key (kbd "<f6>") 'projectile-test-project)
-  (global-set-key (kbd "<f8>") 'neotree-find-project-root)
-  (global-set-key (kbd "<f9>") 'spotify-playpause)
+  (global-set-key (kbd "<f4>") 'gdb)
+  (global-set-key (kbd "<f5>") 'gud-cont)
+  (global-set-key (kbd "<f6>") 'gud-next)
+  (global-set-key (kbd "<f7>") 'gud-step)
+  (global-set-key (kbd "C-&") 'gud-break)
+  (global-set-key (kbd "C-*") 'gud-remove)
+  (global-set-key (kbd "<f12>") 'spotify-playpause)
   (global-set-key [C-tab] 'evil-next-buffer)
   (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
   (global-company-mode t)
-  (add-hook 'company-mode-hook
-            (lambda()
-              (global-set-key (kbd "C-'") 'company-complete)
-              ))
   (setq company-dabbrev-downcase 0)
-  (setq company-idle-delay 0)
+  '(golden-ratio-exclude-modes
+    (quote
+     ("bs-mode"
+      "calc-mode"
+      "ediff-mode"
+      "dired-mode"
+      "gud-mode"
+      "gdb-locals-mode"
+      "gdb-registers-mode"
+      "gdb-breakpoints-mode"
+      "gdb-threads-mode"
+      "gdb-frames-mode"
+      "gdb-inferior-io-mode"
+      "gud-mode"
+      "gdb-inferior-io-mode"
+      "gdb-disassembly-mode"
+      "gdb-memory-mode"
+      "restclient-mode"
+      "speedbar-mode" term-mode)))
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
@@ -320,8 +338,8 @@ you should place your code here."
       (company-nxml :with company-yasnippet)
       (company-css :with company-yasnippet)
       (company-eclim :with company-yasnippet)
-      (company-semantic :with company-yasnippet)
-      (company-clang :with company-yasnippet)
+      (company-semantic :with company-yasnippet company-gtags company-clang)
+      (company-clang :with company-yasnippet company-gtags company-semantic)
       (company-xcode :with company-yasnippet)
       (company-ropemacs :with company-yasnippet)
       (company-cmake :with company-yasnippet)
