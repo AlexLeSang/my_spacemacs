@@ -31,6 +31,7 @@ values."
       :variables
       auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
+      auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
       auto-completion-enable-company-help-tooltip t
       auto-completion-enable-sort-by-usage t)
@@ -54,14 +55,17 @@ values."
       :variables
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
-     latex
+     (latex
+      :variables
+      auto-fill-mode nil)
      ;;clojure
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-enable-clang-support t
       )
-     gtags
+     ;; gtags
+     mineo-rtags
      javascript
      (python
       :variables
@@ -283,11 +287,13 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (require 'flycheck-rtags)
+  (require 'company-rtags)
   (setq helm-buffer-max-length nil)
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
-  (global-auto-complete-mode)
+  ;; (global-auto-complete-mode)
   (global-flycheck-mode t)
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
@@ -305,6 +311,10 @@ you should place your code here."
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
   (global-company-mode t)
+  (add-hook 'company-mode-hook
+            (lambda()
+              (global-set-key (kbd "C-'") 'company-rtags)
+              ))
   (setq company-dabbrev-downcase 0)
   '(golden-ratio-exclude-modes
     (quote
