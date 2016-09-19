@@ -133,7 +133,6 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          zenburn
-                         wombat
                          monokai
                          spacemacs-dark
                          )
@@ -142,7 +141,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -315,7 +314,9 @@ you should place your code here."
             (lambda()
               (global-set-key (kbd "C-'") 'company-rtags)
               ))
-  (setq company-dabbrev-downcase 0)
+  (setq company-dabbrev-downcase nil)
+  (setq dabbrev-case-fold-search nil)
+  (setq dabbrev-upcase-means-case-search t)
   '(golden-ratio-exclude-modes
     (quote
      ("bs-mode"
@@ -340,6 +341,18 @@ you should place your code here."
     (define-key company-active-map (kbd "M-p") nil)
     (define-key company-active-map (kbd "C-j") #'company-select-next)
     (define-key company-active-map (kbd "C-k") #'company-select-previous))
+
+  ;; RTags
+  (setq rtags-autostart-diagnostics t)
+  (setq rtags-completions-enabled t)
+  (push 'company-rtags company-backends)
+  (defun my-flycheck-rtags-setup ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+    (setq-local flycheck-check-syntax-automatically nil))
+  ;; c-mode-common-hook is also called by c++-mode
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+
   '(company-backends
     (quote
      ((company-tern :with company-yasnippet)
