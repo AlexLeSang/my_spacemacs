@@ -64,7 +64,7 @@ values."
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-enable-clang-support t
       )
-     ;; gtags
+     gtags
      mineo-rtags
      javascript
      (python
@@ -76,7 +76,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(persp-mode)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(company)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -132,8 +132,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         zenburn
-                         wombat
+                         darkokai
+                         hc-zenburn
                          monokai
                          spacemacs-dark
                          )
@@ -293,6 +293,11 @@ you should place your code here."
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
+  (spacemacs/toggle-golden-ratio-on)
+  (spacemacs/toggle-camel-case-motion-globally-on)
+  (spacemacs/toggle-syntax-checking-on)
+  (spacemacs/toggle-automatic-symbol-highlight-on)
+  (global-auto-revert-mode 1)
   ;; (global-auto-complete-mode)
   (global-flycheck-mode t)
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -310,12 +315,44 @@ you should place your code here."
   (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
+  ;; RTags
   (global-company-mode t)
+  (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running)
+  (add-hook 'c++-mode-common-hook 'rtags-start-process-unless-running)
+  (setq rtags-autostart-diagnostics t)
+  (setq rtags-completions-enabled t)
+  (require 'company)
+  (require 'rtags-helm)
+  (require 'flycheck-rtags)
+  (require 'company-rtags)
+  (global-company-mode)
+  (push 'company-rtags company-backends)
+  (defun my-flycheck-rtags-setup ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+    (setq-local flycheck-check-syntax-automatically nil))
+  ;; c-mode-common-hook is also called by c++-mode
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   (add-hook 'company-mode-hook
             (lambda()
               (global-set-key (kbd "C-'") 'company-rtags)
               ))
-  (setq company-dabbrev-downcase 0)
+
+  (setq company-dabbrev-downcase nil)
+  (setq dabbrev-case-fold-search nil)
+  (setq dabbrev-upcase-means-case-search t)
+
+  ;; Term
+  (defun bb/setup-term-mode ()
+    (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+
+  (defun bb/send-C-r ()
+    (interactive)
+    (term-send-raw-string "\C-r"))
+
+  (add-hook 'term-mode-hook 'bb/setup-term-mode)
+
   '(golden-ratio-exclude-modes
     (quote
      ("bs-mode"
@@ -359,6 +396,7 @@ you should place your code here."
       (company-files :with company-yasnippet)
       (company-anaconda :with company-yasnippet)
       (company-dabbrev :with company-yasnippet))))
+  (setq company-dabbrev-downcase nil)
   )
 
 ;; Example of .dir-locals.el
