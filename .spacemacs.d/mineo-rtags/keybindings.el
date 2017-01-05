@@ -49,6 +49,7 @@
     "r [" 'rtags-location-stack-back
     "r ]" 'rtags-location-stack-forward
     "r D" 'rtags-diagnostics
+    "r c" 'rtags-set-current-project
     "r C" 'rtags-compile-file
     "r G" 'rtags-guess-function-at-point
     "r p" 'rtags-dependency-tree
@@ -66,6 +67,7 @@
     "r X" 'rtags-fix-fixit-at-point
     "r B" 'rtags-show-rtags-buffer
     "r K" 'rtags-make-member
+    "r i" 'rtags-include-file
     "r I" 'rtags-imenu
     "r T" 'rtags-taglist
     "r h" 'rtags-print-class-hierarchy

@@ -46,11 +46,13 @@
     (setq rtags-autostart-diagnostics t
           rtags-completions-enabled t
           rtags-use-helm t)
+    ; See https://github.com/Andersbakken/rtags/issues/832
+    (require 'rtags-helm)
     (push '(company-rtags)
           company-backends-c-mode-common)
     (rtags-enable-standard-keybindings)
     (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running)
-  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running))
+    (add-hook 'c++-mode-hook 'rtags-start-process-unless-running))
   (use-package flycheck-rtags :ensure rtags)
   (use-package company-rtags :ensure rtags)
   )

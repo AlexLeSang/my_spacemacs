@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     csv
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -59,6 +60,7 @@ values."
       :variables
       auto-fill-mode nil)
      ;;clojure
+     docker
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -76,7 +78,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(persp-mode)
+   dotspacemacs-additional-packages '(persp-mode rtags cmake-ide)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '(company)
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -132,17 +134,18 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         majapahit-dark
+                         spacemacs-dark
                          darkokai
                          hc-zenburn
                          monokai
-                         spacemacs-dark
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -287,6 +290,16 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; (defconst my-cc-style
+  ;;   '("bsd" ; this is inheritance from the bsd style
+  ;;     (c-offsets-alist . ((innamespace . [0])))))
+
+  ;; (c-add-style "my-cc-mode" my-cc-style)
+  ;; (setq-default c-basic-offset 4)
+  ;; (setq-default tab-width 4)
+
+  (require 'cmake-ide)
   (require 'flycheck-rtags)
   (require 'company-rtags)
   (setq helm-buffer-max-length nil)
@@ -296,7 +309,7 @@ you should place your code here."
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
-  (spacemacs/toggle-automatic-symbol-highlight-on)
+  ;; (spacemacs/toggle-automatic-symbol-highlight-on)
   (global-auto-revert-mode 1)
   ;; (global-auto-complete-mode)
   (global-flycheck-mode t)
@@ -324,6 +337,15 @@ you should place your code here."
   (require 'company)
   (require 'rtags-helm)
   (require 'flycheck-rtags)
+  (defun my-flycheck-rtags-setup ()
+    "Configure flycheck-rtags for better experience."
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-highlighting-mode nil))
+  ;; c-mode-common-hook is also called by c++-mode
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+
   (require 'company-rtags)
   (global-company-mode)
   (push 'company-rtags company-backends)
@@ -344,6 +366,12 @@ you should place your code here."
   (setq company-dabbrev-downcase nil)
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
+
+  ;; Avy settings
+  (setq avy-all-windows nil)
+
+  ;; Semantic
+  (setq hlt-auto-faces-flag t)
 
   ;; Term
   (defun bb/setup-term-mode ()
@@ -401,6 +429,7 @@ you should place your code here."
       (company-eclim :with company-yasnippet)
       (company-semantic :with company-yasnippet company-gtags company-clang)
       (company-clang :with company-yasnippet company-gtags company-semantic)
+      (company-rtags :with company-yasnippet company-gtags company-semantic)
       (company-xcode :with company-yasnippet)
       (company-ropemacs :with company-yasnippet)
       (company-cmake :with company-yasnippet)
