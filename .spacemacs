@@ -39,6 +39,9 @@ values."
      better-defaults
      evil-snipe
      emacs-lisp
+     (colors
+      :variables
+      colors-colorize-identifiers 'all)
      (git
       :variables
       git-magit-status-fullscreen t)
@@ -442,29 +445,3 @@ you should place your code here."
   (setq company-dabbrev-downcase nil)
   )
 
-;; Example of .dir-locals.el
-;; (
-;;  (c++-mode .
-;;            (
-;;             (flycheck-clang-include-path . (
-;;                                             "."
-;;                                             "/home/halushko/Projects/DM/src"
-;;                                             "/usr/include"
-;;                                             "/usr/local/include/compute"
-;;                                             )
-;;                                          )
-;;             (company-clang-arguments . (
-;;                                         "-std=c++11"
-;;                                         "-I/home/halushko/Projects/DM/src/"
-;;                                         "-I/usr/include/"
-;;                                         "-I/usr/local/include/compute/"
-;;                                       )
-;;                                    )
-;;             (flycheck-clang-language-standard . "c++11")
-;;             ;; (flycheck-clang-definitions . (
-;;             ;;                                  "VERSION=\"4.5p\""
-;;             ;;                                  )
-;;             ;;                               )
-;;             )
-;;            )
-;;  )
