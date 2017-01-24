@@ -46,6 +46,9 @@ values."
      evil-snipe
      emacs-lisp
      docker
+     (colors
+      :variables
+      colors-colorize-identifiers 'all)
      (git
       :variables
       git-magit-status-fullscreen t)
