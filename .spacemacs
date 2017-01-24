@@ -28,6 +28,12 @@ values."
      spotify
      shell
      semantic
+     (scala
+      :variables
+      scala-indent:use-javadoc-style t
+      scala-use-java-doc-style t
+      scala-auto-insert-asterisk-in-comments t
+      scala-auto-start-ensime t)
      (auto-completion
       :variables
       auto-completion-complete-with-key-sequence-delay 0.0
@@ -39,6 +45,7 @@ values."
      better-defaults
      evil-snipe
      emacs-lisp
+     docker
      (git
       :variables
       git-magit-status-fullscreen t)
@@ -145,7 +152,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -419,6 +426,9 @@ you should place your code here."
   ;; c-mode-common-hook is also called by c++-mode
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
 
+  ;; CMake-Ide
+  (cmake-ide-setup)
+
   '(company-backends
     (quote
      ((company-tern :with company-yasnippet)
@@ -440,31 +450,11 @@ you should place your code here."
       (company-anaconda :with company-yasnippet)
       (company-dabbrev :with company-yasnippet))))
   (setq company-dabbrev-downcase nil)
+  ;; LaTeX
+  (setq-default TeX-engine 'xetex)
+  (setq-default TeX-PDF-mode t)
+  '(TeX-source-correlate-method (quote synctex))
+  '(TeX-source-correlate-mode t)
+  '(TeX-source-correlate-start-server t)
+  '(TeX-view-program-selection (quote (((output-dvi has-no-display-manager) "dvi2tty") ((output-dvi style-pstricks) "dvips and gv") (output-pdf "Okular") (output-dvi "xdvi") (output-pdf "Evince") (output-html "xdg-open"))))
   )
-
-;; Example of .dir-locals.el
-;; (
-;;  (c++-mode .
-;;            (
-;;             (flycheck-clang-include-path . (
-;;                                             "."
-;;                                             "/home/halushko/Projects/DM/src"
-;;                                             "/usr/include"
-;;                                             "/usr/local/include/compute"
-;;                                             )
-;;                                          )
-;;             (company-clang-arguments . (
-;;                                         "-std=c++11"
-;;                                         "-I/home/halushko/Projects/DM/src/"
-;;                                         "-I/usr/include/"
-;;                                         "-I/usr/local/include/compute/"
-;;                                       )
-;;                                    )
-;;             (flycheck-clang-language-standard . "c++11")
-;;             ;; (flycheck-clang-definitions . (
-;;             ;;                                  "VERSION=\"4.5p\""
-;;             ;;                                  )
-;;             ;;                               )
-;;             )
-;;            )
-;;  )
