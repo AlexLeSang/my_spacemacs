@@ -363,6 +363,12 @@ you should place your code here."
             (lambda()
               (global-set-key (kbd "C-'") 'company-rtags)
               (global-set-key (kbd "C-c i") 'yas-insert-snippet)
+              (defun my/downcase-first-char (&optional string)
+                "Downcase only the first character of the input STRING."
+                (when (and string (> (length string) 0))
+                  (let ((first-char (substring string nil 1))
+                        (rest-str   (substring string 1)))
+                    (concat (downcase first-char) rest-str))))
               ))
 
   (setq global-semantic-idle-completions-mode nil)
