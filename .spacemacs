@@ -76,7 +76,7 @@ values."
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-enable-clang-support t
       )
-     gtags
+     ;; gtags
      mineo-rtags
      javascript
      (python
@@ -144,8 +144,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         majapahit-dark
                          spacemacs-dark
+                         majapahit-dark
                          darkokai
                          hc-zenburn
                          monokai
@@ -369,6 +369,13 @@ you should place your code here."
   (add-hook 'company-mode-hook
             (lambda()
               (global-set-key (kbd "C-'") 'company-rtags)
+              (global-set-key (kbd "C-c i") 'yas-insert-snippet)
+              (defun my/downcase-first-char (&optional string)
+                "Downcase only the first character of the input STRING."
+                (when (and string (> (length string) 0))
+                  (let ((first-char (substring string nil 1))
+                        (rest-str   (substring string 1)))
+                    (concat (downcase first-char) rest-str))))
               ))
 
   (setq global-semantic-idle-completions-mode nil)
@@ -411,7 +418,7 @@ you should place your code here."
       "gdb-disassembly-mode"
       "gdb-memory-mode"
       "restclient-mode"
-      "speedbar-mode" term-mode)))
+      "speedbar-mode")))
   (with-eval-after-load 'company
     (define-key company-active-map (kbd "M-n") nil)
     (define-key company-active-map (kbd "M-p") nil)
@@ -419,6 +426,17 @@ you should place your code here."
     (define-key company-active-map (kbd "C-k") #'company-select-previous))
 
   ;; RTags
+  (with-eval-after-load 'rtags
+    (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
+    (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
+    (define-key evil-normal-state-map (kbd "gR") 'rtags-find-all-references-at-point)
+    (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
+    (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
+    (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
+    (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    )
   (setq rtags-autostart-diagnostics t)
   (setq rtags-completions-enabled t)
   (push 'company-rtags company-backends)
@@ -440,14 +458,15 @@ you should place your code here."
       (company-nxml :with company-yasnippet)
       (company-css :with company-yasnippet)
       (company-eclim :with company-yasnippet)
-      (company-semantic :with company-yasnippet company-gtags company-clang)
-      (company-clang :with company-yasnippet company-gtags company-semantic)
-      (company-rtags :with company-yasnippet company-gtags company-semantic)
+      (company-semantic :with company-yasnippet company-clang)
+      (company-clang :with company-yasnippet company-semantic)
+      (company-rtags :with company-yasnippet company-semantic)
       (company-xcode :with company-yasnippet)
       (company-ropemacs :with company-yasnippet)
       (company-cmake :with company-yasnippet)
       (company-capf :with company-yasnippet)
-      (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
+      ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
+      (company-dabbrev-code :with company-yasnippet)
       (company-oddmuse :with company-yasnippet)
       (company-files :with company-yasnippet)
       (company-anaconda :with company-yasnippet)
