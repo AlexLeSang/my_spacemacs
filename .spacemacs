@@ -28,16 +28,10 @@ values."
      spotify
      shell
      semantic
-     (scala
-      :variables
-      scala-indent:use-javadoc-style t
-      scala-use-java-doc-style t
-      scala-auto-insert-asterisk-in-comments t
-      scala-auto-start-ensime t)
      (auto-completion
       :variables
-      auto-completion-complete-with-key-sequence-delay 0.0
-      auto-completion-tab-key-behavior 'cycle
+      auto-completion-complete-with-key-sequence-delay 0.1
+      auto-completion-tab-key-behavior 'nil
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
       auto-completion-enable-company-help-tooltip t
@@ -45,7 +39,6 @@ values."
      better-defaults
      evil-snipe
      emacs-lisp
-     docker
      (colors
       :variables
       colors-colorize-identifiers 'all)
@@ -54,6 +47,12 @@ values."
       git-magit-status-fullscreen t)
      ;; markdown
      ;; org
+     (scala
+      :variables
+      scala-indent:use-javadoc-style t
+      scala-use-java-doc-style t
+      scala-auto-insert-asterisk-in-comments t
+      scala-auto-start-ensime t)
      (shell
       :variables
       shell-default-shell 'term
@@ -384,11 +383,24 @@ you should place your code here."
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
 
+  ;; QML
+  (add-to-list 'load-path (expand-file-name "~/my_spacemacs/qml"))
+  (require 'qml-mode)
+  (setq auto-mode-alist (cons '("\\.qml$" . qml-mode) auto-mode-alist))
+
   ;; Avy settings
   (setq avy-all-windows nil)
 
   ;; Semantic
   (setq hlt-auto-faces-flag t)
+
+  ;; LaTeX
+  (setq-default TeX-engine 'xetex)
+  (setq-default TeX-PDF-mode t)
+  '(TeX-source-correlate-method (quote synctex))
+  '(TeX-source-correlate-mode t)
+  '(TeX-source-correlate-start-server t)
+  '(TeX-view-program-selection (quote (((output-dvi has-no-display-manager) "dvi2tty") ((output-dvi style-pstricks) "dvips and gv") (output-pdf "Okular") (output-dvi "xdvi") (output-pdf "Evince") (output-html "xdg-open"))))
 
   ;; Term
   (defun bb/setup-term-mode ()
@@ -439,7 +451,7 @@ you should place your code here."
     )
   (setq rtags-autostart-diagnostics t)
   (setq rtags-completions-enabled t)
-  (push 'company-rtags company-backends)
+  (push '(company-rtags :with company-dabbrev-code company-yasnippet company-semantic) company-backends)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
@@ -447,36 +459,26 @@ you should place your code here."
   ;; c-mode-common-hook is also called by c++-mode
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
 
-  ;; CMake-Ide
-  (cmake-ide-setup)
-
-  '(company-backends
-    (quote
-     ((company-tern :with company-yasnippet)
-      (company-elisp :with company-yasnippet)
-      (company-bbdb :with company-yasnippet)
-      (company-nxml :with company-yasnippet)
-      (company-css :with company-yasnippet)
-      (company-eclim :with company-yasnippet)
-      (company-semantic :with company-yasnippet company-clang)
-      (company-clang :with company-yasnippet company-semantic)
-      (company-rtags :with company-yasnippet company-semantic)
-      (company-xcode :with company-yasnippet)
-      (company-ropemacs :with company-yasnippet)
-      (company-cmake :with company-yasnippet)
-      (company-capf :with company-yasnippet)
-      ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
-      (company-dabbrev-code :with company-yasnippet)
-      (company-oddmuse :with company-yasnippet)
-      (company-files :with company-yasnippet)
-      (company-anaconda :with company-yasnippet)
-      (company-dabbrev :with company-yasnippet))))
+  ;; '(company-backends
+  ;;   (quote
+  ;;    ((company-tern :with company-yasnippet)
+  ;;     (company-elisp :with company-yasnippet)
+  ;;     (company-bbdb :with company-yasnippet)
+  ;;     (company-nxml :with company-yasnippet)
+  ;;     (company-css :with company-yasnippet)
+  ;;     (company-eclim :with company-yasnippet)
+  ;;     (company-semantic :with company-yasnippet company-clang)
+  ;;     (company-clang :with company-yasnippet company-semantic)
+  ;;     (company-rtags :with company-yasnippet company-semantic)
+  ;;     (company-xcode :with company-yasnippet)
+  ;;     (company-ropemacs :with company-yasnippet)
+  ;;     (company-cmake :with company-yasnippet)
+  ;;     (company-capf :with company-yasnippet)
+  ;;     ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
+  ;;     (company-dabbrev-code :with company-yasnippet)
+  ;;     (company-oddmuse :with company-yasnippet)
+  ;;     (company-files :with company-yasnippet)
+  ;;     (company-anaconda :with company-yasnippet)
+  ;;     (company-dabbrev :with company-yasnippet))))
   (setq company-dabbrev-downcase nil)
-  ;; LaTeX
-  (setq-default TeX-engine 'xetex)
-  (setq-default TeX-PDF-mode t)
-  '(TeX-source-correlate-method (quote synctex))
-  '(TeX-source-correlate-mode t)
-  '(TeX-source-correlate-start-server t)
-  '(TeX-view-program-selection (quote (((output-dvi has-no-display-manager) "dvi2tty") ((output-dvi style-pstricks) "dvips and gv") (output-pdf "Okular") (output-dvi "xdvi") (output-pdf "Evince") (output-html "xdg-open"))))
   )
