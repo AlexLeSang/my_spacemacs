@@ -47,6 +47,12 @@ values."
       git-magit-status-fullscreen t)
      ;; markdown
      ;; org
+     (scala
+      :variables
+      scala-indent:use-javadoc-style t
+      scala-use-java-doc-style t
+      scala-auto-insert-asterisk-in-comments t
+      scala-auto-start-ensime t)
      (shell
       :variables
       shell-default-shell 'term
@@ -149,7 +155,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -375,11 +381,24 @@ you should place your code here."
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
 
+  ;; QML
+  (add-to-list 'load-path (expand-file-name "~/my_spacemacs/qml"))
+  (require 'qml-mode)
+  (setq auto-mode-alist (cons '("\\.qml$" . qml-mode) auto-mode-alist))
+
   ;; Avy settings
   (setq avy-all-windows nil)
 
   ;; Semantic
   (setq hlt-auto-faces-flag t)
+
+  ;; LaTeX
+  (setq-default TeX-engine 'xetex)
+  (setq-default TeX-PDF-mode t)
+  '(TeX-source-correlate-method (quote synctex))
+  '(TeX-source-correlate-mode t)
+  '(TeX-source-correlate-start-server t)
+  '(TeX-view-program-selection (quote (((output-dvi has-no-display-manager) "dvi2tty") ((output-dvi style-pstricks) "dvips and gv") (output-pdf "Okular") (output-dvi "xdvi") (output-pdf "Evince") (output-html "xdg-open"))))
 
   ;; Term
   (defun bb/setup-term-mode ()
@@ -453,9 +472,7 @@ you should place your code here."
     )
   (setq rtags-autostart-diagnostics t)
   (setq rtags-completions-enabled t)
-  ;; (push 'company-rtags company-backends)
-  ;; (push '(company-rtags :with company-semantic company-dabbrev-code company-yasnippet) company-backends)
-  (push '(company-rtags :with company-dabbrev-code company-yasnippet) company-backends)
+  (push '(company-rtags :with company-dabbrev-code company-yasnippet company-semantic) company-backends)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
@@ -464,7 +481,6 @@ you should place your code here."
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
 
   (setq large-file-warning-threshold nil)
-
   (setq company-dabbrev-downcase nil)
   (setq helm-buffer-max-length nil)
 
@@ -474,6 +490,4 @@ you should place your code here."
   ;;     ))
 
   ;; (add-hook 'after-save-hook #'run-compilation)
-
   )
-
