@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: cui32
+# key: cui32
+# --
+const uint32_t ${1:name} = $0;

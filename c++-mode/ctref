@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ctref
+# key: ctref
+# --
+const ${1:Type}& ${1:$(my/downcase-first-char yas-text)} = $0;

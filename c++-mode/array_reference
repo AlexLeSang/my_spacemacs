@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: array_reference
+# key: array_reference
+# --
+${2:Type} (&${1:name})[${3:size}]

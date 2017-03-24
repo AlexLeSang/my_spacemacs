@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ctvar
+# key: ctvar
+# --
+const ${1:Type} ${1:$(my/downcase-first-char yas-text)} = $0;

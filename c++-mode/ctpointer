@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ctpointer
+# key: ctpointer
+# --
+const ${1:Type}* const ${1:$(my/downcase-first-char yas-text)} = $0;
