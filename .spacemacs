@@ -18,24 +18,26 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     csv
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     csv
      javascript
      spotify
      shell
      semantic
      (auto-completion
       :variables
+      auto-completion-return-key-behavior 'nil
       auto-completion-complete-with-key-sequence-delay 0.1
-      auto-completion-tab-key-behavior nil
+      auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-enable-snippets-in-popup t
       auto-completion-enable-company-help-tooltip t
-      auto-completion-enable-sort-by-usage t)
+      auto-completion-enable-sort-by-usage t
+      spacemacs-default-company-backends '(company-files company-capf company-yasnippet)
+      )
      better-defaults
      evil-snipe
      emacs-lisp
@@ -73,7 +75,7 @@ values."
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
-      c-c++-enable-clang-support t
+      ;; c-c++-enable-clang-support t
       )
      ;; asm
      ;; gtags
@@ -354,7 +356,6 @@ you should place your code here."
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
 
-  (require 'company-rtags)
   (global-company-mode)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
@@ -365,8 +366,6 @@ you should place your code here."
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   (add-hook 'company-mode-hook
             (lambda()
-              (global-set-key (kbd "C-'") 'company-complete)
-              (global-set-key (kbd "C-c i") 'yas-insert-snippet)
               (defun my/downcase-first-char (&optional string)
                 "Downcase only the first character of the input STRING."
                 (when (and string (> (length string) 0))
@@ -435,6 +434,49 @@ you should place your code here."
     (define-key company-active-map (kbd "C-j") #'company-select-next)
     (define-key company-active-map (kbd "C-k") #'company-select-previous))
 
+  ;; RTags
+  (with-eval-after-load 'rtags
+    (setq rtags-autostart-diagnostics t)
+    (setq rtags-completions-enabled t)
+    (setq rtags-enable-unsaved-reparsing t)
+    (setq rtags-periodic-reparse-timeout 1.0)
+    (setq rtags-reindex-on-save t)
+    (setq rtags-show-containing-function t)
+    (setq rtags-tracking-timer-interval 0.1)
+    (setq rtags-verbose-results t)
+    (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
+    (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
+    (define-key evil-normal-state-map (kbd "gR") 'rtags-find-all-references-at-point)
+    (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
+    (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
+    (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
+    (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    )
+  (push 'company-rtags company-backends)
+
+  (setq company-backends-c-mode-common  '(
+                                          (
+                                           (company-rtags :with company-semantic company-dabbrev-code)
+                                           (company-semantic :with company-dabbrev-code)
+                                           company-dabbrev
+                                           company-dabbrev-code
+                                           )
+                                          )
+        )
+
+  (defun my-flycheck-rtags-setup ()
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
+    (setq-local flycheck-check-syntax-automatically nil))
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+
+  (eval-after-load 'company
+    '(progn
+       (define-key company-mode-map (kbd "C-;") 'helm-company)
+       (define-key company-active-map (kbd "C-;") 'helm-company)))
+
   ;; '(company-backends
   ;;   (quote
   ;;    ((company-tern :with company-yasnippet)
@@ -456,31 +498,6 @@ you should place your code here."
   ;;     (company-files :with company-yasnippet)
   ;;     (company-anaconda :with company-yasnippet)
   ;;     (company-dabbrev :with company-yasnippet))))
-
-  ;; RTags
-  (with-eval-after-load 'rtags
-    (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
-    (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
-    (define-key evil-normal-state-map (kbd "gR") 'rtags-find-all-references-at-point)
-    (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
-    (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
-    (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
-    (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
-    (define-key evil-normal-state-map (kbd "gI") 'rtags-imenu)
-    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-    )
-  (setq rtags-autostart-diagnostics t)
-  (setq rtags-completions-enabled t)
-  (push '(company-rtags :with company-dabbrev-code company-yasnippet company-semantic) company-backends)
-  (defun my-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-    (setq-local flycheck-check-syntax-automatically nil))
-  ;; c-mode-common-hook is also called by c++-mode
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-
-  (setq large-file-warning-threshold nil)
   (setq company-dabbrev-downcase nil)
   (setq helm-buffer-max-length nil)
 
@@ -491,3 +508,22 @@ you should place your code here."
 
   ;; (add-hook 'after-save-hook #'run-compilation)
   )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (noflet ensime sbt-mode scala-mode zenburn-theme which-key use-package ujelly-theme toc-org tao-theme srefactor spotify shell-pop rtags restart-emacs pyvenv persp-mode neotree monokai-theme live-py-mode link-hint js2-refactor jbeans-theme info+ indent-guide hide-comnt help-fns+ helm-company gotham-theme git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-nerd-commenter evil-mc dumb-jump dracula-theme dockerfile-mode darktooth-theme coffee-mode cmake-ide apropospriate-theme anaconda-mode aggressive-indent ace-link packed company tablist smartparens highlight evil flycheck yasnippet projectile helm helm-core magit magit-popup git-commit async js2-mode spacemacs-theme zonokai-theme zen-and-art-theme yapfify xterm-color ws-butler with-editor window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme quelpa pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mwim mustang-theme multiple-cursors multi-term move-text monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative light-soap-theme levenshtein js-doc jazz-theme ir-black-theme inkpot-theme ido-vertical-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme goto-chg google-translate golden-ratio gitconfig-mode gitattributes-mode git-messenger git-gutter-fringe git-gutter-fringe+ gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav docker django-theme disaster diminish diff-hl define-word darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme adaptive-wrap ace-window ace-jump-helm-line ac-ispell)))
+)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-tooltip-common
+   ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection
+   ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
+ )
