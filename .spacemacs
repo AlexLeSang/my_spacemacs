@@ -18,20 +18,20 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
-     csv
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     csv
      javascript
      spotify
      shell
      semantic
      (auto-completion
       :variables
-      auto-completion-complete-with-key-sequence-delay 0.0
-      auto-completion-tab-key-behavior 'cycle
+      auto-completion-complete-with-key-sequence-delay 0.1
+      auto-completion-tab-key-behavior nil
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-snippets-in-popup t
       auto-completion-enable-company-help-tooltip t
@@ -69,6 +69,7 @@ values."
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-enable-clang-support t
       )
+     ;; asm
      ;; gtags
      mineo-rtags
      javascript
@@ -151,7 +152,7 @@ values."
                                :size 12
                                :weight normal
                                :width normal
-                               :powerline-scale 1.1)
+                               :powerline-scale 1.0)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -305,7 +306,6 @@ you should place your code here."
   (require 'cmake-ide)
   (require 'flycheck-rtags)
   (require 'company-rtags)
-  (setq helm-buffer-max-length nil)
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
@@ -327,8 +327,8 @@ you should place your code here."
   (global-set-key (kbd "C-&") 'gud-break)
   (global-set-key (kbd "C-*") 'gud-remove)
   (global-set-key (kbd "<f12>") 'spotify-playpause)
-  (global-set-key [C-tab] 'evil-next-buffer)
-  (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
+  ;; (global-set-key [C-tab] 'evil-next-buffer)
+  ;; (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
   ;; RTags
@@ -336,7 +336,6 @@ you should place your code here."
   (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running)
   (add-hook 'c++-mode-common-hook 'rtags-start-process-unless-running)
   (setq rtags-autostart-diagnostics t)
-  (setq rtags-completions-enabled t)
   (require 'company)
   (require 'rtags-helm)
   (require 'flycheck-rtags)
@@ -351,7 +350,6 @@ you should place your code here."
 
   (require 'company-rtags)
   (global-company-mode)
-  (push 'company-rtags company-backends)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
@@ -361,7 +359,7 @@ you should place your code here."
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   (add-hook 'company-mode-hook
             (lambda()
-              (global-set-key (kbd "C-'") 'company-rtags)
+              (global-set-key (kbd "C-'") 'company-complete)
               (global-set-key (kbd "C-c i") 'yas-insert-snippet)
               (defun my/downcase-first-char (&optional string)
                 "Downcase only the first character of the input STRING."
@@ -418,6 +416,28 @@ you should place your code here."
     (define-key company-active-map (kbd "C-j") #'company-select-next)
     (define-key company-active-map (kbd "C-k") #'company-select-previous))
 
+  ;; '(company-backends
+  ;;   (quote
+  ;;    ((company-tern :with company-yasnippet)
+  ;;     (company-elisp :with company-yasnippet)
+  ;;     (company-bbdb :with company-yasnippet)
+  ;;     (company-nxml :with company-yasnippet)
+  ;;     (company-css :with company-yasnippet)
+  ;;     (company-eclim :with company-yasnippet)
+  ;;     (company-semantic :with company-yasnippet company-clang)
+  ;;     (company-clang :with company-yasnippet company-semantic)
+  ;;     (company-rtags :with company-yasnippet company-semantic)
+  ;;     (company-xcode :with company-yasnippet)
+  ;;     (company-ropemacs :with company-yasnippet)
+  ;;     (company-cmake :with company-yasnippet)
+  ;;     (company-capf :with company-yasnippet)
+  ;;     ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
+  ;;     (company-dabbrev-code :with company-yasnippet)
+  ;;     (company-oddmuse :with company-yasnippet)
+  ;;     (company-files :with company-yasnippet)
+  ;;     (company-anaconda :with company-yasnippet)
+  ;;     (company-dabbrev :with company-yasnippet))))
+
   ;; RTags
   (with-eval-after-load 'rtags
     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
@@ -427,12 +447,15 @@ you should place your code here."
     (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
     (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
     (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+    (define-key evil-normal-state-map (kbd "gI") 'rtags-imenu)
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
   (setq rtags-autostart-diagnostics t)
   (setq rtags-completions-enabled t)
-  (push 'company-rtags company-backends)
+  ;; (push 'company-rtags company-backends)
+  ;; (push '(company-rtags :with company-semantic company-dabbrev-code company-yasnippet) company-backends)
+  (push '(company-rtags :with company-dabbrev-code company-yasnippet) company-backends)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
@@ -440,27 +463,17 @@ you should place your code here."
   ;; c-mode-common-hook is also called by c++-mode
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
 
-  '(company-backends
-    (quote
-     ((company-tern :with company-yasnippet)
-      (company-elisp :with company-yasnippet)
-      (company-bbdb :with company-yasnippet)
-      (company-nxml :with company-yasnippet)
-      (company-css :with company-yasnippet)
-      (company-eclim :with company-yasnippet)
-      (company-semantic :with company-yasnippet company-clang)
-      (company-clang :with company-yasnippet company-semantic)
-      (company-rtags :with company-yasnippet company-semantic)
-      (company-xcode :with company-yasnippet)
-      (company-ropemacs :with company-yasnippet)
-      (company-cmake :with company-yasnippet)
-      (company-capf :with company-yasnippet)
-      ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
-      (company-dabbrev-code :with company-yasnippet)
-      (company-oddmuse :with company-yasnippet)
-      (company-files :with company-yasnippet)
-      (company-anaconda :with company-yasnippet)
-      (company-dabbrev :with company-yasnippet))))
+  (setq large-file-warning-threshold nil)
+
   (setq company-dabbrev-downcase nil)
+  (setq helm-buffer-max-length nil)
+
+  ;; (defun run-compilation ()
+  ;;   (when (eq major-mode 'c++-mode)
+  ;;     (recompile nil)
+  ;;     ))
+
+  ;; (add-hook 'after-save-hook #'run-compilation)
+
   )
 
