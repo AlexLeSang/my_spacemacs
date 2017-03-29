@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     search-engine
      chrome
      csv
      ;; ----------------------------------------------------------------
@@ -62,7 +63,11 @@ values."
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
       shell-default-position 'bottom)
-     spell-checking
+     (spell-checking
+      :variables
+      =enable-flyspell-auto-completion= t
+      spell-checking-enable-auto-dictionary t
+      )
      syntax-checking
      (version-control
       :variables
@@ -315,6 +320,11 @@ you should place your code here."
   (require 'edit-server)
   (edit-server-start)
 
+  (when (locate-library "edit-server")
+    (require 'edit-server)
+    (setq edit-server-new-frame nil)
+    (edit-server-start))
+
   (require 'cmake-ide)
   (require 'flycheck-rtags)
   (require 'company-rtags)
@@ -347,7 +357,6 @@ you should place your code here."
   (global-company-mode t)
   (add-hook 'c-mode-common-hook 'rtags-start-process-unless-running)
   (add-hook 'c++-mode-common-hook 'rtags-start-process-unless-running)
-  (setq rtags-autostart-diagnostics t)
   (require 'company)
   (require 'rtags-helm)
   (require 'flycheck-rtags)
@@ -442,11 +451,11 @@ you should place your code here."
   (with-eval-after-load 'rtags
     (setq rtags-autostart-diagnostics t)
     (setq rtags-completions-enabled t)
-    (setq rtags-enable-unsaved-reparsing t)
-    (setq rtags-periodic-reparse-timeout 1.0)
+    ;; (setq rtags-enable-unsaved-reparsing t)
+    ;; (setq rtags-periodic-reparse-timeout 1.0)
     (setq rtags-reindex-on-save t)
     (setq rtags-show-containing-function t)
-    (setq rtags-tracking-timer-interval 0.1)
+    ;; (setq rtags-tracking-timer-interval 0.1)
     (setq rtags-verbose-results t)
     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
@@ -519,7 +528,7 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (gmail-message-mode ham-mode markdown-mode html-to-markdown edit-server noflet ensime sbt-mode scala-mode zenburn-theme which-key use-package ujelly-theme toc-org tao-theme srefactor spotify shell-pop rtags restart-emacs pyvenv persp-mode neotree monokai-theme live-py-mode link-hint js2-refactor jbeans-theme info+ indent-guide hide-comnt help-fns+ helm-company gotham-theme git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-nerd-commenter evil-mc dumb-jump dracula-theme dockerfile-mode darktooth-theme coffee-mode cmake-ide apropospriate-theme anaconda-mode aggressive-indent ace-link packed company tablist smartparens highlight evil flycheck yasnippet projectile helm helm-core magit magit-popup git-commit async js2-mode spacemacs-theme zonokai-theme zen-and-art-theme yapfify xterm-color ws-butler with-editor window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme quelpa pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mwim mustang-theme multiple-cursors multi-term move-text monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative light-soap-theme levenshtein js-doc jazz-theme ir-black-theme inkpot-theme ido-vertical-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme goto-chg google-translate golden-ratio gitconfig-mode gitattributes-mode git-messenger git-gutter-fringe git-gutter-fringe+ gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav docker django-theme disaster diminish diff-hl define-word darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme adaptive-wrap ace-window ace-jump-helm-line ac-ispell))))
+    (engine-mode gmail-message-mode ham-mode markdown-mode html-to-markdown edit-server noflet ensime sbt-mode scala-mode zenburn-theme which-key use-package ujelly-theme toc-org tao-theme srefactor spotify shell-pop rtags restart-emacs pyvenv persp-mode neotree monokai-theme live-py-mode link-hint js2-refactor jbeans-theme info+ indent-guide hide-comnt help-fns+ helm-company gotham-theme git-timemachine git-link eyebrowse expand-region exec-path-from-shell evil-nerd-commenter evil-mc dumb-jump dracula-theme dockerfile-mode darktooth-theme coffee-mode cmake-ide apropospriate-theme anaconda-mode aggressive-indent ace-link packed company tablist smartparens highlight evil flycheck yasnippet projectile helm helm-core magit magit-popup git-commit async js2-mode spacemacs-theme zonokai-theme zen-and-art-theme yapfify xterm-color ws-butler with-editor window-numbering web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree underwater-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance spaceline spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle seti-theme reverse-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme quelpa pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pkg-info pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-plus-contrib org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme naquadah-theme mwim mustang-theme multiple-cursors multi-term move-text monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow macrostep lush-theme lorem-ipsum livid-mode linum-relative light-soap-theme levenshtein js-doc jazz-theme ir-black-theme inkpot-theme ido-vertical-mode hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme goto-chg google-translate golden-ratio gitconfig-mode gitattributes-mode git-messenger git-gutter-fringe git-gutter-fringe+ gandalf-theme flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav docker django-theme disaster diminish diff-hl define-word darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme adaptive-wrap ace-window ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
