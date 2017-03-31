@@ -328,6 +328,7 @@ you should place your code here."
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
   (setq projectile-enable-caching t)
+  (setq dotspacemacs-large-file-size 50)
   (global-set-key (kbd "<f4>") 'gdb)
   (global-set-key (kbd "<f5>") 'gud-cont)
   (global-set-key (kbd "<f6>") 'gud-next)
