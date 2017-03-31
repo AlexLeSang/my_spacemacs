@@ -471,7 +471,7 @@ you should place your code here."
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
-  (push 'company-rtags company-backends)
+  (push '(company-rtags :with company-semantic company-dabbrev-code company-keywords) company-backends)
 
   (setq company-backends-c-mode-common  '(
                                           (
