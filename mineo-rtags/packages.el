@@ -30,9 +30,9 @@
 ;;; Code:
 
 (defconst mineo-rtags-packages
-  '(cmake-ide
-    company-rtags
+  '(company-rtags
     flycheck-rtags
+    helm-rtags
     rtags))
 
 (defun mineo-rtags/init-cmake-ide ()
@@ -47,7 +47,8 @@
           rtags-completions-enabled t
           rtags-use-helm t)
     ; See https://github.com/Andersbakken/rtags/issues/832
-    (require 'rtags-helm)
+    (add-to-list 'load-path (expand-file-name "/opt/spacemacs/private/mineo-rtags"))
+    (require 'helm-rtags)
     (push '(company-rtags)
           company-backends-c-mode-common)
     (rtags-enable-standard-keybindings)
@@ -55,6 +56,7 @@
     (add-hook 'c++-mode-hook 'rtags-start-process-unless-running))
   (use-package flycheck-rtags :ensure rtags)
   (use-package company-rtags :ensure rtags)
+  (use-package helm-rtags :ensure rtags)
   )
 
 ;;; packages.el ends here

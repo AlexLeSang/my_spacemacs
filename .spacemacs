@@ -509,8 +509,6 @@ you should place your code here."
   ;;     (company-files :with company-yasnippet)
   ;;     (company-anaconda :with company-yasnippet)
   ;;     (company-dabbrev :with company-yasnippet))))
-  (setq company-dabbrev-downcase nil)
-  (setq helm-buffer-max-length nil)
 
   ;; translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
@@ -535,5 +533,6 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(rtags-display-result-backend (quote helm))
- )
+ '(company-dabbrev-downcase nil)
+ '(helm-buffer-max-length nil)
+ '(rtags-display-result-backend (quote helm)))
