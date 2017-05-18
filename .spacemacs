@@ -49,8 +49,6 @@ values."
      (git
       :variables
       git-magit-status-fullscreen t)
-     ;; markdown
-     ;; org
      (scala
       :variables
       scala-indent:use-javadoc-style t
@@ -72,15 +70,11 @@ values."
      (latex
       :variables
       auto-fill-mode nil)
-     ;;clojure
      docker
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
-      ;; c-c++-enable-clang-support t
       )
-     ;; asm
-     ;; gtags
      mineo-rtags
      javascript
      (python
@@ -305,13 +299,6 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;; (defconst my-cc-style
-  ;;   '("bsd" ; this is inheritance from the bsd style
-  ;;     (c-offsets-alist . ((innamespace . [0])))))
-
-  ;; (c-add-style "my-cc-mode" my-cc-style)
-  ;; (setq-default c-basic-offset 4)
-  ;; (setq-default tab-width 4)
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [C-tab] 'clang-format-buffer))
@@ -350,8 +337,6 @@ you should place your code here."
   (global-set-key (kbd "C-&") 'gud-break)
   (global-set-key (kbd "C-*") 'gud-remove)
   (global-set-key (kbd "<f12>") 'spotify-playpause)
-  ;; (global-set-key [C-tab] 'evil-next-buffer)
-  ;; (global-set-key [C-iso-lefttab] 'evil-prev-buffer)
   (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
   ;; RTags
@@ -420,40 +405,12 @@ you should place your code here."
 
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
-  '(golden-ratio-exclude-modes
-    (quote
-     ("bs-mode"
-      "calc-mode"
-      "ediff-mode"
-      "dired-mode"
-      "gud-mode"
-      "gdb-locals-mode"
-      "gdb-registers-mode"
-      "gdb-breakpoints-mode"
-      "gdb-threads-mode"
-      "gdb-frames-mode"
-      "gdb-inferior-io-mode"
-      "gud-mode"
-      "gdb-inferior-io-mode"
-      "gdb-disassembly-mode"
-      "gdb-memory-mode"
-      "restclient-mode"
-      "speedbar-mode")))
-  (with-eval-after-load 'company
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-j") #'company-select-next)
-    (define-key company-active-map (kbd "C-k") #'company-select-previous))
-
   ;; RTags
   (with-eval-after-load 'rtags
     (setq rtags-autostart-diagnostics t)
     (setq rtags-completions-enabled t)
-    ;; (setq rtags-enable-unsaved-reparsing t)
-    ;; (setq rtags-periodic-reparse-timeout 1.0)
     (setq rtags-reindex-on-save t)
     (setq rtags-show-containing-function t)
-    ;; (setq rtags-tracking-timer-interval 0.1)
     (setq rtags-verbose-results t)
     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
@@ -494,38 +451,10 @@ you should place your code here."
        (define-key company-mode-map (kbd "C-;") 'helm-company)
        (define-key company-active-map (kbd "C-;") 'helm-company)))
 
-  ;; '(company-backends
-  ;;   (quote
-  ;;    ((company-tern :with company-yasnippet)
-  ;;     (company-elisp :with company-yasnippet)
-  ;;     (company-bbdb :with company-yasnippet)
-  ;;     (company-nxml :with company-yasnippet)
-  ;;     (company-css :with company-yasnippet)
-  ;;     (company-eclim :with company-yasnippet)
-  ;;     (company-semantic :with company-yasnippet company-clang)
-  ;;     (company-clang :with company-yasnippet company-semantic)
-  ;;     (company-rtags :with company-yasnippet company-semantic)
-  ;;     (company-xcode :with company-yasnippet)
-  ;;     (company-ropemacs :with company-yasnippet)
-  ;;     (company-cmake :with company-yasnippet)
-  ;;     (company-capf :with company-yasnippet)
-  ;;     ;; (company-dabbrev-code company-gtags company-etags company-keywords :with company-yasnippet)
-  ;;     (company-dabbrev-code :with company-yasnippet)
-  ;;     (company-oddmuse :with company-yasnippet)
-  ;;     (company-files :with company-yasnippet)
-  ;;     (company-anaconda :with company-yasnippet)
-  ;;     (company-dabbrev :with company-yasnippet))))
-
   ;; translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
   (define-key key-translation-map (kbd "M-h") (kbd "C-h"))
 
-  ;; (defun run-compilation ()
-  ;;   (when (eq major-mode 'c++-mode)
-  ;;     (recompile nil)
-  ;;     ))
-
-  ;; (add-hook 'after-save-hook #'run-compilation)
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -539,6 +468,7 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-auto-complete-chars (quote (32 119)))
  '(company-dabbrev-downcase nil)
  '(helm-buffer-max-length nil)
  '(rtags-display-result-backend (quote helm)))
