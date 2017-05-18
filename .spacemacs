@@ -32,8 +32,8 @@ values."
      semantic
      (auto-completion
       :variables
-      auto-completion-return-key-behavior 'nil
-      auto-completion-complete-with-key-sequence-delay 0.1
+      auto-completion-return-key-behavior nil
+      auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-company-help-tooltip t
@@ -159,7 +159,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 11
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -485,6 +485,12 @@ you should place your code here."
 
   (eval-after-load 'company
     '(progn
+       (setq company-minimum-prefix-length 1)
+       (setq company-idle-delay 0)
+       (setq company-show-numbers t)
+       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
+       (setq company-tooltip-limit 150)
+       (setq company-auto-complete t)
        (define-key company-mode-map (kbd "C-;") 'helm-company)
        (define-key company-active-map (kbd "C-;") 'helm-company)))
 
