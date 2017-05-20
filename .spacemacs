@@ -62,7 +62,10 @@ values."
       shell-default-height 30
       shell-default-position 'bottom)
      spell-checking
-     syntax-checking
+     (syntax-checking
+      :variables
+      syntax-checking-enable-by-default t
+      syntax-checking-enable-tooltips nil)
      (version-control
       :variables
       version-control-diff-tool 'diff-hl
@@ -121,7 +124,7 @@ values."
    ;; unchanged. (default 'vim)
    dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
-   dotspacemacs-verbose-loading nil
+   dotspacemacs-verbose-loading t
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
@@ -316,11 +319,15 @@ you should place your code here."
   (spacemacs/toggle-indent-guide-on)
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
-  (spacemacs/toggle-syntax-checking-on)
-  ;; (spacemacs/toggle-automatic-symbol-highlight-on)
   (global-auto-revert-mode 1)
-  ;; (global-auto-complete-mode)
-  (global-flycheck-mode t)
+
+  ;; (eval-after-load 'flycheck
+  ;;   '(progn
+  ;;      ;; (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  ;;      ;; (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+  ;;      )
+  ;;   )
+
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
@@ -333,17 +340,8 @@ you should place your code here."
   (global-set-key (kbd "C-&") 'gud-break)
   (global-set-key (kbd "C-*") 'gud-remove)
   (global-set-key (kbd "<f12>") 'spotify-playpause)
-  (setq neo-theme 'nerd)
   (indent-guide-global-mode t)
-  ;; RTags
   (global-company-mode t)
-  (defun my-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-    (setq-local flycheck-check-syntax-automatically nil))
-  ;; c-mode-common-hook is also called by c++-mode
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   (add-hook 'company-mode-hook
             (lambda()
               (defun my/downcase-first-char (&optional string)
@@ -395,8 +393,8 @@ you should place your code here."
   (require 'helm-rtags)
 
   (with-eval-after-load 'rtags
-    (setq rtags-autostart-diagnostics t)
-    (rtags-diagnostics)
+    ;; (setq rtags-autostart-diagnostics t)
+    ;; (rtags-diagnostics)
     (setq rtags-completions-enabled t)
     (setq rtags-reindex-on-save t)
     (setq rtags-show-containing-function t)
@@ -419,7 +417,11 @@ you should place your code here."
     "Configure flycheck-rtags for better experience."
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-highlighting-mode nil))
+    (setq-local flycheck-highlighting-mode nil)
+    )
+
+  (global-flycheck-mode t)
+  (setq flycheck-checker-error-threshold 100)
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
 
