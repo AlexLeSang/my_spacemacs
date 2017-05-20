@@ -311,10 +311,6 @@ you should place your code here."
     (setq edit-server-new-frame nil)
     (edit-server-start))
 
-  (require 'flycheck-rtags)
-  (require 'company-rtags)
-  (require 'company-rtags)
-  (require 'helm-rtags)
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
@@ -341,18 +337,6 @@ you should place your code here."
   (indent-guide-global-mode t)
   ;; RTags
   (global-company-mode t)
-  (require 'company)
-  (require 'flycheck-rtags)
-  (defun my-flycheck-rtags-setup ()
-    "Configure flycheck-rtags for better experience."
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-highlighting-mode nil))
-  ;; c-mode-common-hook is also called by c++-mode
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-
-  (global-company-mode)
   (defun my-flycheck-rtags-setup ()
     (flycheck-select-checker 'rtags)
     (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
@@ -406,12 +390,19 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   ;; RTags
+  (require 'flycheck-rtags)
+  (require 'company-rtags)
+  (require 'helm-rtags)
+
   (with-eval-after-load 'rtags
     (setq rtags-autostart-diagnostics t)
+    (rtags-diagnostics)
     (setq rtags-completions-enabled t)
     (setq rtags-reindex-on-save t)
     (setq rtags-show-containing-function t)
     (setq rtags-verbose-results t)
+    ;; c-mode-common-hook is also called by c++-mode
+    (setq rtags-display-result-backend 'helm)
     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
     (define-key evil-normal-state-map (kbd "gR") 'rtags-rename-symbol)
@@ -424,6 +415,14 @@ you should place your code here."
     )
   (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
 
+  (defun my-flycheck-rtags-setup ()
+    "Configure flycheck-rtags for better experience."
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-highlighting-mode nil))
+  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+
   (setq company-backends-c-mode-common  '(
                                           (
                                            (company-rtags :with company-dabbrev-code)
@@ -434,26 +433,40 @@ you should place your code here."
                                           )
         )
 
-  (defun my-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-    (setq-local flycheck-check-syntax-automatically nil))
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-
   (eval-after-load 'company
     '(progn
-       (setq company-minimum-prefix-length 1)
-       (setq company-idle-delay 0)
+       (setq company-minimum-prefix-length 2)
+       (setq company-idle-delay 0.6)
        (setq company-show-numbers t)
        (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
-       (setq company-tooltip-limit 150)
+       (setq company-tooltip-limit 30)
        (setq company-auto-complete t)
+       (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+       (setq company-auto-complete-chars (quote (41 46)))
+       (define-key company-active-map (kbd "M-n") nil)
+       (define-key company-active-map (kbd "M-p") nil)
+       (define-key company-active-map (kbd "C-n") #'company-select-next)
+       (define-key company-active-map (kbd "C-p") #'company-select-previous)
        (define-key company-mode-map (kbd "C-;") 'helm-company)
        (define-key company-active-map (kbd "C-;") 'helm-company)))
 
   ;; translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
   (define-key key-translation-map (kbd "M-h") (kbd "C-h"))
+
+  ;; This snippet allows you to run clang-format before saving
+  ;; given the current file as the correct filetype.
+  ;; This relies on the c-c++ layer being enabled.
+  (defun clang-format-for-filetype ()
+    "Run clang-format if the current file has a file extensions
+in the filetypes list."
+    (let ((filetypes '("c" "cpp" "h" "hpp")))
+      (when (member (file-name-extension (buffer-file-name)) filetypes)
+        (clang-format-buffer))))
+
+  ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
+  ;; what this line means
+  (add-hook 'before-save-hook 'clang-format-for-filetype)
 
   )
 (custom-set-faces
@@ -468,7 +481,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-auto-complete-chars (quote (32 119)))
- '(company-dabbrev-downcase nil)
- '(helm-buffer-max-length nil)
- '(rtags-display-result-backend (quote helm)))
+ '(helm-buffer-max-length nil))
