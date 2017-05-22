@@ -442,12 +442,16 @@ you should place your code here."
 
   (eval-after-load 'company
     '(progn
-       (setq company-minimum-prefix-length 1)
-       (setq company-idle-delay 0)
+       (setq company-minimum-prefix-length 3)
+       (setq company-idle-delay 0.7)
        (setq company-show-numbers t)
-       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
-       (setq company-tooltip-limit 150)
+       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0.3)
+       (setq company-tooltip-limit 30)
        (setq company-auto-complete t)
+       (define-key company-active-map (kbd "M-n") nil)
+       (define-key company-active-map (kbd "M-p") nil)
+       (define-key company-active-map (kbd "C-n") #'company-select-next)
+       (define-key company-active-map (kbd "C-p") #'company-select-previous)
        (define-key company-mode-map (kbd "C-;") 'helm-company)
        (define-key company-active-map (kbd "C-;") 'helm-company)))
 
