@@ -437,7 +437,7 @@ you should place your code here."
 
   (eval-after-load 'company
     '(progn
-       (setq company-minimum-prefix-length 2)
+       (setq company-minimum-prefix-length 3)
        (setq company-idle-delay 0.6)
        (setq company-show-numbers t)
        (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
