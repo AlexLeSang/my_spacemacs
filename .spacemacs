@@ -156,7 +156,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 11
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -321,13 +321,6 @@ you should place your code here."
   (spacemacs/toggle-camel-case-motion-globally-on)
   (global-auto-revert-mode 1)
 
-  ;; (eval-after-load 'flycheck
-  ;;   '(progn
-  ;;      ;; (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  ;;      ;; (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-  ;;      )
-  ;;   )
-
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
   (setenv "NO_PROXY" "127.0.0.1")
   (setenv "no_proxy" "127.0.0.1")
@@ -408,6 +401,7 @@ you should place your code here."
     (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
     (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
     (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+    (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
@@ -420,10 +414,14 @@ you should place your code here."
     (setq-local flycheck-highlighting-mode nil)
     )
 
-  (global-flycheck-mode t)
-  (setq flycheck-checker-error-threshold 100)
-  (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+  (eval-after-load 'flycheck
+    '(progn
+       (global-flycheck-mode t)
+       (setq flycheck-checker-error-threshold nil)
+       (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+       (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+       )
+    )
 
   (setq company-backends-c-mode-common  '(
                                           (
