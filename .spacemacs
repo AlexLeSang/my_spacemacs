@@ -153,7 +153,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 11
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -242,7 +242,7 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 75
+   dotspacemacs-inactive-transparency 90
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
@@ -321,6 +321,7 @@ you should place your code here."
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
+  (spacemacs/toggle-transparency)
   ;; (spacemacs/toggle-automatic-symbol-highlight-on)
   (global-auto-revert-mode 1)
   ;; (global-auto-complete-mode)
@@ -346,6 +347,7 @@ you should place your code here."
   (defun my-flycheck-rtags-setup ()
     "Configure flycheck-rtags for better experience."
     (flycheck-select-checker 'rtags)
+    (setq-local flycheck-checker-error-threshold nil)
     (setq-local flycheck-check-syntax-automatically nil)
     (setq-local flycheck-highlighting-mode nil))
   ;; c-mode-common-hook is also called by c++-mode
@@ -353,11 +355,6 @@ you should place your code here."
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
 
   (global-company-mode)
-  (defun my-flycheck-rtags-setup ()
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-highlighting-mode nil) ;; RTags creates more accurate overlays.
-    (setq-local flycheck-check-syntax-automatically nil))
-  ;; c-mode-common-hook is also called by c++-mode
   (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
   (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   (add-hook 'company-mode-hook
