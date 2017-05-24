@@ -41,7 +41,9 @@ values."
       spacemacs-default-company-backends '(company-files company-yasnippet)
       )
      better-defaults
-     evil-snipe
+     (evil-snipe
+      :variables
+      evil-snipe-enable-alternate-f-and-t-behaviors t)
      emacs-lisp
      (colors
       :variables
