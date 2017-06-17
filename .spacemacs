@@ -158,7 +158,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 11
+                               :size 10
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -304,13 +304,13 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (setq gc-cons-threshold 80000000)
+  (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 80000000))
+    (setq gc-cons-threshold 0000000))
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
@@ -451,7 +451,7 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 3)
-       (setq company-idle-delay 0.6)
+       (setq company-idle-delay 0.2)
        (setq company-show-numbers t)
        (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
        (setq company-tooltip-limit 30)
