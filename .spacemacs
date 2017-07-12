@@ -80,7 +80,7 @@ values."
       :variables
       c-c++-default-mode-for-headers 'c++-mode
       )
-     mineo-rtags
+     ;; mineo-rtags
      javascript
      (python
       :variables
@@ -333,6 +333,7 @@ you should place your code here."
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
+  (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
   (global-auto-revert-mode 1)
 
@@ -388,6 +389,10 @@ you should place your code here."
   ;; Term
   (defun bb/setup-term-mode ()
     (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+
+  (auto-fill-mode nil)
+  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+  (setq latex-enable-auto-fill nil)
 
   (defun bb/send-C-r ()
     (interactive)
@@ -482,6 +487,8 @@ in the filetypes list."
   ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
   ;; what this line means
   (add-hook 'before-save-hook 'clang-format-for-filetype)
+  (setq evil-snipe-scope 'whole-visible)
+  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
 
   )
 (custom-set-faces
