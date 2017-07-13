@@ -301,9 +301,7 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;; garbage-collecion
   (setq gc-cons-threshold 1000000)
-  ;; (setq garbage-collection-messages t)
 
   (defun my-minibuffer-setup-hook ()
     (setq gc-cons-threshold most-positive-fixnum))
@@ -332,6 +330,7 @@ you should place your code here."
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
+  (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
   (global-auto-revert-mode 1)
 
@@ -388,6 +387,10 @@ you should place your code here."
   ;; Term
   (defun bb/setup-term-mode ()
     (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+
+  (auto-fill-mode nil)
+  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
+  (setq latex-enable-auto-fill nil)
 
   (defun bb/send-C-r ()
     (interactive)
@@ -451,7 +454,7 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 3)
-       (setq company-idle-delay 0.5)
+       (setq company-idle-delay 0.2)
        (setq company-show-numbers t)
        (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0.2)
        (setq company-tooltip-limit 15)
@@ -482,6 +485,7 @@ you should place your code here."
   ;; what this line means
   ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
   (setq-default git-enable-magit-svn-plugin t)
+  (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
 
   (setq python-shell-interpreter "python3")
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
