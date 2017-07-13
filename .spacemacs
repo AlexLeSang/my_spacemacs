@@ -80,10 +80,11 @@ values."
       :variables
       c-c++-default-mode-for-headers 'c++-mode
       )
-     mineo-rtags
+     ;; mineo-rtags
      javascript
      (python
       :variables
+      python-enable-yapf-format-on-save t
       python-test-runner 'pytest)
      themes-megapack
      )
@@ -148,17 +149,13 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          spacemacs-dark
-                         majapahit-dark
-                         darkokai
-                         hc-zenburn
-                         monokai
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 11
+                               :size 10
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -247,7 +244,7 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 90
+   dotspacemacs-inactive-transparency 95
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
    dotspacemacs-mode-line-unicode-symbols t
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
@@ -304,13 +301,15 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (setq gc-cons-threshold 80000000)
+  ;; garbage-collecion
+  (setq gc-cons-threshold 1000000)
+  ;; (setq garbage-collection-messages t)
 
   (defun my-minibuffer-setup-hook ()
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 80000000))
+    (setq gc-cons-threshold 1000000))
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
@@ -361,6 +360,7 @@ you should place your code here."
               ))
 
   (setq global-semantic-idle-completions-mode nil)
+  (setq global-semantic-idle-summary-mode nil)
 
   (setq company-dabbrev-downcase nil)
   (setq dabbrev-case-fold-search nil)
@@ -451,10 +451,10 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 3)
-       (setq company-idle-delay 0.6)
+       (setq company-idle-delay 0.5)
        (setq company-show-numbers t)
-       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0)
-       (setq company-tooltip-limit 30)
+       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0.2)
+       (setq company-tooltip-limit 15)
        (setq company-auto-complete t)
        (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
        (setq company-auto-complete-chars (quote (41 46)))
@@ -473,16 +473,19 @@ you should place your code here."
   ;; given the current file as the correct filetype.
   ;; This relies on the c-c++ layer being enabled.
   (defun clang-format-for-filetype ()
-    "Run clang-format if the current file has a file extensions
-in the filetypes list."
+    "Run clang-format if the current file has a file extensions in the filetypes list."
     (let ((filetypes '("c" "cpp" "h" "hpp")))
       (when (member (file-name-extension (buffer-file-name)) filetypes)
         (clang-format-buffer))))
 
   ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
   ;; what this line means
-  (add-hook 'before-save-hook 'clang-format-for-filetype)
+  ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
+  (setq-default git-enable-magit-svn-plugin t)
 
+  (setq python-shell-interpreter "python3")
+  (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -496,4 +499,5 @@ in the filetypes list."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-buffer-max-length nil))
+ '(helm-buffer-max-length nil)
+ '(python-shell-interpreter "python"))
