@@ -197,7 +197,7 @@ values."
    ;; `find-contrib-file' (SPC f e c) are replaced. (default nil)
    dotspacemacs-use-ido nil
    ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize nil
+   dotspacemacs-helm-resize t
    ;; if non nil, the helm header is hidden when there is only one source.
    ;; (default nil)
    dotspacemacs-helm-no-header nil
@@ -307,14 +307,6 @@ you should place your code here."
   (add-hook 'c++-mode-hook 'clang-format-bindings)
   (defun clang-format-bindings ()
     (define-key c++-mode-map [C-tab] 'clang-format-buffer))
-
-  (require 'edit-server)
-  (edit-server-start)
-
-  (when (locate-library "edit-server")
-    (require 'edit-server)
-    (setq edit-server-new-frame nil)
-    (edit-server-start))
 
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
