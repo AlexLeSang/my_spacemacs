@@ -18,15 +18,12 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
-     search-engine
-     chrome
      csv
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     javascript
      spotify
      shell
      semantic
@@ -40,7 +37,9 @@ values."
       auto-completion-enable-sort-by-usage t
       spacemacs-default-company-backends '(company-files company-yasnippet)
       )
-     better-defaults
+     (better-defaults
+      :variables
+      better-defaults-move-to-beginning-of-code-first t)
      (evil-snipe
       :variables
       evil-snipe-enable-alternate-f-and-t-behaviors t)
@@ -51,12 +50,6 @@ values."
      (git
       :variables
       git-magit-status-fullscreen t)
-     (scala
-      :variables
-      scala-indent:use-javadoc-style t
-      scala-use-java-doc-style t
-      scala-auto-insert-asterisk-in-comments t
-      scala-auto-start-ensime t)
      (shell
       :variables
       shell-default-shell 'term
@@ -80,7 +73,6 @@ values."
       :variables
       c-c++-default-mode-for-headers 'c++-mode
       )
-     ;; mineo-rtags
      javascript
      (python
       :variables
