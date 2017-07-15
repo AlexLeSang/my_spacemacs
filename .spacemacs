@@ -296,6 +296,7 @@ you should place your code here."
   (setq gc-cons-threshold 1000000)
 
   (defun my-minibuffer-setup-hook ()
+    (setq helm-buffer-max-length nil)
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
@@ -493,6 +494,16 @@ you should place your code here."
   (setq python-shell-interpreter "python3")
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+  (eval-after-load 'helm
+    '(progn
+       (setq helm-buffer-max-length nil)
+       (setq helm-display-header-line nil)
+       (set-face-attribute 'helm-source-header nil :height 0.1)
+       (setq helm-split-window-in-side-p t)
+       )
+    )
+
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -506,5 +517,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-buffer-max-length nil)
  '(python-shell-interpreter "python"))
