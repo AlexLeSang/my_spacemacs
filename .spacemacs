@@ -425,6 +425,25 @@ you should place your code here."
        )
     )
 
+  (eval-after-load 'projectile
+    '(progn
+       (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+       )
+    )
+
+  ;; Swoop
+  (setq helm-swoop-split-window-function 'spacemacs//display-helm-window)
+
+  ;; ;; Go to the opposite side of line from the end or beginning of line
+  (setq helm-swoop-move-to-line-cycle t)
+
+  ;; Optional face for line numbers
+  ;; Face name is `helm-swoop-line-number-face`
+  (setq helm-swoop-use-line-number-face t)
+
+  ;; If you prefer fuzzy matching
+  (setq helm-swoop-use-fuzzy-match t)
+
   (setq company-backends-c-mode-common  '(
                                           (
                                            (company-rtags :with company-dabbrev-code)
