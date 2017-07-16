@@ -56,7 +56,9 @@ values."
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
       shell-default-position 'bottom)
-     spell-checking
+     (spell-checking
+      :variables
+      spell-checking-enable-by-default t)
      (syntax-checking
       :variables
       syntax-checking-enable-by-default t
@@ -197,7 +199,7 @@ values."
    ;; `find-contrib-file' (SPC f e c) are replaced. (default nil)
    dotspacemacs-use-ido nil
    ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize t
+   dotspacemacs-helm-resize nil
    ;; if non nil, the helm header is hidden when there is only one source.
    ;; (default nil)
    dotspacemacs-helm-no-header nil
@@ -293,14 +295,14 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  (setq gc-cons-threshold 1000000)
+  (setq gc-cons-threshold 104857600)
 
   (defun my-minibuffer-setup-hook ()
     (setq helm-buffer-max-length nil)
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 1000000))
+    (setq gc-cons-threshold 104857600))
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
@@ -432,10 +434,7 @@ you should place your code here."
        )
     )
 
-  ;; Swoop
-  (setq helm-swoop-split-window-function 'spacemacs//display-helm-window)
-
-  ;; ;; Go to the opposite side of line from the end or beginning of line
+  ;; Go to the opposite side of line from the end or beginning of line
   (setq helm-swoop-move-to-line-cycle t)
 
   ;; Optional face for line numbers
@@ -487,7 +486,7 @@ you should place your code here."
 
   ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
   ;; what this line means
-  ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
+  (add-hook 'before-save-hook 'clang-format-for-filetype)
   (setq-default git-enable-magit-svn-plugin t)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
 
