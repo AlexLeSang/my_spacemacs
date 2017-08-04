@@ -24,6 +24,7 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
+     elixir
      spotify
      shell
      semantic
@@ -33,9 +34,9 @@ values."
       auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-enable-company-help-tooltip t
+      auto-completion-enable-company-help-tooltip nil
       auto-completion-enable-sort-by-usage t
-      spacemacs-default-company-backends '(company-files company-yasnippet)
+      spacemacs-default-company-backends '(company-files company-capf)
       )
      (better-defaults
       :variables
@@ -74,6 +75,9 @@ values."
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
+      )
+     (gtags
+      :variables gtags-enable-by-default t
       )
      javascript
      (python
@@ -248,7 +252,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers nil
    ;; If non-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -294,15 +298,14 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-
-  (setq gc-cons-threshold 104857600)
+  (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
     (setq helm-buffer-max-length nil)
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 104857600))
+    (setq gc-cons-threshold 8000000))
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
@@ -319,6 +322,8 @@ you should place your code here."
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
+  (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
+  (setq avy-timeout-seconds 0.75)
   (global-auto-revert-mode 1)
 
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -386,47 +391,58 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   ;; RTags
-  (require 'flycheck-rtags)
-  (require 'company-rtags)
-  (require 'helm-rtags)
+  ;; (require 'flycheck-rtags)
+  ;; (require 'company-rtags)
+  ;; (require 'helm-rtags)
 
-  (with-eval-after-load 'rtags
-    ;; (setq rtags-autostart-diagnostics t)
-    ;; (rtags-diagnostics)
-    (setq rtags-completions-enabled t)
-    (setq rtags-reindex-on-save t)
-    (setq rtags-show-containing-function t)
-    (setq rtags-verbose-results t)
-    ;; c-mode-common-hook is also called by c++-mode
-    (setq rtags-display-result-backend 'helm)
-    (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
-    (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
-    (define-key evil-normal-state-map (kbd "gR") 'rtags-rename-symbol)
-    (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
-    (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
-    (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
-    (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
-    (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
+  ;; (with-eval-after-load 'rtags
+  ;;   ;; (setq rtags-autostart-diagnostics t)
+  ;;   ;; (rtags-diagnostics)
+  ;;   (setq rtags-completions-enabled t)
+  ;;   (setq rtags-reindex-on-save t)
+  ;;   (setq rtags-show-containing-function t)
+  ;;   (setq rtags-verbose-results t)
+  ;;   ;; c-mode-common-hook is also called by c++-mode
+  ;;   (setq rtags-display-result-backend 'helm)
+  ;;   (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
+  ;;   (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
+  ;;   (define-key evil-normal-state-map (kbd "gR") 'rtags-rename-symbol)
+  ;;   (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
+  ;;   (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
+  ;;   (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
+  ;;   (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+  ;;   (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
+  ;;   (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+  ;;   (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+  ;;   )
+  ;; (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
+
+  (with-eval-after-load 'ggtags
+    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
-  (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
+  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
 
-  (defun my-flycheck-rtags-setup ()
-    "Configure flycheck-rtags for better experience."
-    (flycheck-select-checker 'rtags)
-    (setq-local flycheck-check-syntax-automatically nil)
-    (setq-local flycheck-highlighting-mode nil)
-    )
+  ;; (defun my-flycheck-rtags-setup ()
+  ;;   "Configure flycheck-rtags for better experience."
+  ;;   (flycheck-select-checker 'rtags)
+  ;;   (setq-local flycheck-check-syntax-automatically nil)
+  ;;   (setq-local flycheck-highlighting-mode nil)
+  ;;   )
 
-  (eval-after-load 'flycheck
-    '(progn
-       (global-flycheck-mode t)
-       (setq flycheck-checker-error-threshold nil)
-       (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-       (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-       )
-    )
+  ;; (eval-after-load 'flycheck
+  ;;   '(progn
+  ;;      (global-flycheck-mode t)
+  ;;      (setq flycheck-checker-error-threshold nil)
+  ;;      (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  ;;      (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+  ;;      )
+  ;;   )
 
   (eval-after-load 'projectile
     '(progn
@@ -446,10 +462,8 @@ you should place your code here."
 
   (setq company-backends-c-mode-common  '(
                                           (
-                                           (company-rtags :with company-dabbrev-code)
-                                           (company-semantic :with company-dabbrev-code)
-                                           company-dabbrev
-                                           company-dabbrev-code
+                                           ;; (company-rtags :with company-dabbrev-code)
+                                           (company-capf :with company-dabbrev company-dabbrev-code)
                                            )
                                           )
         )
@@ -457,19 +471,21 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 3)
-       (setq company-idle-delay 0.2)
+       ;; (setq company-idle-delay 0.2)
+       (setq company-idle-delay nil)
        (setq company-show-numbers t)
-       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay 0.2)
-       (setq company-tooltip-limit 15)
+       (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay nil)
+       (setq company-tooltip-limit 10)
        (setq company-auto-complete t)
-       (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-       (setq company-auto-complete-chars (quote (41 46)))
+       ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+       (setq company-frontends (quote (company-preview-common-frontend)))
+       (setq company-auto-complete-chars (quote (32 40 41 46 34 36 60 62 124 33)))
        (define-key company-active-map (kbd "M-n") nil)
        (define-key company-active-map (kbd "M-p") nil)
        (define-key company-active-map (kbd "C-n") #'company-select-next)
        (define-key company-active-map (kbd "C-p") #'company-select-previous)
-       (define-key company-mode-map (kbd "C-;") 'helm-company)
-       (define-key company-active-map (kbd "C-;") 'helm-company)))
+       (define-key company-mode-map (kbd "C-i") 'helm-company)
+       (define-key company-active-map (kbd "C-i") 'helm-company)))
 
   ;; translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
@@ -486,9 +502,21 @@ you should place your code here."
 
   ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
   ;; what this line means
-  (add-hook 'before-save-hook 'clang-format-for-filetype)
+  ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
   (setq-default git-enable-magit-svn-plugin t)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
+
+  (eval-after-load 'evil
+    '(progn
+       (defun my-save-if-bufferfilename ()
+         (if (buffer-file-name)
+             (progn (save-buffer) )
+           (message "no file is associated to this buffer: do nothing")
+           )
+         )
+       (add-hook 'hybrid-mode-insert-state-exit-hook 'my-save-if-bufferfilename)
+       )
+    )
 
   (setq python-shell-interpreter "python3")
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
@@ -499,7 +527,8 @@ you should place your code here."
        (setq helm-buffer-max-length nil)
        (setq helm-display-header-line nil)
        (set-face-attribute 'helm-source-header nil :height 0.1)
-       (setq helm-split-window-in-side-p t)
+       (setq helm-candidate-number-limit 500)
+       (message "Reverting: updating helm")
        )
     )
 
@@ -509,11 +538,12 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
- '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+ )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(python-shell-interpreter "python"))
+ '(package-selected-packages
+   (quote
+    (ob-elixir flycheck-mix flycheck-credo alchemist elixir-mode nlinum-relative nlinum zonokai-theme zenburn-theme zen-and-art-theme yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance srefactor spotify spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme rtags reverse-theme restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme dockerfile-mode docker django-theme disaster diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme anaconda-mode ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
