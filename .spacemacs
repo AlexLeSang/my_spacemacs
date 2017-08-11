@@ -310,9 +310,9 @@ you should place your code here."
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
-  (add-hook 'c++-mode-hook 'clang-format-bindings)
-  (defun clang-format-bindings ()
-    (define-key c++-mode-map [C-tab] 'clang-format-buffer))
+  ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
+  ;; (defun clang-format-bindings ()
+  ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
 
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
@@ -322,8 +322,9 @@ you should place your code here."
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
+  (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.75)
+  (setq avy-timeout-seconds 0.5)
   (global-auto-revert-mode 1)
 
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -390,7 +391,7 @@ you should place your code here."
 
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
-  ;; RTags
+  ;; ;; RTags
   ;; (require 'flycheck-rtags)
   ;; (require 'company-rtags)
   ;; (require 'helm-rtags)
@@ -416,18 +417,6 @@ you should place your code here."
   ;;   (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
   ;;   )
   ;; (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
-
-  (with-eval-after-load 'ggtags
-    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
-    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-    )
-  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
-
   ;; (defun my-flycheck-rtags-setup ()
   ;;   "Configure flycheck-rtags for better experience."
   ;;   (flycheck-select-checker 'rtags)
@@ -443,6 +432,17 @@ you should place your code here."
   ;;      (add-hook 'c++-mode #'my-flycheck-rtags-setup)
   ;;      )
   ;;   )
+
+  (with-eval-after-load 'ggtags
+    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    )
+  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
 
   (eval-after-load 'projectile
     '(progn
@@ -464,13 +464,14 @@ you should place your code here."
                                           (
                                            ;; (company-rtags :with company-dabbrev-code)
                                            (company-capf :with company-dabbrev company-dabbrev-code)
+                                           (company-semantic :with company-dabbrev company-dabbrev-code)
                                            )
                                           )
         )
 
   (eval-after-load 'company
     '(progn
-       (setq company-minimum-prefix-length 3)
+       (setq company-minimum-prefix-length 1)
        ;; (setq company-idle-delay 0.2)
        (setq company-idle-delay nil)
        (setq company-show-numbers t)
@@ -527,10 +528,23 @@ you should place your code here."
        (setq helm-buffer-max-length nil)
        (setq helm-display-header-line nil)
        (set-face-attribute 'helm-source-header nil :height 0.1)
-       (setq helm-candidate-number-limit 500)
-       (message "Reverting: updating helm")
+       ;; (setq helm-candidate-number-limit 500)
        )
     )
+
+
+  ;; bind evil-args text objects
+  (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+  (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+
+  ;; bind evil-forward/backward-args
+  (define-key evil-normal-state-map "L" 'evil-forward-arg)
+  (define-key evil-normal-state-map "H" 'evil-backward-arg)
+  (define-key evil-motion-state-map "L" 'evil-forward-arg)
+  (define-key evil-motion-state-map "H" 'evil-backward-arg)
+
+  ;; bind evil-jump-out-args
+  (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
   )
 (custom-set-faces
