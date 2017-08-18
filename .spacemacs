@@ -394,57 +394,58 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   ;; ;; RTags
-  ;; (require 'flycheck-rtags)
-  ;; (require 'company-rtags)
-  ;; (require 'helm-rtags)
+  (require 'flycheck-rtags)
+  (require 'company-rtags)
+  (require 'helm-rtags)
 
-  ;; (with-eval-after-load 'rtags
-  ;;   ;; (setq rtags-autostart-diagnostics t)
-  ;;   ;; (rtags-diagnostics)
-  ;;   (setq rtags-completions-enabled t)
-  ;;   (setq rtags-reindex-on-save t)
-  ;;   (setq rtags-show-containing-function t)
-  ;;   (setq rtags-verbose-results t)
-  ;;   ;; c-mode-common-hook is also called by c++-mode
-  ;;   (setq rtags-display-result-backend 'helm)
-  ;;   (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
-  ;;   (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
-  ;;   (define-key evil-normal-state-map (kbd "gR") 'rtags-rename-symbol)
-  ;;   (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
-  ;;   (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
-  ;;   (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
-  ;;   (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
-  ;;   (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
-  ;;   (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-  ;;   (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-  ;;   )
-  ;; (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
-  ;; (defun my-flycheck-rtags-setup ()
-  ;;   "Configure flycheck-rtags for better experience."
-  ;;   (flycheck-select-checker 'rtags)
-  ;;   (setq-local flycheck-check-syntax-automatically nil)
-  ;;   (setq-local flycheck-highlighting-mode nil)
-  ;;   )
-
-  ;; (eval-after-load 'flycheck
-  ;;   '(progn
-  ;;      (global-flycheck-mode t)
-  ;;      (setq flycheck-checker-error-threshold nil)
-  ;;      (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  ;;      (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-  ;;      )
-  ;;   )
-
-  (with-eval-after-load 'ggtags
-    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+  (with-eval-after-load 'rtags
+    ;; (setq rtags-autostart-diagnostics t)
+    ;; (rtags-diagnostics)
+    (setq rtags-use-helm t)
+    (setq rtags-completions-enabled t)
+    (setq rtags-reindex-on-save t)
+    (setq rtags-show-containing-function t)
+    (setq rtags-verbose-results t)
+    ;; c-mode-common-hook is also called by c++-mode
+    (setq rtags-display-result-backend 'helm)
+    (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
+    (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
+    (define-key evil-normal-state-map (kbd "gR") 'rtags-rename-symbol)
+    (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
+    (define-key evil-normal-state-map (kbd "gU") 'rtags-location-stack-forward)
+    (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
+    (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+    (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
-  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
+  (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
+  (defun my-flycheck-rtags-setup ()
+    "Configure flycheck-rtags for better experience."
+    (flycheck-select-checker 'rtags)
+    (setq-local flycheck-check-syntax-automatically nil)
+    (setq-local flycheck-highlighting-mode nil)
+    )
+
+  (eval-after-load 'flycheck
+    '(progn
+       (global-flycheck-mode t)
+       (setq flycheck-checker-error-threshold nil)
+       (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+       (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+       )
+    )
+
+  ;; (with-eval-after-load 'ggtags
+  ;;   (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+  ;;   (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+  ;;   (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+  ;;   (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+  ;;   (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+  ;;   (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+  ;;   (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+  ;;   )
+  ;; (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
 
   (eval-after-load 'projectile
     '(progn
@@ -464,7 +465,7 @@ you should place your code here."
 
   (setq company-backends-c-mode-common  '(
                                           (
-                                           ;; (company-rtags :with company-dabbrev-code)
+                                           (company-rtags :with company-dabbrev-code)
                                            (company-capf :with company-dabbrev company-dabbrev-code)
                                            (company-semantic :with company-dabbrev company-dabbrev-code)
                                            )
