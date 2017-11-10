@@ -23,10 +23,6 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     elixir
-     erlang
-     spotify
-     shell
      semantic
      (auto-completion
       :variables
@@ -68,10 +64,6 @@ values."
       :variables
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
-     (latex
-      :variables
-      auto-fill-mode nil)
-     docker
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -354,32 +346,17 @@ you should place your code here."
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
 
-  ;; QML
-  (add-to-list 'load-path (expand-file-name "~/my_spacemacs/qml"))
-  (require 'qml-mode)
-  (setq auto-mode-alist (cons '("\\.qml$" . qml-mode) auto-mode-alist))
-
   ;; Avy settings
   (setq avy-all-windows nil)
 
   ;; Semantic
   (setq hlt-auto-faces-flag t)
 
-  ;; LaTeX
-  (setq-default TeX-engine 'xetex)
-  (setq-default TeX-PDF-mode t)
-  '(TeX-source-correlate-method (quote synctex))
-  '(TeX-source-correlate-mode t)
-  '(TeX-source-correlate-start-server t)
-  '(TeX-view-program-selection (quote (((output-dvi has-no-display-manager) "dvi2tty") ((output-dvi style-pstricks) "dvips and gv") (output-pdf "Okular") (output-dvi "xdvi") (output-pdf "Evince") (output-html "xdg-open"))))
-
   ;; Term
   (defun bb/setup-term-mode ()
     (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
 
   (auto-fill-mode nil)
-  (remove-hook 'text-mode-hook #'turn-on-auto-fill)
-  (setq latex-enable-auto-fill nil)
 
   (defun bb/send-C-r ()
     (interactive)
@@ -387,67 +364,67 @@ you should place your code here."
 
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
+  (with-eval-after-load 'ggtags
+    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    )
+  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
+
+  (eval-after-load 'projectile
+    '(progn
+       (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+       )
+    )
+
   ;; RTags
-  (defun rtags-bindings ()
-   (require 'flycheck-rtags)
-   (require 'company-rtags)
-   (require 'helm-rtags)
-
-   (with-eval-after-load 'rtags
-     ;; (setq rtags-autostart-diagnostics t)
-     ;; (rtags-diagnostics)
-     (setq rtags-completions-enabled t)
-     (setq rtags-reindex-on-save t)
-     (setq rtags-show-containing-function t)
-     (setq rtags-verbose-results t)
-     ;; c-mode-common-hook is also called by c++-mode
-     (setq rtags-display-result-backend 'helm)
-     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
-     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
-     (define-key evil-normal-state-map (kbd "gr") 'rtags-rename-symbol)
-     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
-     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-forward)
-     (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
-     (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
-     (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
-     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-     )
-   (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
-   (defun my-flycheck-rtags-setup ()
-     "Configure flycheck-rtags for better experience."
-     (flycheck-select-checker 'rtags)
-     (setq-local flycheck-check-syntax-automatically nil)
-     (setq-local flycheck-highlighting-mode nil)
-     )
-
-   (eval-after-load 'flycheck
-     '(progn
-        (global-flycheck-mode t)
-        (setq flycheck-checker-error-threshold nil)
-        (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-        (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-        )
-     )
-
-   ;; (with-eval-after-load 'ggtags
-   ;;   (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-   ;;   (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-   ;;   (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-   ;;   (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-   ;;   (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
-   ;;   (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-   ;;   (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-   ;;   )
-   ;; (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
-
-   ;; (eval-after-load 'projectile
-   ;;   '(progn
-   ;;      (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
-   ;;      )
-   ;;   )
-   )
-  (add-hook 'c++-mode-hook 'rtags-bindings)
+  ;;  (defun rtags-bindings ()
+  ;;   (require 'flycheck-rtags)
+  ;;   (require 'company-rtags)
+  ;;   (require 'helm-rtags)
+  ;;
+  ;;   (with-eval-after-load 'rtags
+  ;;     ;; (setq rtags-autostart-diagnostics t)
+  ;;     ;; (rtags-diagnostics)
+  ;;     (setq rtags-completions-enabled t)
+  ;;     (setq rtags-reindex-on-save t)
+  ;;     (setq rtags-show-containing-function t)
+  ;;     (setq rtags-verbose-results t)
+  ;;     ;; c-mode-common-hook is also called by c++-mode
+  ;;     (setq rtags-display-result-backend 'helm)
+  ;;     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
+  ;;     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
+  ;;     (define-key evil-normal-state-map (kbd "gr") 'rtags-rename-symbol)
+  ;;     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
+  ;;     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-forward)
+  ;;     (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
+  ;;     (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
+  ;;     (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
+  ;;     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+  ;;     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+  ;;     )
+  ;;   (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
+  ;;   (defun my-flycheck-rtags-setup ()
+  ;;     "Configure flycheck-rtags for better experience."
+  ;;     (flycheck-select-checker 'rtags)
+  ;;     (setq-local flycheck-check-syntax-automatically nil)
+  ;;     (setq-local flycheck-highlighting-mode nil)
+  ;;     )
+  ;;
+  ;;   (eval-after-load 'flycheck
+  ;;     '(progn
+  ;;        (global-flycheck-mode t)
+  ;;        (setq flycheck-checker-error-threshold nil)
+  ;;        (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+  ;;        (add-hook 'c++-mode #'my-flycheck-rtags-setup)
+  ;;        )
+  ;;     )
+  ;;
+  ;;   )
 
   ;; Go to the opposite side of line from the end or beginning of line
   (setq helm-swoop-move-to-line-cycle t)
@@ -461,8 +438,8 @@ you should place your code here."
 
   (setq company-backends-c-mode-common  '(
                                           (
-                                           (company-rtags :with company-dabbrev-code)
-                                           ;; (company-capf :with company-dabbrev company-dabbrev-code)
+                                           ;; (company-rtags :with company-dabbrev-code)
+                                           (company-capf :with company-dabbrev company-dabbrev-code)
                                            (company-semantic :with company-dabbrev company-dabbrev-code)
                                            )
                                           )
@@ -581,4 +558,4 @@ you should place your code here."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (powerline simple-httpd dash-functional packed avy iedit smartparens evil goto-chg elixir-mode flycheck company helm helm-core projectile yasnippet multiple-cursors org-plus-contrib magit magit-popup git-commit with-editor async hydra js2-mode s dash erlang zonokai-theme zenburn-theme zen-and-art-theme yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance srefactor spotify spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme rtags reverse-theme restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ibuffer-projectile hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-mix flycheck-credo flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme dockerfile-mode docker django-theme disaster diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme anaconda-mode ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (f powerline simple-httpd dash-functional packed avy iedit smartparens evil goto-chg elixir-mode flycheck company helm helm-core projectile yasnippet multiple-cursors org-plus-contrib magit magit-popup git-commit with-editor async hydra js2-mode s dash erlang zonokai-theme zenburn-theme zen-and-art-theme yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance srefactor spotify spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle shell-pop seti-theme rtags reverse-theme restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el pastels-on-dark-theme paradox orgit organic-green-theme org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noctilux-theme niflheim-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme inkpot-theme info+ indent-guide ibuffer-projectile hy-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt heroku-theme hemisu-theme help-fns+ helm-themes helm-swoop helm-spotify helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-pos-tip flycheck-mix flycheck-credo flx-ido flatui-theme flatland-theme firebelly-theme fill-column-indicator farmhouse-theme fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump dracula-theme dockerfile-mode docker django-theme disaster diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme company-statistics column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme anaconda-mode ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
