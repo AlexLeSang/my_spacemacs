@@ -507,6 +507,7 @@ you should place your code here."
     )
 
   ;; Python
+  ;; http://pythoscope.org/
   (setq python-shell-interpreter "python3")
   (setq flycheck-python-pylint-executable "pylint3")
 
