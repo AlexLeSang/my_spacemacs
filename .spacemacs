@@ -26,7 +26,7 @@ values."
      semantic
      (auto-completion
       :variables
-      auto-completion-return-key-behavior nil
+      auto-completion-return-key-behavior 'complete
       auto-completion-complete-with-key-sequence-delay 0.0
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
@@ -75,7 +75,10 @@ values."
      (python
       :variables
       python-enable-yapf-format-on-save t
-      python-test-runner 'pytest)
+      python-sort-imports-on-save t
+      python-fill-column 120
+      ;; python-test-runner 'pytest
+      )
      (ibuffer
       :variables
       ibuffer-group-buffers-by 'projects)
@@ -446,7 +449,7 @@ you should place your code here."
 
   (eval-after-load 'company
     '(progn
-       (setq company-minimum-prefix-length 2)
+       (setq company-minimum-prefix-length 1)
        (setq company-idle-delay 0)
        (setq company-show-numbers t)
        (setq company-tooltip-limit 10)
