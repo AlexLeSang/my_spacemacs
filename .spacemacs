@@ -32,7 +32,6 @@ values."
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-company-help-tooltip nil
       auto-completion-enable-sort-by-usage t
-      spacemacs-default-company-backends '(company-files company-capf)
       )
      (better-defaults
       :variables
@@ -384,51 +383,6 @@ you should place your code here."
        )
     )
 
-  ;; RTags
-  ;;  (defun rtags-bindings ()
-  ;;   (require 'flycheck-rtags)
-  ;;   (require 'company-rtags)
-  ;;   (require 'helm-rtags)
-  ;;
-  ;;   (with-eval-after-load 'rtags
-  ;;     ;; (setq rtags-autostart-diagnostics t)
-  ;;     ;; (rtags-diagnostics)
-  ;;     (setq rtags-completions-enabled t)
-  ;;     (setq rtags-reindex-on-save t)
-  ;;     (setq rtags-show-containing-function t)
-  ;;     (setq rtags-verbose-results t)
-  ;;     ;; c-mode-common-hook is also called by c++-mode
-  ;;     (setq rtags-display-result-backend 'helm)
-  ;;     (define-key evil-normal-state-map (kbd "gd") 'rtags-find-symbol-at-point)
-  ;;     (define-key evil-normal-state-map (kbd "gr") 'rtags-find-references-at-point)
-  ;;     (define-key evil-normal-state-map (kbd "gr") 'rtags-rename-symbol)
-  ;;     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-back)
-  ;;     (define-key evil-normal-state-map (kbd "gu") 'rtags-location-stack-forward)
-  ;;     (define-key evil-normal-state-map (kbd "ge") 'rtags-reparse-file)
-  ;;     (define-key evil-normal-state-map (kbd "gt") 'rtags-display-summary)
-  ;;     (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
-  ;;     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-  ;;     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-  ;;     )
-  ;;   (push '(company-rtags :with company-dabbrev-code company-keywords) company-backends)
-  ;;   (defun my-flycheck-rtags-setup ()
-  ;;     "Configure flycheck-rtags for better experience."
-  ;;     (flycheck-select-checker 'rtags)
-  ;;     (setq-local flycheck-check-syntax-automatically nil)
-  ;;     (setq-local flycheck-highlighting-mode nil)
-  ;;     )
-  ;;
-  ;;   (eval-after-load 'flycheck
-  ;;     '(progn
-  ;;        (global-flycheck-mode t)
-  ;;        (setq flycheck-checker-error-threshold nil)
-  ;;        (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
-  ;;        (add-hook 'c++-mode #'my-flycheck-rtags-setup)
-  ;;        )
-  ;;     )
-  ;;
-  ;;   )
-
   ;; Go to the opposite side of line from the end or beginning of line
   (setq helm-swoop-move-to-line-cycle t)
 
@@ -438,15 +392,6 @@ you should place your code here."
 
   ;; If you prefer fuzzy matching
   (setq helm-swoop-use-fuzzy-match t)
-
-  (setq company-backends-c-mode-common  '(
-                                          (
-                                           ;; (company-rtags :with company-dabbrev-code)
-                                           (company-capf :with company-dabbrev company-dabbrev-code)
-                                           (company-semantic :with company-dabbrev company-dabbrev-code)
-                                           )
-                                          )
-        )
 
   (eval-after-load 'company
     '(progn
@@ -525,7 +470,7 @@ you should place your code here."
 
   (eval-after-load 'company
     '(progn
-       (add-to-list 'company-backends '(company-anaconda :with company-capf))
+       (add-to-list 'company-backends '(company-anaconda :with company-capf company-yasnippet))
        )
     )
 
@@ -533,13 +478,22 @@ you should place your code here."
   ;; pip install -e "git+https://github.com/pinard/Pymacs.git#egg=Pymacs" --user
   (add-to-list 'load-path "~/my_spacemacs/src/pymacs")
   (require 'pymacs)
-  (autoload 'pymacs-apply "pymacs")
-  (autoload 'pymacs-call "pymacs")
-  (autoload 'pymacs-eval "pymacs" nil t)
-  (autoload 'pymacs-exec "pymacs" nil t)
-  (autoload 'pymacs-load "pymacs" nil t)
+  ;; (autoload 'pymacs-apply "pymacs")
+  ;; (autoload 'pymacs-call "pymacs")
+  ;; (autoload 'pymacs-eval "pymacs" nil t)
+  ;; (autoload 'pymacs-exec "pymacs" nil t)
+  ;; (autoload 'pymacs-load "pymacs" nil t)
   (pymacs-load "ropemacs" "rope-")
+  (setq ropemacs-confirm-saving t)
 
+  (eval-after-load 'ropemacs
+    '(progn
+       ;; (setq helm-candidate-number-limit 500)
+       (define-key spacemacs-python-mode-map-prefix "ro" 'rope-open-project)
+       (define-key spacemacs-python-mode-map-prefix "rv" 'rope-extract-variable)
+       (define-key spacemacs-python-mode-map-prefix "rm" 'rope-extract-method)
+       )
+    )
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
