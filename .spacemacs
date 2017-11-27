@@ -453,6 +453,10 @@ you should place your code here."
     )
 
   ;; Python
+  ;; ((python-mode
+  ;;   (python-indent-offset . 4)
+  ;;   (python-shell-extra-pythonpaths '("/home/halushko/Projects/linked_project/main", "/home/halushko/Projects/linked_project/main/linked_2"))
+  ;;   ))
   ;; http://pythoscope.org/
   (setq python-shell-interpreter "python3")
   (setq flycheck-python-pylint-executable "pylint3")
