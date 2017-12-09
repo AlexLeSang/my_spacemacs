@@ -399,13 +399,15 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   (with-eval-after-load 'ggtags
-    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
-    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    '(progn
+       (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+       (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+       (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+       (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+       (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+       (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
+       (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
+       )
     )
 
   (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
@@ -416,6 +418,45 @@ you should place your code here."
        (setq projectile-generic-command "find -L . -type f -print0" )
        )
     )
+
+  (with-eval-after-load 'golden-ratio
+    '(progn
+       (setq golden-ratio-auto-scale t)
+       (add-to-list 'golden-ratio-exclude-modes "ediff-mode")
+       (add-to-list 'golden-ratio-inhibit-functions 'pl/ediff-comparison-buffer-p)
+       )
+    )
+
+  (defun pl/ediff-comparison-buffer-p ()
+    (and (boundp 'ediff-this-buffer-ediff-sessions)
+         ediff-this-buffer-ediff-sessions))
+
+  ;; The version which also called balance-windows at this point looked
+  ;; a bit broken, but could probably be replaced with:
+  ;;
+  ;; (defun pl/ediff-comparison-buffer-p ()
+  ;;   (and (boundp 'ediff-this-buffer-ediff-sessions)
+  ;;        ediff-this-buffer-ediff-sessions
+  ;;        (prog1 t (balance-windows))))
+  ;;
+  ;; However I think the following has the desired effect, and without
+  ;; messing with the ediff control buffer:
+  ;;
+  (add-hook 'ediff-startup-hook 'my-ediff-startup-hook)
+
+  (defun my-ediff-startup-hook ()
+    "Workaround to balance the ediff windows when golden-ratio is enabled."
+    ;; There's probably a better way to do it.
+    (ediff-toggle-split)
+    (ediff-toggle-split))
+
+  ;; helm
+  (eval-after-load "golden-ratio"
+    '(add-to-list 'golden-ratio-inhibit-functions 'pl/helm-alive-p))
+
+  (defun pl/helm-alive-p ()
+    (and (boundp 'helm-alive-p)
+         (symbol-value 'helm-alive-p)))
 
   ;; Go to the opposite side of line from the end or beginning of line
   (setq helm-swoop-move-to-line-cycle t)
