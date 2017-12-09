@@ -24,6 +24,32 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      semantic
+     markdown
+     csv
+     erlang
+     elixir
+     extra-langs
+     html
+     graphviz
+     octave
+     java
+     scala
+     vimscript
+     shell-scripts
+     sql
+     shaders
+     cscope
+     (latex
+      :variables latex-enable-auto-fill nil
+      )
+     (org
+      :variables
+      org-enable-github-support t
+      org-projectile-file "TODOs.org"
+      )
+     (clojure
+      :variables clojure-enable-fancify-symbols t
+      )
      (auto-completion
       :variables
       auto-completion-return-key-behavior 'complete
@@ -35,34 +61,42 @@ values."
       )
      (better-defaults
       :variables
-      better-defaults-move-to-beginning-of-code-first t)
+      better-defaults-move-to-beginning-of-code-first t
+      )
      (evil-snipe
       :variables
-      evil-snipe-enable-alternate-f-and-t-behaviors t)
+      evil-snipe-enable-alternate-f-and-t-behaviors t
+      )
      emacs-lisp
      (colors
       :variables
-      colors-colorize-identifiers 'all)
+      colors-colorize-identifiers 'all
+      )
      (git
       :variables
-      git-magit-status-fullscreen t)
+      git-magit-status-fullscreen t
+      )
      (shell
       :variables
       shell-default-shell 'term
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
-      shell-default-position 'bottom)
+      shell-default-position 'bottom
+      )
      (spell-checking
       :variables
-      spell-checking-enable-by-default t)
+      spell-checking-enable-by-default t
+      )
      (syntax-checking
       :variables
       syntax-checking-enable-by-default t
-      syntax-checking-enable-tooltips nil)
+      syntax-checking-enable-tooltips nil
+      )
      (version-control
       :variables
       version-control-diff-tool 'diff-hl
-      version-control-global-margin t)
+      version-control-global-margin t
+      )
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -75,12 +109,11 @@ values."
       :variables
       python-enable-yapf-format-on-save t
       python-sort-imports-on-save t
-      python-fill-column 120
-      ;; python-test-runner 'pytest
       )
      (ibuffer
       :variables
-      ibuffer-group-buffers-by 'projects)
+      ibuffer-group-buffers-by 'projects
+      )
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -459,6 +492,7 @@ you should place your code here."
   ;;   (python-shell-extra-pythonpaths '("/home/halushko/Projects/linked_project/main", "/home/halushko/Projects/linked_project/main/linked_2"))
   ;;   ))
   ;; http://pythoscope.org/
+  (setq python-shell-interpreter-args "-i")
   (setq python-shell-interpreter "python3")
   (setq flycheck-python-pylint-executable "pylint3")
 
@@ -529,15 +563,8 @@ you should place your code here."
     (define-key evil-normal-state-map (kbd "gu") 'alchemist-goto-jump-back)
     )
 
-  (add-hook 'elixir-mode-hook 'custom-elixir-mode-hook)
-  (add-hook 'erlang-mode-hook 'custom-elixir-mode-hook)
-
-  (eval-after-load 'elixir-mode
-    '(progn
-       (setq flycheck-elixir-credo-strict t)
-       )
-    )
-
+  (setq org-agenda-files (list
+                          "./org/work.org"))
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -550,4 +577,14 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-    )
+ '(package-selected-packages
+   (quote
+    (helm-cscope xcscope web-mode vimrc-mode tagedit sql-indent slim-mode scss-mode sass-mode pug-mode noflet less-css-mode insert-shebang helm-css-scss haml-mode graphviz-dot-mode glsl-mode fish-mode ensime sbt-mode scala-mode emmet-mode dactyl-mode company-web web-completion-data company-shell company-emacs-eclim eclim company-auctex auctex-latexmk auctex thrift stan-mode scad-mode qml-mode matlab-mode julia-mode arduino-mode ob-elixir flycheck-mix flycheck-credo erlang alchemist elixir-mode clojure-snippets clj-refactor inflections edn paredit peg cider-eval-sexp-fu cider queue clojure-mode ox-gfm csv-mode yapfify xterm-color ws-butler winum which-key web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unfill toc-org stickyfunc-enhance srefactor spaceline smeargle shell-pop rtags restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters pyvenv pytest pyenv-mode py-isort popwin pip-requirements persp-mode pcre2el paradox orgit org-projectile org-present org-pomodoro org-download org-bullets open-junk-file neotree mwim multi-term move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint json-mode js2-refactor js-doc info+ indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags fuzzy flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help elisp-slime-nav dumb-jump disaster diff-hl define-word cython-mode company-tern company-statistics company-c-headers company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clean-aindent-mode clang-format auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(safe-local-variable-values
+   (quote
+    ((python-shell-extra-pythonpaths
+      (quote
+       ("/home/halushko/Projects/linked_project/main"
+        (\, "/home/halushko/Projects/linked_project/main/linked_2"))))
+     (elixir-enable-compilation-checking . t)
+     (elixir-enable-compilation-checking)))))
