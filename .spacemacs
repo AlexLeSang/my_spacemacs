@@ -565,6 +565,15 @@ you should place your code here."
 
   (setq org-agenda-files (list
                           "./org/work.org"))
+
+  (defun save-buffer-on-exit-from-edit-mode ()
+    (when (and (buffer-file-name) (buffer-modified-p))
+      (save-buffer)
+      )
+    )
+
+  (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
+
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
