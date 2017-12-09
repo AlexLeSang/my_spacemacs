@@ -344,6 +344,9 @@ you should place your code here."
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
 
+  (require 'flycheck-mypy)
+  (add-hook 'python-mode-hook 'flycheck-mode)
+
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   (spacemacs/toggle-indent-guide-on)
