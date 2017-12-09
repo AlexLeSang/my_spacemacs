@@ -533,12 +533,15 @@ you should place your code here."
   ;; Python
   ;; http://pythoscope.org/
   (setq python-shell-interpreter-args "-i")
-  (setq python-shell-interpreter "python3")
-  (setq flycheck-python-pylint-executable "pylint3")
+  (setq python-shell-interpreter "python")
+  ;; (setq flycheck-python-pylint-executable "pylint3")
+
+  (require 'flycheck-pycheckers)
+  (with-eval-after-load 'flycheck
+    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
 
   (add-hook 'python-mode-hook (lambda ()
-                                (setq flycheck-checker 'python-pylint
-                                      flycheck-checker-error-threshold 900
+                                (setq flycheck-checker 'python-pycheckers
                                       )
                                 )
             )
