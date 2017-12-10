@@ -488,7 +488,7 @@ you should place your code here."
        (setq company-auto-complete t)
        (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
        ;; (setq company-frontends (quote (company-preview-common-frontend)))
-       (setq company-auto-complete-chars (quote (40 41 46 34 36 60 62 124 33)))
+       (setq company-auto-complete-chars (quote (40 41 34 36 60 62 124 33)))
 
        ;; (setq company-minimum-prefix-length 1)
        ;; ;; (setq company-idle-delay 0.2)
