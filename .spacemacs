@@ -119,7 +119,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(rtags flycheck-mypy flycheck-pycheckers pycoverage)
+   dotspacemacs-additional-packages '(rtags flycheck-mypy flycheck-pycheckers pycoverage realgud realgud-pry)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -343,6 +343,24 @@ you should place your code here."
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
+
+  (require 'realgud)
+  (eval-after-load 'realgud
+    '(progn
+       (define-key spacemacs-python-mode-map-prefix "dD" 'realgud:pdb)
+       (define-key spacemacs-python-mode-map-prefix "db" 'realgud:cmd-break)
+       (define-key spacemacs-python-mode-map-prefix "dx" 'realgud:cmd-clear)
+       (define-key spacemacs-python-mode-map-prefix "dn" 'realgud:cmd-next-no-arg)
+       (define-key spacemacs-python-mode-map-prefix "ds" 'realgud:cmd-step-no-arg)
+       (define-key spacemacs-python-mode-map-prefix "df" 'realgud:cmd-finish)
+       (define-key spacemacs-python-mode-map-prefix "dc" 'realgud:cmd-continue)
+       (define-key spacemacs-python-mode-map-prefix "de" 'realgud:cmd-eval-region)
+       (define-key spacemacs-python-mode-map-prefix "dr" 'realgud:cmd-restart)
+       (define-key spacemacs-python-mode-map-prefix "dU" 'realgud:cmd-until)
+       (define-key spacemacs-python-mode-map-prefix "du" 'realgud:cmd-older-frame)
+       (define-key spacemacs-python-mode-map-prefix "dd" 'realgud:cmd-newer-frame)
+       )
+    )
 
   (require 'pycoverage)
   (defun my-coverage ()
