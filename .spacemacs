@@ -119,7 +119,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(rtags flycheck-mypy flycheck-pycheckers)
+   dotspacemacs-additional-packages '(rtags flycheck-mypy flycheck-pycheckers pycoverage)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -343,6 +343,14 @@ you should place your code here."
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
+
+  (require 'pycoverage)
+  (defun my-coverage ()
+    (interactive)
+    (when (derived-mode-p 'python-mode)
+      (progn
+        (linum-mode)
+        (pycoverage-mode))))
 
   (require 'flycheck-mypy)
   (add-hook 'python-mode-hook 'flycheck-mode)
