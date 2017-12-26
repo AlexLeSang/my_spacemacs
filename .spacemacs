@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -53,7 +54,7 @@ values."
      (auto-completion
       :variables
       auto-completion-return-key-behavior 'complete
-      auto-completion-complete-with-key-sequence-delay 0.0
+      auto-completion-complete-with-key-sequence-delay 0.3
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-company-help-tooltip nil
@@ -107,8 +108,8 @@ values."
      javascript
      (python
       :variables
-      python-enable-yapf-format-on-save t
-      python-sort-imports-on-save t
+      python-fill-column 119
+      python-test-runner 'pytest
       )
      (ibuffer
       :variables
@@ -244,7 +245,7 @@ values."
    dotspacemacs-enable-paste-micro-state nil
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.4
+   dotspacemacs-which-key-delay 0.8
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
@@ -344,6 +345,14 @@ you should place your code here."
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
 
+  ;; Org
+  (eval-after-load 'org
+    '(progn
+       (setq org-clock-persist 'history)
+       (org-clock-persistence-insinuate)
+       )
+    )
+
   (require 'realgud)
   (eval-after-load 'realgud
     '(progn
@@ -375,13 +384,15 @@ you should place your code here."
 
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
+  (spacemacs/toggle-mode-line-battery-on)
+  (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-indent-guide-on)
   (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
-  ;; (spacemacs/toggle-which-key-off)
+  (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
   (setq avy-timeout-seconds 0.5)
   (global-auto-revert-mode 1)
@@ -409,6 +420,7 @@ you should place your code here."
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
 
+  (setq helm-grep-ag-command "ag --follow --line-numbers -S --hidden --color --nogroup %s %s %s")
   ;; Avy settings
   (setq avy-all-windows nil)
 
@@ -428,32 +440,32 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   (with-eval-after-load 'ggtags
-    '(progn
-       (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-       (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-       (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-       (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-       (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
-       (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-       (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-       )
+    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
+    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
+    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
+    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
     )
 
-  (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
+  (with-eval-after-load 'company
+   ;; (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
+   ;; (push 'company-yasnippet company-backends)
+   ;; (setq company-backends 'company-yasnippet)
+   )
+
   (eval-after-load 'projectile
     '(progn
        (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+       (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
        (setq projectile-enable-caching t)
-       (setq projectile-generic-command "find -L . -type f -print0" )
+       (setq projectile-generic-command "find -L . -maxdepth 8 -type f -print0")
        )
     )
 
   (with-eval-after-load 'golden-ratio
-    '(progn
-       (setq golden-ratio-auto-scale t)
-       (add-to-list 'golden-ratio-exclude-modes "ediff-mode")
-       (add-to-list 'golden-ratio-inhibit-functions 'pl/ediff-comparison-buffer-p)
-       )
+    (setq golden-ratio-auto-scale nil)
+    (add-to-list 'golden-ratio-exclude-modes "ediff-mode")
+    (add-to-list 'golden-ratio-inhibit-functions 'pl/ediff-comparison-buffer-p)
     )
 
   (defun pl/ediff-comparison-buffer-p ()
@@ -500,24 +512,13 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 1)
-       (setq company-idle-delay 0)
+       (setq company-idle-delay nil)
        (setq company-show-numbers t)
-       (setq company-tooltip-limit 10)
+       (setq company-tooltip-limit 15)
        (setq company-auto-complete t)
        (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-       ;; (setq company-frontends (quote (company-preview-common-frontend)))
        (setq company-auto-complete-chars (quote (40 41 34 36 60 62 124 33)))
 
-       ;; (setq company-minimum-prefix-length 1)
-       ;; ;; (setq company-idle-delay 0.2)
-       ;; (setq company-idle-delay nil)
-       ;; (setq company-show-numbers t)
-       ;; (setq company-pseudo-tooltip-unless-just-one-frontend-with-delay nil)
-       ;; (setq company-tooltip-limit 10)
-       ;; (setq company-auto-complete t)
-       ;; ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-       ;; (setq company-frontends (quote (company-preview-common-frontend)))
-       ;; (setq company-auto-complete-chars (quote (32 40 41 46 34 36 60 62 124 33)))
        (define-key company-active-map (kbd "M-n") nil)
        (define-key company-active-map (kbd "M-p") nil)
        (define-key company-active-map (kbd "C-n") #'company-select-next)
@@ -560,37 +561,51 @@ you should place your code here."
   ;; http://pythoscope.org/
   (setq python-shell-interpreter-args "-i")
   (setq python-shell-interpreter "python")
-  ;; (setq flycheck-python-pylint-executable "pylint3")
 
   (require 'flycheck-pycheckers)
   (with-eval-after-load 'flycheck
-    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+    (setq flycheck-python-pylint-executable "pylint")
+    (setq flycheck-display-errors-delay 1.0)
+    )
 
   (add-hook 'python-mode-hook (lambda ()
+                                (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
                                 (setq flycheck-checker 'python-pycheckers
+                                ;; (setq flycheck-checker 'python-pylint
+                                ;; (setq flycheck-checker 'python-flake8
                                       )
                                 )
             )
 
-  (with-eval-after-load 'anaconda-mode
-    (define-key evil-normal-state-map (kbd "gh") 'anaconda-mode-show-doc)
-    )
-
-  (eval-after-load 'company
+  (eval-after-load 'anaconda-mode
     '(progn
-       (add-to-list 'company-backends '(company-anaconda :with company-capf company-yasnippet))
+       (define-key spacemacs-python-mode-map-prefix "ah" 'anaconda-mode-show-doc)
+       (define-key spacemacs-python-mode-map-prefix "ag" 'anaconda-mode-find-definitions)
+       (define-key spacemacs-python-mode-map-prefix "ar" 'anaconda-mode-find-references)
+       (define-key spacemacs-python-mode-map-prefix "aa" 'anaconda-mode-find-assignments)
+       (define-key spacemacs-python-mode-map-prefix "au" 'anaconda-mode-go-back)
+       (push '(company-anaconda :with company-dabbrev :with company-yasnippet) company-backends)
        )
     )
 
+  (with-eval-after-load 'anaconda-mode
+    (remove-hook 'anaconda-mode-response-read-fail-hook
+                 'anaconda-mode-show-unreadable-response))
+
+  (with-eval-after-load 'magit
+    (setq magit-revision-show-gravatars nil)
+    )
+
+  (setq company-backends-python-mode '((company-anaconda :with company-dabbrev :with company-yasnippet)))
+  (setq company-transformers '(spacemacs//company-transformer-cancel
+                               company-sort-by-backend-importance))
+
   ;; pip install --user rope ropemacs
   ;; pip install -e "git+https://github.com/pinard/Pymacs.git#egg=Pymacs" --user
-  (add-to-list 'load-path "~/my_spacemacs/src/pymacs")
+  (add-to-list 'load-path "~/.emacs.d/src/pymacs")
   (require 'pymacs)
-  ;; (autoload 'pymacs-apply "pymacs")
-  ;; (autoload 'pymacs-call "pymacs")
-  ;; (autoload 'pymacs-eval "pymacs" nil t)
-  ;; (autoload 'pymacs-exec "pymacs" nil t)
-  ;; (autoload 'pymacs-load "pymacs" nil t)
+  (setq pymacs-python-command "python")
   (pymacs-load "ropemacs" "rope-")
   (setq ropemacs-confirm-saving t)
 
@@ -599,6 +614,9 @@ you should place your code here."
        (define-key spacemacs-python-mode-map-prefix "ro" 'rope-open-project)
        (define-key spacemacs-python-mode-map-prefix "rv" 'rope-extract-variable)
        (define-key spacemacs-python-mode-map-prefix "rm" 'rope-extract-method)
+       (define-key spacemacs-python-mode-map-prefix "rr" 'rope-rename)
+       (define-key spacemacs-python-mode-map-prefix "ri" 'rope-inline)
+       (define-key spacemacs-python-mode-map-prefix "rcf" 'rope-cleate-file)
        )
     )
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
