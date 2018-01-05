@@ -607,9 +607,17 @@ you should place your code here."
        )
     )
 
-  ;; (setq company-backends-python-mode '((company-anaconda :with company-dabbrev :with company-dabbrev-code :with company-yasnippet)))
-  ;; (setq company-backends-python-mode '((company-anaconda :with company-dabbrev-code :with company-yasnippet)))
-  (setq company-backends-python-mode '((company-anaconda :with company-capf :with company-semantic :with company-dabbrev-code :with company-yasnippet)))
+  (setq company-backends-python-mode
+        '((company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
+          (company-keywords company-semantic)
+          (company-gtags company-etags)
+          company-files company-dabbrev))
+
+  (setq company-backends-c-mode-common '(company-c-headers
+                                         (company-yasnippet :separate
+                                         company-dabbrev-code :with company-keywords)
+                                         (company-gtags :separate company-etags)
+                                         company-files company-dabbrev))
 
   (setq company-transformers '(spacemacs//company-transformer-cancel
                                company-sort-by-backend-importance))
