@@ -585,7 +585,6 @@ you should place your code here."
        (define-key spacemacs-python-mode-map-prefix "ar" 'anaconda-mode-find-references)
        (define-key spacemacs-python-mode-map-prefix "aa" 'anaconda-mode-find-assignments)
        (define-key spacemacs-python-mode-map-prefix "au" 'anaconda-mode-go-back)
-       (push '(company-anaconda :with company-dabbrev :with company-yasnippet) company-backends)
        )
     )
 
@@ -597,7 +596,21 @@ you should place your code here."
     (setq magit-revision-show-gravatars nil)
     )
 
-  (setq company-backends-python-mode '((company-anaconda :with company-dabbrev :with company-yasnippet)))
+  (eval-after-load 'yasnippet
+    '(progn
+       (define-key yas-keymap (kbd "TAB") nil)
+       (define-key yas-keymap (kbd "<tab>") nil)
+       (define-key yas-keymap (kbd "<S-tab>") nil)
+       (define-key yas-keymap (kbd "<backtab>") nil)
+       (define-key yas-keymap (kbd "C-n") #'yas-next-field)
+       (define-key yas-keymap (kbd "C-p") #'yas-prev-field)
+       )
+    )
+
+  ;; (setq company-backends-python-mode '((company-anaconda :with company-dabbrev :with company-dabbrev-code :with company-yasnippet)))
+  ;; (setq company-backends-python-mode '((company-anaconda :with company-dabbrev-code :with company-yasnippet)))
+  (setq company-backends-python-mode '((company-anaconda :with company-capf :with company-semantic :with company-dabbrev-code :with company-yasnippet)))
+
   (setq company-transformers '(spacemacs//company-transformer-cancel
                                company-sort-by-backend-importance))
 
@@ -660,6 +673,7 @@ you should place your code here."
 
   (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
 
+  (setq evil-move-cursor-back nil)
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
