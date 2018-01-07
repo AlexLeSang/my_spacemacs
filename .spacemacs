@@ -38,6 +38,7 @@ values."
      vimscript
      shell-scripts
      sql
+     fasd
      shaders
      cscope
      (latex
@@ -79,10 +80,10 @@ values."
       )
      (shell
       :variables
-      shell-default-shell 'term
+      shell-default-shell 'multi-term
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
-      shell-default-position 'bottom
+      shell-default-position 'left
       )
      (spell-checking
       :variables
