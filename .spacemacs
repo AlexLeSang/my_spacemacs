@@ -107,6 +107,7 @@ values."
       :variables gtags-enable-by-default t
       )
      javascript
+     ycmd
      (python
       :variables
       python-fill-column 119
@@ -589,6 +590,22 @@ you should place your code here."
        )
     )
 
+  (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
+  (setq ycmd-force-semantic-completion t)
+
+  (eval-after-load 'ycmd
+    '(progn
+       (add-hook 'c++-mode-hook 'ycmd-mode)
+       (add-hook 'c-mode-hook 'ycmd-mode)
+       (add-hook 'python-mode-hook 'ycmd-mode)
+       (define-key spacemacs-c++-mode-map-prefix "yg" 'ycmd-goto)
+       (define-key spacemacs-c++-mode-map-prefix "yi" 'ycmd-goto-imprecise)
+       (define-key spacemacs-c++-mode-map-prefix "yT" 'ycmd-get-type)
+       (define-key spacemacs-c++-mode-map-prefix "yd" 'ycmd-goto-definition)
+       (define-key spacemacs-c++-mode-map-prefix "yD" 'ycmd-goto-declaration)
+       )
+    )
+
   (with-eval-after-load 'anaconda-mode
     (remove-hook 'anaconda-mode-response-read-fail-hook
                  'anaconda-mode-show-unreadable-response))
@@ -614,7 +631,8 @@ you should place your code here."
           (company-gtags company-etags)
           company-files company-dabbrev))
 
-  (setq company-backends-c-mode-common '(company-c-headers
+  (setq company-backends-c-mode-common '(company-ycmd
+                                         company-c-headers
                                          (company-yasnippet :separate
                                          company-dabbrev-code :with company-keywords)
                                          (company-gtags :separate company-etags)
