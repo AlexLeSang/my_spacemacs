@@ -570,10 +570,8 @@ you should place your code here."
 
   (add-hook 'python-mode-hook (lambda ()
                                 (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
-                                (setq flycheck-checker 'python-pycheckers
-                                ;; (setq flycheck-checker 'python-pylint
-                                ;; (setq flycheck-checker 'python-flake8
-                                      )
+                                (setq flycheck-checker 'python-pycheckers)
+                                (setq flycheck-checker-error-threshold 9000)
                                 )
             )
 
