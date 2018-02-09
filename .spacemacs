@@ -24,7 +24,6 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     semantic
      markdown
      csv
      erlang
@@ -40,7 +39,6 @@ values."
      sql
      fasd
      shaders
-     cscope
      (latex
       :variables latex-enable-auto-fill nil
       )
@@ -318,9 +316,6 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
-  (setq-default c-default-style "bsd")
-  (setq-default c-basic-offset 4)
-  (setq-default tab-width 4)
   )
 
 (defun dotspacemacs/user-config ()
@@ -547,17 +542,19 @@ you should place your code here."
   (setq-default git-enable-magit-svn-plugin t)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
 
-  (eval-after-load 'evil
-    '(progn
-       (defun my-save-if-bufferfilename ()
-         (if (buffer-file-name)
-             (progn (save-buffer) )
-           (message "no file is associated to this buffer: do nothing")
-           )
-         )
-       (add-hook 'hybrid-mode-insert-state-exit-hook 'my-save-if-bufferfilename)
-       )
-    )
+  ;; (eval-after-load 'evil
+  ;;   '(progn
+  ;;      (defun my-save-if-bufferfilename ()
+  ;;        (if (buffer-file-name)
+  ;;            (progn (save-buffer) )
+  ;;          (message "no file is associated to this buffer: do nothing")
+  ;;          )
+  ;;        )
+  ;;      (add-hook 'hybrid-mode-insert-state-exit-hook 'my-save-if-bufferfilename)
+  ;;      )
+  ;;   )
+
+
 
   ;; Python
   ;; http://pythoscope.org/
@@ -692,13 +689,13 @@ you should place your code here."
   (setq org-agenda-files (list
                           "./org/work.org"))
 
-  (defun save-buffer-on-exit-from-edit-mode ()
-    (when (and (buffer-file-name) (buffer-modified-p))
-      (save-buffer)
-      )
-    )
+  ;; (defun save-buffer-on-exit-from-edit-mode ()
+  ;;   (when (and (buffer-file-name) (buffer-modified-p))
+  ;;     (save-buffer)
+  ;;     )
+  ;;   )
 
-  (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
+  ;; (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
 
   (setq evil-move-cursor-back nil)
   )
