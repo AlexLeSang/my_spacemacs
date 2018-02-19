@@ -440,11 +440,18 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   (with-eval-after-load 'ggtags
-    (define-key evil-normal-state-map (kbd "gd") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gr") 'helm-gtags-dwim)
-    (define-key evil-normal-state-map (kbd "gu") 'helm-gtags-previous-history)
-    (define-key evil-normal-state-map (kbd "gU") 'helm-gtags-next-history)
-    (define-key evil-normal-state-map (kbd "ge") 'helm-gtags-parse-file)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "td") 'helm-gtags-dwim)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tR") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
     )
 
   (with-eval-after-load 'company
