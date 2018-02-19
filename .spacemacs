@@ -123,7 +123,8 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(rtags flycheck-mypy flycheck-pycheckers pycoverage realgud realgud-pry helm-tramp)
+   dotspacemacs-additional-packages '(rtags helm-rtags flycheck-mypy flycheck-pycheckers
+                                            pycoverage realgud realgud-pry helm-tramp  modern-cpp-font-lock)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
