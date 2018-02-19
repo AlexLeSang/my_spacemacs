@@ -343,6 +343,16 @@ you should place your code here."
        )
     )
 
+  ;; Cscope
+  ;; (define-key spacemacs-c++-mode-map-prefix "cD" 'helm-cscope-find-global-definition)
+  ;; (define-key spacemacs-c++-mode-map-prefix "cd" 'helm-cscope-find-this-symbol)
+  ;; (define-key spacemacs-c++-mode-map-prefix "ca" 'helm-cscope-find-assignments-to-this-symbol)
+  ;; (define-key spacemacs-c++-mode-map-prefix "cf" 'helm-cscope-find-this-file)
+  ;; (define-key spacemacs-c++-mode-map-prefix "cc" 'helm-cscope-find-called-function)
+  ;; (define-key spacemacs-c++-mode-map-prefix "cC" 'helm-cscope-find-calling-this-function)
+  ;; (define-key spacemacs-c++-mode-map-prefix "ce" 'helm-cscope-find-egrep-pattern)
+  ;; (define-key spacemacs-c++-mode-map-prefix "ci" 'cscope-index-files)
+
   (require 'realgud)
   (eval-after-load 'realgud
     '(progn
