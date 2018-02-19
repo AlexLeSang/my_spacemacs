@@ -699,6 +699,9 @@ you should place your code here."
   ;; (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
 
   (setq evil-move-cursor-back nil)
+  (use-package modern-cpp-font-lock :ensure t)
+  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
+
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
