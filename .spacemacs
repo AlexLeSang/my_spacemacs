@@ -330,17 +330,6 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (server-start)
-  (setq gc-cons-threshold 8000000)
-
-  (defun my-minibuffer-setup-hook ()
-    (setq helm-buffer-max-length nil)
-    (setq gc-cons-threshold most-positive-fixnum))
-
-  (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 8000000))
-
-  (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-  (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
@@ -393,9 +382,9 @@ you should place your code here."
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
-  (spacemacs/toggle-which-key-off)
+  ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.5)
+  (setq avy-timeout-seconds 0.4)
   (global-auto-revert-mode 1)
 
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
