@@ -631,22 +631,22 @@ you should place your code here."
 
   ;; pip install --user rope ropemacs
   ;; pip install -e "git+https://github.com/pinard/Pymacs.git#egg=Pymacs" --user
-  (add-to-list 'load-path "~/.emacs.d/src/pymacs")
-  (require 'pymacs)
-  (setq pymacs-python-command "python")
-  (pymacs-load "ropemacs" "rope-")
-  (setq ropemacs-confirm-saving t)
+  ;; (add-to-list 'load-path "~/.emacs.d/src/pymacs")
+  ;; (require 'pymacs)
+  ;; (setq pymacs-python-command "python")
+  ;; (pymacs-load "ropemacs" "rope-")
+  ;; (setq ropemacs-confirm-saving t)
 
-  (eval-after-load 'ropemacs
-    '(progn
-       (define-key spacemacs-python-mode-map-prefix "ro" 'rope-open-project)
-       (define-key spacemacs-python-mode-map-prefix "rv" 'rope-extract-variable)
-       (define-key spacemacs-python-mode-map-prefix "rm" 'rope-extract-method)
-       (define-key spacemacs-python-mode-map-prefix "rr" 'rope-rename)
-       (define-key spacemacs-python-mode-map-prefix "ri" 'rope-inline)
-       (define-key spacemacs-python-mode-map-prefix "rcf" 'rope-cleate-file)
-       )
-    )
+  ;; (eval-after-load 'ropemacs
+  ;;   '(progn
+  ;;      (define-key spacemacs-python-mode-map-prefix "ro" 'rope-open-project)
+  ;;      (define-key spacemacs-python-mode-map-prefix "rv" 'rope-extract-variable)
+  ;;      (define-key spacemacs-python-mode-map-prefix "rm" 'rope-extract-method)
+  ;;      (define-key spacemacs-python-mode-map-prefix "rr" 'rope-rename)
+  ;;      (define-key spacemacs-python-mode-map-prefix "ri" 'rope-inline)
+  ;;      (define-key spacemacs-python-mode-map-prefix "rcf" 'rope-cleate-file)
+  ;;      )
+  ;;   )
   (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
