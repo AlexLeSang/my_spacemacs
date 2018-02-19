@@ -34,21 +34,24 @@ values."
      octave
      java
      scala
+     ;; cscope
      vimscript
      shell-scripts
      sql
      fasd
      shaders
      (latex
-      :variables latex-enable-auto-fill nil
+      :variables
+      latex-enable-auto-fill nil
       )
+     pdf-tools
      (org
       :variables
       org-enable-github-support t
       org-projectile-file "TODOs.org"
       )
      (clojure
-      :variables clojure-enable-fancify-symbols t
+      :variables clojure-enable-fancify-symbols nil
       )
      (auto-completion
       :variables
