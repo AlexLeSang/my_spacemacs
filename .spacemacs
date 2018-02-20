@@ -440,6 +440,21 @@ you should place your code here."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
   (with-eval-after-load 'ggtags
+    ;; Remove old key
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gl") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gn") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gp") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gf") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gi") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gs") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gS") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gR") nil)
+    ;; New keybindings
     (define-key spacemacs-c++-mode-map-prefix (kbd "td") 'helm-gtags-dwim)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
@@ -587,11 +602,11 @@ you should place your code here."
 
   (eval-after-load 'anaconda-mode
     '(progn
-       (define-key spacemacs-python-mode-map-prefix "ah" 'anaconda-mode-show-doc)
-       (define-key spacemacs-python-mode-map-prefix "ag" 'anaconda-mode-find-definitions)
-       (define-key spacemacs-python-mode-map-prefix "ar" 'anaconda-mode-find-references)
-       (define-key spacemacs-python-mode-map-prefix "aa" 'anaconda-mode-find-assignments)
-       (define-key spacemacs-python-mode-map-prefix "au" 'anaconda-mode-go-back)
+       (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
+       (define-key spacemacs-python-mode-map-prefix (kbd "ag") 'anaconda-mode-find-definitions)
+       (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
+       (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
+       (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
        )
     )
 
@@ -603,11 +618,15 @@ you should place your code here."
        (add-hook 'c++-mode-hook 'ycmd-mode)
        (add-hook 'c-mode-hook 'ycmd-mode)
        (add-hook 'python-mode-hook 'ycmd-mode)
-       (define-key spacemacs-c++-mode-map-prefix "yg" 'ycmd-goto)
-       (define-key spacemacs-c++-mode-map-prefix "yi" 'ycmd-goto-imprecise)
-       (define-key spacemacs-c++-mode-map-prefix "yT" 'ycmd-get-type)
-       (define-key spacemacs-c++-mode-map-prefix "yd" 'ycmd-goto-definition)
-       (define-key spacemacs-c++-mode-map-prefix "yD" 'ycmd-goto-declaration)
+       ;; Remove old keybindings
+       (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
+       ;; Create new keybindings
+       (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
        )
     )
 
