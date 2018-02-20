@@ -655,12 +655,15 @@ you should place your code here."
           (company-gtags company-etags)
           company-files company-dabbrev))
 
-  (setq company-backends-c-mode-common '(company-ycmd
-                                         company-c-headers
-                                         (company-yasnippet :separate
-                                         company-dabbrev-code :with company-keywords)
-                                         (company-gtags :separate company-etags)
-                                         company-files company-dabbrev))
+  ;; (setq company-backends-c-mode-common '((company-ycmd :with company-keywords company-yasnippet company-dabbrev-code)
+  ;;                                        (company-yasnippet :separate
+  ;;                                                           company-dabbrev-code :with company-keywords)
+  ;;                                        (company-gtags :separate company-etags)
+  ;;                                        company-files company-dabbrev))
+  (setq company-backends-c-mode-common '(
+                                         (:sorted company-ycmd :with company-yasnippet)
+                                         )
+        )
 
   (setq company-transformers '(spacemacs//company-transformer-cancel
                                company-sort-by-backend-importance))
