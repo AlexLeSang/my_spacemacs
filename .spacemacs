@@ -187,7 +187,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 10
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -329,7 +329,6 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (server-start)
 
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
@@ -413,8 +412,8 @@ you should place your code here."
                     (concat (downcase first-char) rest-str))))
               ))
 
-  (setq global-semantic-idle-completions-mode nil)
-  (setq global-semantic-idle-summary-mode nil)
+  ;; (setq global-semantic-idle-completions-mode nil)
+  ;; (setq global-semantic-idle-summary-mode nil)
 
   (setq company-dabbrev-downcase nil)
   (setq dabbrev-case-fold-search nil)
@@ -438,6 +437,32 @@ you should place your code here."
     (term-send-raw-string "\C-r"))
 
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
+
+  ;; RTags
+  (require 'rtags)
+  (require 'flycheck-rtags)
+  (require 'company-rtags)
+  (require 'helm-rtags)
+
+  (with-eval-after-load 'rtags
+    ;; (setq rtags-autostart-diagnostics t)
+    ;; (rtags-diagnostics)
+    (setq rtags-use-helm t)
+    (setq rtags-completions-enabled t)
+    (setq rtags-reindex-on-save t)
+    (setq rtags-show-containing-function t)
+    (setq rtags-verbose-results t)
+    ;; c-mode-common-hook is also called by c++-mode
+    (setq rtags-display-result-backend 'helm)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rd") 'rtags-find-symbol-at-point)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rr") 'rtags-find-references-at-point)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rR") 'rtags-rename-symbol)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ru") 'rtags-location-stack-back)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rU") 'rtags-location-stack-forward)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "re") 'rtags-reparse-file)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rt") 'rtags-display-summary)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "rF") 'rtags-fix-fixit-at-point)
+    )
 
   (with-eval-after-load 'ggtags
     ;; Remove old key
@@ -579,8 +604,6 @@ you should place your code here."
   ;;      )
   ;;   )
 
-
-
   ;; Python
   ;; http://pythoscope.org/
   (setq python-shell-interpreter-args "-i")
@@ -610,11 +633,11 @@ you should place your code here."
        )
     )
 
-  (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
-  (setq ycmd-force-semantic-completion t)
 
   (eval-after-load 'ycmd
     '(progn
+       (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
+       (setq ycmd-force-semantic-completion t)
        (add-hook 'c++-mode-hook 'ycmd-mode)
        (add-hook 'c-mode-hook 'ycmd-mode)
        (add-hook 'python-mode-hook 'ycmd-mode)
@@ -649,11 +672,17 @@ you should place your code here."
        )
     )
 
-  (setq company-backends-python-mode
-        '((company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
-          (company-keywords company-semantic)
-          (company-gtags company-etags)
-          company-files company-dabbrev))
+  (setq company-backends-python-mode '(
+                                       (company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
+                                       ;; (:sorted company-ycmd :with company-capf company-yasnippet)
+                                       )
+        )
+
+  ;; (setq company-backends-python-mode
+  ;;       '((company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
+  ;;         (company-keywords company-semantic)
+  ;;         (company-gtags company-etags)
+  ;;         company-files company-dabbrev))
 
   ;; (setq company-backends-c-mode-common '((company-ycmd :with company-keywords company-yasnippet company-dabbrev-code)
   ;;                                        (company-yasnippet :separate
@@ -743,4 +772,14 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(package-selected-packages
+   (quote
+    (cider company smartparens flycheck helm helm-core magit magit-popup ghub with-editor org-plus-contrib simple-httpd anaconda-mode pythonic helm-c-yasnippet auto-yasnippet yasnippet yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode restart-emacs realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode pycoverage py-isort pug-mode popwin pip-requirements persp-mode pdf-tools pcre2el paradox ox-gfm orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file ob-elixir noflet neotree mwim multi-term move-text modern-cpp-font-lock mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode julia-mode json-mode js2-refactor js-doc insert-shebang indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-tramp helm-themes helm-swoop helm-rtags helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-ag graphviz-dot-mode google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido fish-mode fill-column-indicator fasd fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump disaster diminish diff-hl define-word dactyl-mode cython-mode csv-mode company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(safe-local-variable-values
+   (quote
+    ((python-shell-extra-pythonpaths
+      (quote
+       ("/home/halushko/Projects/linked_project/main"
+        (\, "/home/halushko/Projects/linked_project/main/linked_2"))))
+     (elixir-enable-compilation-checking . t)
+     (elixir-enable-compilation-checking)))))
