@@ -465,7 +465,7 @@ you should place your code here."
     )
 
   (with-eval-after-load 'ggtags
-    ;; Remove old key
+    ;; Remove old key c++
     (define-key spacemacs-c++-mode-map-prefix (kbd "gd") nil)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gD") nil)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gc") nil)
@@ -479,11 +479,27 @@ you should place your code here."
     (define-key spacemacs-c++-mode-map-prefix (kbd "gS") nil)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gu") nil)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gR") nil)
-    ;; New keybindings
-    (define-key spacemacs-c++-mode-map-prefix (kbd "td") 'helm-gtags-dwim)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tR") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
+    ;; Remove old key elixir
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gl") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gn") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gf") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gi") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gs") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gS") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gR") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") nil)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") nil)
+    ;; New keybindings c++
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
     (define-key spacemacs-c++-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
@@ -492,6 +508,17 @@ you should place your code here."
     (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
+    ;; New keybindings c++
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'helm-gtags-dwim)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'helm-gtags-previous-history)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gU") 'helm-gtags-next-history)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'helm-gtags-parse-file)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gs") 'helm-gtags-show-stack)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gn") 'helm-gtags-next-history)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'helm-gtags-previous-history)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gf") 'helm-gtags-tags-in-this-function)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gF") 'helm-gtags-find-files)
     )
 
   (with-eval-after-load 'company
@@ -633,6 +660,18 @@ you should place your code here."
        )
     )
 
+  (eval-after-load 'helm
+    '(progn
+       (define-key spacemacs-c++-mode-map-prefix (kbd "ug") 'dumb-jump-go)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "uG") 'dumb-jump-go-other-window)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "up") 'dumb-jump-go-prompt)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "uu") 'dumb-jump-back)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "ue") 'dumb-jump-go-prefer-external)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "uE") 'dumb-jump-go-prefer-external-other-window)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "uc") 'dumb-jump-go-current-window)
+       (define-key spacemacs-c++-mode-map-prefix (kbd "uq") 'dumb-jump-quick-look)
+       )
+    )
 
   (eval-after-load 'ycmd
     '(progn
