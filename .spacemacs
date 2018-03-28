@@ -650,6 +650,11 @@ you should place your code here."
                                 )
             )
 
+  (add-hook 'elixir-mode-hook
+            (lambda ()
+              (setq flycheck-checker 'elixir-credo)
+              ))
+
   (eval-after-load 'anaconda-mode
     '(progn
        (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
@@ -811,14 +816,4 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (cider company smartparens flycheck helm helm-core magit magit-popup ghub with-editor org-plus-contrib simple-httpd anaconda-mode pythonic helm-c-yasnippet auto-yasnippet yasnippet yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode restart-emacs realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode pycoverage py-isort pug-mode popwin pip-requirements persp-mode pdf-tools pcre2el paradox ox-gfm orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file ob-elixir noflet neotree mwim multi-term move-text modern-cpp-font-lock mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode julia-mode json-mode js2-refactor js-doc insert-shebang indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-tramp helm-themes helm-swoop helm-rtags helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-ag graphviz-dot-mode google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido fish-mode fill-column-indicator fasd fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump disaster diminish diff-hl define-word dactyl-mode cython-mode csv-mode company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
- '(safe-local-variable-values
-   (quote
-    ((python-shell-extra-pythonpaths
-      (quote
-       ("/home/halushko/Projects/linked_project/main"
-        (\, "/home/halushko/Projects/linked_project/main/linked_2"))))
-     (elixir-enable-compilation-checking . t)
-     (elixir-enable-compilation-checking)))))
+ )
