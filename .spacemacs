@@ -333,6 +333,17 @@ you should place your code here."
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
+  (setq gc-cons-threshold 8000000)
+
+  (defun my-minibuffer-setup-hook ()
+    (setq helm-buffer-max-length nil)
+    (setq gc-cons-threshold most-positive-fixnum))
+
+  (defun my-minibuffer-exit-hook ()
+    (setq gc-cons-threshold 8000000))
+
+  (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
   ;; Org
   (eval-after-load 'org
@@ -341,7 +352,7 @@ you should place your code here."
        (org-clock-persistence-insinuate)
        )
     )
-
+  (setq dotspacemacs-mode-line-unicode-symbols nil)
   ;; Cscope
   ;; (define-key spacemacs-c++-mode-map-prefix "cD" 'helm-cscope-find-global-definition)
   ;; (define-key spacemacs-c++-mode-map-prefix "cd" 'helm-cscope-find-this-symbol)
@@ -383,6 +394,7 @@ you should place your code here."
 
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
+  (spacemacs/toggle-vi-tilde-fringe-off)
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-indent-guide-on)
