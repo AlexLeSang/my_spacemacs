@@ -118,6 +118,7 @@ values."
       :variables
       ibuffer-group-buffers-by 'projects
       )
+     themes-megapack
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -180,6 +181,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         zenburn
+                         monokai
                          spacemacs-dark
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
@@ -187,7 +190,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -249,7 +252,7 @@ values."
    dotspacemacs-enable-paste-micro-state nil
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
-   dotspacemacs-which-key-delay 0.8
+   dotspacemacs-which-key-delay 2.0
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
@@ -276,9 +279,9 @@ values."
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
-   dotspacemacs-inactive-transparency 95
+   dotspacemacs-inactive-transparency 100
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
-   dotspacemacs-mode-line-unicode-symbols t
+   dotspacemacs-mode-line-unicode-symbols nil
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters the
    ;; point when it reaches the top or bottom of the screen. (default t)
@@ -333,6 +336,7 @@ you should place your code here."
   ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
   ;; (defun clang-format-bindings ()
   ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
+
   (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
@@ -340,7 +344,7 @@ you should place your code here."
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 8000000))
+    (setq gc-cons-threshold 9000000))
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
@@ -394,18 +398,19 @@ you should place your code here."
 
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
+  ;; (spacemacs/toggle-transparency)
   (spacemacs/toggle-vi-tilde-fringe-off)
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-indent-guide-on)
-  (spacemacs/toggle-golden-ratio-on)
+  ;; (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
   ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.4)
+  (setq avy-timeout-seconds 0.35)
   (global-auto-revert-mode 1)
 
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -433,7 +438,7 @@ you should place your code here."
 
   (setq helm-grep-ag-command "ag --follow --line-numbers -S --hidden --color --nogroup %s %s %s")
   ;; Avy settings
-  (setq avy-all-windows nil)
+  (setq avy-all-windows t)
 
   ;; Semantic
   (setq hlt-auto-faces-flag t)
@@ -531,6 +536,24 @@ you should place your code here."
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'helm-gtags-previous-history)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gf") 'helm-gtags-tags-in-this-function)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gF") 'helm-gtags-find-files)
+    ;; New keybindings for dumb jump c++ mode
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gg") 'dumb-jump-go)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'dumb-jump-back)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
+    ;; New keybindings for dumb jump elixir mode
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'dumb-jump-go)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'dumb-jump-back)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
     )
 
   (with-eval-after-load 'company
@@ -677,19 +700,6 @@ you should place your code here."
        )
     )
 
-  (eval-after-load 'helm
-    '(progn
-       (define-key spacemacs-c++-mode-map-prefix (kbd "ug") 'dumb-jump-go)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "uG") 'dumb-jump-go-other-window)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "up") 'dumb-jump-go-prompt)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "uu") 'dumb-jump-back)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "ue") 'dumb-jump-go-prefer-external)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "uE") 'dumb-jump-go-prefer-external-other-window)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "uc") 'dumb-jump-go-current-window)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "uq") 'dumb-jump-quick-look)
-       )
-    )
-
   (eval-after-load 'ycmd
     '(progn
        (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
@@ -816,16 +826,22 @@ you should place your code here."
   (use-package modern-cpp-font-lock :ensure t)
   (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
+  (setq powerline-default-separator nil)
+  (setq fancy-battery-show-percentage nil)
+
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(avy-all-windows t)
+ '(package-selected-packages
+   (quote
+    (zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode restart-emacs realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode pycoverage py-isort pug-mode popwin pip-requirements persp-mode pdf-tools pcre2el paradox ox-gfm orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file ob-elixir noflet neotree mwim multi-term move-text modern-cpp-font-lock mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode julia-mode json-mode js2-refactor js-doc insert-shebang indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-tramp helm-themes helm-swoop helm-rtags helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido fish-mode fill-column-indicator fasd fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump disaster diminish diff-hl define-word dactyl-mode cython-mode csv-mode company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
