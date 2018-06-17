@@ -18,6 +18,7 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     rust
      yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -124,8 +125,11 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(rtags helm-rtags flycheck-mypy flycheck-pycheckers
-                                            pycoverage realgud realgud-pry helm-tramp  modern-cpp-font-lock)
+   dotspacemacs-additional-packages '(flycheck-mypy flycheck-pycheckers
+                                            pycoverage realgud realgud-pry helm-tramp
+                                            modern-cpp-font-lock org-projectile
+                                            lsp-mode lsp-python company-lsp
+                                            cquery helm-xref lsp-ui)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -150,7 +154,7 @@ values."
    ;; (default t)
    dotspacemacs-elpa-https t
    ;; Maximum allowed time in seconds to contact an ELPA repository.
-   dotspacemacs-elpa-timeout 5
+   dotspacemacs-elpa-timeout 20
    ;; If non nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. (default t)
    dotspacemacs-check-for-update nil
@@ -190,7 +194,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.0)
@@ -281,7 +285,7 @@ values."
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 100
    ;; If non nil unicode symbols are displayed in the mode line. (default t)
-   dotspacemacs-mode-line-unicode-symbols nil
+   dotspacemacs-mode-line-unicode-symbols t
    ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters the
    ;; point when it reaches the top or bottom of the screen. (default t)
@@ -289,7 +293,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers 'relative
    ;; If non\\\\\-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -333,14 +337,9 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-  ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
-  ;; (defun clang-format-bindings ()
-  ;;   (define-key c++-mode-map [C-tab] 'clang-format-buffer))
-
   (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
-    (setq helm-buffer-max-length nil)
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
@@ -349,6 +348,17 @@ you should place your code here."
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
+  (defun clang-format-bindings ()
+    (setq helm-buffer-max-length nil)
+    (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
+    (define-key spacemacs-c-mode-map "," 'clang-format-region)
+    (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
+    (define-key spacemacs-c++-mode-map "," 'clang-format-region)
+    )
+
+  (add-hook 'c++-mode-hook 'clang-format-bindings)
+  (add-hook 'c-mode-hook 'clang-format-bindings)
+
   ;; Org
   (eval-after-load 'org
     '(progn
@@ -356,16 +366,6 @@ you should place your code here."
        (org-clock-persistence-insinuate)
        )
     )
-  (setq dotspacemacs-mode-line-unicode-symbols nil)
-  ;; Cscope
-  ;; (define-key spacemacs-c++-mode-map-prefix "cD" 'helm-cscope-find-global-definition)
-  ;; (define-key spacemacs-c++-mode-map-prefix "cd" 'helm-cscope-find-this-symbol)
-  ;; (define-key spacemacs-c++-mode-map-prefix "ca" 'helm-cscope-find-assignments-to-this-symbol)
-  ;; (define-key spacemacs-c++-mode-map-prefix "cf" 'helm-cscope-find-this-file)
-  ;; (define-key spacemacs-c++-mode-map-prefix "cc" 'helm-cscope-find-called-function)
-  ;; (define-key spacemacs-c++-mode-map-prefix "cC" 'helm-cscope-find-calling-this-function)
-  ;; (define-key spacemacs-c++-mode-map-prefix "ce" 'helm-cscope-find-egrep-pattern)
-  ;; (define-key spacemacs-c++-mode-map-prefix "ci" 'cscope-index-files)
 
   (require 'realgud)
   (eval-after-load 'realgud
@@ -399,9 +399,10 @@ you should place your code here."
   (setq ahs-idle-timer 0)
   (setq vc-follow-symlinks t)
   ;; (spacemacs/toggle-transparency)
-  (spacemacs/toggle-vi-tilde-fringe-off)
+  ;; (spacemacs/toggle-vi-tilde-fringe-off)
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
+  (spacemacs/toggle-truncate-lines-off)
   (spacemacs/toggle-indent-guide-on)
   ;; (spacemacs/toggle-golden-ratio-on)
   (spacemacs/toggle-camel-case-motion-globally-on)
@@ -429,9 +430,6 @@ you should place your code here."
                     (concat (downcase first-char) rest-str))))
               ))
 
-  ;; (setq global-semantic-idle-completions-mode nil)
-  ;; (setq global-semantic-idle-summary-mode nil)
-
   (setq company-dabbrev-downcase nil)
   (setq dabbrev-case-fold-search nil)
   (setq dabbrev-upcase-means-case-search t)
@@ -454,32 +452,6 @@ you should place your code here."
     (term-send-raw-string "\C-r"))
 
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
-
-  ;; RTags
-  (require 'rtags)
-  (require 'flycheck-rtags)
-  (require 'company-rtags)
-  (require 'helm-rtags)
-
-  (with-eval-after-load 'rtags
-    ;; (setq rtags-autostart-diagnostics t)
-    ;; (rtags-diagnostics)
-    (setq rtags-use-helm t)
-    (setq rtags-completions-enabled t)
-    (setq rtags-reindex-on-save t)
-    (setq rtags-show-containing-function t)
-    (setq rtags-verbose-results t)
-    ;; c-mode-common-hook is also called by c++-mode
-    (setq rtags-display-result-backend 'helm)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rd") 'rtags-find-symbol-at-point)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rr") 'rtags-find-references-at-point)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rR") 'rtags-rename-symbol)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ru") 'rtags-location-stack-back)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rU") 'rtags-location-stack-forward)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "re") 'rtags-reparse-file)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rt") 'rtags-display-summary)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "rF") 'rtags-fix-fixit-at-point)
-    )
 
   (with-eval-after-load 'ggtags
     ;; Remove old key c++
@@ -514,6 +486,46 @@ you should place your code here."
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gR") nil)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") nil)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") nil)
+    ;; New keybindings for dumb jump c mode
+    (define-key spacemacs-c-mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-c-mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key spacemacs-c-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    ;; New keybindings for dumb jump c++ mode
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    ;; New keybindings for dumb jump elixir mode
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'dumb-jump-go)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'dumb-jump-back)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
+    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
+    ;; gtags
+    ;; New keybindings c
+    (define-key spacemacs-c-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key spacemacs-c-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
     ;; New keybindings c++
     (define-key spacemacs-c++-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
@@ -525,42 +537,40 @@ you should place your code here."
     (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
     (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
-    ;; New keybindings c++
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'helm-gtags-dwim)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'helm-gtags-previous-history)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gU") 'helm-gtags-next-history)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'helm-gtags-parse-file)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gs") 'helm-gtags-show-stack)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gn") 'helm-gtags-next-history)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'helm-gtags-previous-history)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gf") 'helm-gtags-tags-in-this-function)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gF") 'helm-gtags-find-files)
-    ;; New keybindings for dumb jump c++ mode
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gg") 'dumb-jump-go)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'dumb-jump-back)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
-    ;; New keybindings for dumb jump elixir mode
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'dumb-jump-go)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'dumb-jump-back)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
+    ;; ycmd
+    ;; C
+    (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
+    (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+    (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+    (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+    (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
+    ;; C++
+    (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
+    ;; xref C++
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") 'xref-find-references)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+    ;; peek
+    (define-key spacemacs-c++-mode-map-prefix (kbd "pd") 'lsp-ui-peek-find-definitions)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "pr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ps") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "pu") 'evil-jump-backward)
+    ;; C
+    (define-key spacemacs-c-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gr") 'xref-find-references)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+    ;; peek
+    (define-key spacemacs-c-mode-map-prefix (kbd "pd") 'lsp-ui-peek-find-definitions)
+    (define-key spacemacs-c-mode-map-prefix (kbd "pr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c-mode-map-prefix (kbd "ps") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key spacemacs-c-mode-map-prefix (kbd "pu") 'evil-jump-backward)
     )
-
-  (with-eval-after-load 'company
-   ;; (push '(company-capf :with company-dabbrev-code company-keywords) company-backends)
-   ;; (push 'company-yasnippet company-backends)
-   ;; (setq company-backends 'company-yasnippet)
-   )
 
   (eval-after-load 'projectile
     '(progn
@@ -680,8 +690,9 @@ you should place your code here."
 
   (add-hook 'python-mode-hook (lambda ()
                                 (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
-                                (setq flycheck-checker 'python-pycheckers)
-                                (setq flycheck-checker-error-threshold 9000)
+                                ;; (setq flycheck-checker 'python-pycheckers)
+                                ;; (setq flycheck-checker-error-threshold 9000)
+                                (setq flycheck-checker 'lsp-ui)
                                 )
             )
 
@@ -706,11 +717,19 @@ you should place your code here."
        (setq ycmd-force-semantic-completion t)
        (add-hook 'c++-mode-hook 'ycmd-mode)
        (add-hook 'c-mode-hook 'ycmd-mode)
-       (add-hook 'python-mode-hook 'ycmd-mode)
+       ;; (add-hook 'python-mode-hook 'ycmd-mode)
+       (add-hook 'text-mode 'ycmd-mode)
        ;; Remove old keybindings
-       (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
+       ;; (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
+       ;; (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
        ;; Create new keybindings
+       ;; C
+       (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
+       (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+       (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+       (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+       (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
+       ;; C++
        (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
        (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
        (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
@@ -739,24 +758,12 @@ you should place your code here."
     )
 
   (setq company-backends-python-mode '(
-                                       (company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
-                                       ;; (:sorted company-ycmd :with company-capf company-yasnippet)
+                                       (:sorted company-lsp :with company-yasnippet company-dabbrev)
                                        )
         )
 
-  ;; (setq company-backends-python-mode
-  ;;       '((company-anaconda :with company-dabbrev-code :separate company-capf company-yasnippet)
-  ;;         (company-keywords company-semantic)
-  ;;         (company-gtags company-etags)
-  ;;         company-files company-dabbrev))
-
-  ;; (setq company-backends-c-mode-common '((company-ycmd :with company-keywords company-yasnippet company-dabbrev-code)
-  ;;                                        (company-yasnippet :separate
-  ;;                                                           company-dabbrev-code :with company-keywords)
-  ;;                                        (company-gtags :separate company-etags)
-  ;;                                        company-files company-dabbrev))
   (setq company-backends-c-mode-common '(
-                                         (:sorted company-ycmd :with company-yasnippet)
+                                         (:sorted company-lsp :with company-yasnippet company-dabbrev)
                                          )
         )
 
@@ -789,7 +796,8 @@ you should place your code here."
        (setq helm-buffer-max-length nil)
        (setq helm-display-header-line nil)
        (set-face-attribute 'helm-source-header nil :height 0.1)
-       ;; (setq helm-candidate-number-limit 500)
+       (setq helm-candidate-number-limit 500)
+       ;; (setq helm-candidate-number-limit nil)
        )
     )
 
@@ -806,28 +814,118 @@ you should place your code here."
   ;; bind evil-jump-out-args
   (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
-  (defun custom-elixir-mode-hook ()
-    (define-key evil-normal-state-map (kbd "gd") 'alchemist-goto-definition-at-point)
-    (define-key evil-normal-state-map (kbd "gu") 'alchemist-goto-jump-back)
+
+  (eval-after-load 'alchemist
+    '(progn
+       (define-key spacemacs-elixir-mode-map-prefix (kbd "d") 'alchemist-goto-definition-at-point)
+       )
     )
 
   (setq org-agenda-files (list
                           "./org/work.org"))
 
-  ;; (defun save-buffer-on-exit-from-edit-mode ()
-  ;;   (when (and (buffer-file-name) (buffer-modified-p))
-  ;;     (save-buffer)
-  ;;     )
-  ;;   )
-
-  ;; (add-hook 'evil-hybrid-state-exit-hook 'save-buffer-on-exit-from-edit-mode)
-
   (setq evil-move-cursor-back nil)
   (use-package modern-cpp-font-lock :ensure t)
   (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
-  (setq powerline-default-separator nil)
   (setq fancy-battery-show-percentage nil)
+
+  ;; eshell
+  (setq eshell-history-size 10000)
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (setq eshell-cmpl-ignore-case t)
+              (eshell-cmpl-initialize)
+              (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
+              (define-key eshell-mode-map [remap eshell-complete-lisp-symbol] 'helm-lisp-completion-at-point)
+              ))
+
+  (defun eshell/clear ()
+    "Clear the eshell buffer."
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (eshell-send-input)))
+
+  (setq eshell-save-history-on-exit t)
+
+  ;; eshell here
+  (defun eshell-here ()
+    "Opens up a new shell in the directory associated with the
+    current buffer's file. The eshell is renamed to match that
+    directory to make multiple eshell windows easier."
+    (interactive)
+    (let* ((height (/ (window-total-height) 3)))
+      (split-window-vertically (- height))
+      (other-window 1)
+      (eshell "new")
+      (insert (concat "ls"))
+      (eshell-send-input)))
+
+  (bind-key "C-!" 'eshell-here)
+
+  ;; lsp-mode
+  (require 'lsp-mode)
+  (require 'lsp-python)
+  (add-hook 'python-mode-hook #'lsp-python-enable)
+
+  ;; lsp-python
+  (lsp-define-stdio-client lsp-python "python3"
+                           #'projectile-project-root
+                           '("pyls"))
+
+  (add-hook 'lsp-mode-hook 'flycheck-mode)
+
+  (defun lsp-set-cfg ()
+    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+      ;; TODO: check lsp--cur-workspace here to decide per server / project
+      (lsp--set-configuration lsp-cfg)))
+
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
+
+  ;; lsp-ui
+  (require 'lsp-ui)
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  (setq lsp-ui-sideline-ignore-duplicate t)
+
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (lsp-python-enable)))
+
+  ;; company-lsp
+  (require 'company-lsp)
+  (push 'company-lsp company-backends)
+  (setq company-lsp-enable-recompletion t)
+
+  ;; cquery
+  (require 'lsp-mode)
+  (require 'cquery)
+  (setq cquery-executable "/home/halushko/Projects/cquery/build/release/bin/cquery")
+  (setq cquery-extra-args '("--log-file=/tmp/cq.log"))
+
+  (with-eval-after-load 'projectile
+    (setq projectile-project-root-files-top-down-recurring
+          (append '("compile_commands.json"
+                    ".cquery")
+                  projectile-project-root-files-top-down-recurring)))
+
+  (setq cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+  (defun cquery//enable ()
+    (condition-case nil
+        (lsp-cquery-enable)
+      (user-error nil)))
+
+  (use-package cquery
+    :commands lsp-cquery-enable
+    :init (add-hook 'c-mode-common-hook #'cquery//enable))
+
+  ;; lsp-ui
+  (require 'lsp-ui)
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  (add-hook 'c-mode-common-hook 'flycheck-mode)
+
+  ;; helm-xref
+  (require 'helm-xref)
+  (setq xref-show-xrefs-function 'helm-xref-show-xrefs)
 
   )
 (custom-set-faces
@@ -842,6 +940,9 @@ you should place your code here."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(avy-all-windows t)
+ '(lsp-ui-doc-include-signature t)
+ '(lsp-ui-sideline-delay 0.15)
  '(package-selected-packages
    (quote
-    (zenburn-theme zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme autothemer darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme yapfify yaml-mode xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill toc-org thrift tagedit stan-mode sql-indent spaceline smeargle slim-mode shell-pop scss-mode scad-mode sass-mode restart-emacs realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters qml-mode pyvenv pytest pyenv-mode pycoverage py-isort pug-mode popwin pip-requirements persp-mode pdf-tools pcre2el paradox ox-gfm orgit org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file ob-elixir noflet neotree mwim multi-term move-text modern-cpp-font-lock mmm-mode matlab-mode markdown-toc magit-gitflow macrostep lorem-ipsum livid-mode live-py-mode linum-relative link-hint less-css-mode julia-mode json-mode js2-refactor js-doc insert-shebang indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-tramp helm-themes helm-swoop helm-rtags helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag graphviz-dot-mode google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido fish-mode fill-column-indicator fasd fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump disaster diminish diff-hl define-word dactyl-mode cython-mode csv-mode company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-identifiers-mode coffee-mode cmake-mode clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode alchemist aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+    (cider anaconda-mode lsp-mode markdown-mode projectile magit toml-mode racer flycheck-rust cargo rust-mode company-lsp lsp-python zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(powerline-default-separator (quote alternate)))
