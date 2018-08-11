@@ -109,7 +109,7 @@ values."
       :variables gtags-enable-by-default t
       )
      javascript
-     ycmd
+     ;;ycmd
      (python
       :variables
       python-fill-column 119
@@ -539,27 +539,27 @@ you should place your code here."
     (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
     ;; ycmd
     ;; C
-    (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
-    (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-    (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-    (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-    (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
+    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
+    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
     ;; C++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
+    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
+    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
+    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
+    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
+    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
     ;; xref C++
     (define-key spacemacs-c++-mode-map-prefix (kbd "gd") 'xref-find-definitions)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gr") 'xref-find-references)
     (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'evil-jump-backward)
     ;; peek
-    (define-key spacemacs-c++-mode-map-prefix (kbd "pd") 'lsp-ui-peek-find-definitions)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "pr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ps") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "pu") 'evil-jump-backward)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "su") 'evil-jump-backward)
     ;; C
     (define-key spacemacs-c-mode-map-prefix (kbd "gd") 'xref-find-definitions)
     (define-key spacemacs-c-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
