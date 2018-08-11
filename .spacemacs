@@ -126,11 +126,11 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(flycheck-mypy flycheck-pycheckers
-                                            pycoverage realgud realgud-pry helm-tramp
-                                            modern-cpp-font-lock org-projectile
-                                            lsp-mode lsp-python company-lsp
-                                            cquery helm-xref lsp-ui fzf
-                                            yasnippet-snippets)
+                                                    pycoverage realgud realgud-pry helm-tramp
+                                                    modern-cpp-font-lock org-projectile
+                                                    lsp-mode lsp-python company-lsp
+                                                    cquery helm-xref lsp-ui fzf
+                                                    yasnippet-snippets)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -624,13 +624,15 @@ you should place your code here."
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 1)
-       (setq company-idle-delay 0.5)
        (setq company-show-numbers t)
        (setq company-tooltip-limit 10)
        (setq company-auto-complete t)
+       (setq company-idle-delay 0.4)
        ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
        (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-       (setq company-auto-complete-chars (quote (40 41 34 36 60 62 124 33)))
+       ;; (setq company-auto-complete-chars (quote (40 41 34 36 60 62 124 33)))
+       (setq company-auto-complete-chars (quote (32)))
+       ;; '(company-auto-complete-chars (quote (32)))
 
        (define-key company-active-map (kbd "M-n") nil)
        (define-key company-active-map (kbd "M-p") nil)
@@ -642,6 +644,8 @@ you should place your code here."
        ;; (define-key company-active-map (kbd "C-i") 'helm-company)
        (define-key company-mode-map (kbd "<C-tab>") 'helm-company)
        (define-key company-mode-map (kbd "C-i") 'company-capf)
+       (remove-hook 'eshell-directory-change-hook
+                    'spacemacs//toggle-shell-auto-completion-based-on-path)
        ))
 
   ;; translate C-h to backspace, and M-h to C-h
@@ -862,14 +866,60 @@ you should place your code here."
   (setq fancy-battery-show-percentage nil)
 
   ;; eshell
-  (setq eshell-history-size 10000)
+  (with-eval-after-load 'eshell
+    (setq eshell-save-history-on-exit t)
+    (setq eshell-history-size 10000)
+    )
+
+
+  ;; My eshell-initialize
+  (defun my-eshell-cmpl-initialize ()
+    "Initialize the completions module."
+    (set (make-local-variable 'pcomplete-command-completion-function) eshell-command-completion-function)
+    (set (make-local-variable 'pcomplete-command-name-function) eshell-cmpl-command-name-function)
+    (set (make-local-variable 'pcomplete-default-completion-function) eshell-default-completion-function)
+    (set (make-local-variable 'pcomplete-parse-arguments-function) 'eshell-complete-parse-arguments)
+    (set (make-local-variable 'pcomplete-file-ignore) eshell-cmpl-file-ignore)
+    (set (make-local-variable 'pcomplete-dir-ignore) eshell-cmpl-dir-ignore)
+    (set (make-local-variable 'pcomplete-ignore-case) eshell-cmpl-ignore-case)
+    (set (make-local-variable 'pcomplete-autolist) eshell-cmpl-autolist)
+    (set (make-local-variable 'pcomplete-suffix-list) eshell-cmpl-suffix-list)
+    (set (make-local-variable 'pcomplete-recexact) eshell-cmpl-recexact)
+    (set (make-local-variable 'pcomplete-man-function) eshell-cmpl-man-function)
+    (set (make-local-variable 'pcomplete-compare-entry-function) eshell-cmpl-compare-entry-function)
+    (set (make-local-variable 'pcomplete-expand-before-complete) eshell-cmpl-expand-before-complete)
+    (set (make-local-variable 'pcomplete-cycle-completions) eshell-cmpl-cycle-completions)
+    (set (make-local-variable 'pcomplete-cycle-cutoff-length) 0)
+    (set (make-local-variable 'pcomplete-restore-window-delay) 0)
+    (set (make-local-variable 'pcomplete-use-paring) eshell-cmpl-use-paring)
+    ;; `comint-file-name-quote-list' should only be set after all the
+    ;; load-hooks for any other extension modules have been run, which
+    ;; is true at the time `eshell-mode-hook' is run
+    (add-hook 'eshell-mode-hook
+              (function
+               (lambda ()
+                 (set (make-local-variable 'comint-file-name-quote-list)
+                      eshell-special-chars-outside-quoting))) nil t)
+    (add-hook 'pcomplete-quote-arg-hook 'eshell-quote-backslash nil t)
+    (define-key eshell-mode-map [(meta tab)] 'helm-lisp-completion-at-point)
+    (define-key eshell-mode-map [(meta control ?i)] 'helm-lisp-completion-at-point)
+    (define-key eshell-command-map [(meta ?h)] 'eshell-completion-help)
+    (define-key eshell-command-map [tab] 'pcomplete-expand-and-complete)
+    (define-key eshell-command-map [(control ?i)] 'pcomplete-expand-and-complete)
+    (define-key eshell-command-map [space] 'pcomplete-expand)
+    (define-key eshell-command-map [? ] 'pcomplete-expand)
+    (define-key eshell-mode-map [tab] 'helm-esh-pcomplete)
+    (define-key eshell-mode-map [(control ?i)] 'helm-esh-pcomplete)
+    (add-hook 'completion-at-point-functions #'pcomplete-completions-at-point nil t)
+    (define-key eshell-mode-map [(meta ??)] 'pcomplete-list)
+    (message "my-eshell-cmpl-initialize loaded dupa delay!"))
+
   (add-hook 'eshell-mode-hook
             (lambda ()
-              (eshell-cmpl-initialize)
-              (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
-              (define-key eshell-mode-map [remap eshell-complete-lisp-symbol] 'helm-lisp-completion-at-point)
+              (my-eshell-cmpl-initialize)
               (define-key eshell-mode-map (kbd "M-l") 'helm-eshell-history)
               (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
+              (set (make-local-variable 'company-idle-delay) nil)
               ))
 
   (defun eshell/clear ()
@@ -878,15 +928,13 @@ you should place your code here."
       (erase-buffer)
       (eshell-send-input)))
 
-  (setq eshell-save-history-on-exit t)
-
   ;; eshell here
   (defun eshell-here ()
     "Opens up a new shell in the directory associated with the
     current buffer's file. The eshell is renamed to match that
     directory to make multiple eshell windows easier."
     (interactive)
-    (let* ((height (/ (window-total-height) 3)))
+    (let* ((height (/ (window-total-height) 2)))
       (split-window-vertically (- height))
       (other-window 1)
       (eshell "new")
@@ -984,6 +1032,7 @@ you should place your code here."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(avy-all-windows t)
+ '(company-idle-delay nil)
  '(fzf/window-height 50)
  '(helm-buffer-max-length nil)
  '(helm-display-header-line nil)
@@ -993,6 +1042,6 @@ you should place your code here."
  '(lsp-ui-doc-include-signature t)
  '(lsp-ui-sideline-delay 0.5)
  '(package-selected-packages
-   '(yasnippet-snippets powerline test-simple loc-changes load-relative tablist org-category-capture alert log4e gntp simple-httpd json-snatcher json-reformat parent-mode request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flx magit-popup with-editor iedit anzu goto-chg undo-tree sbt-mode scala-mode autothemer web-completion-data dash-functional tern eclim inflections edn multiple-cursors paredit peg eval-sexp-fu highlight queue bind-map bind-key packed auctex spinner f s dash pkg-info epl avy async auto-complete popup evil ycmd flycheck git-commit fzf elixir-mode ghub sesman clojure-mode smartparens company helm-core skewer-mode js2-mode hydra realgud helm yasnippet pythonic org-plus-contrib cider anaconda-mode lsp-mode markdown-mode projectile magit toml-mode racer flycheck-rust cargo rust-mode company-lsp lsp-python zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))
- '(pcomplete-command-completion-function 'helm-company)
- '(powerline-default-separator 'alternate))
+   (quote
+    (yasnippet-snippets powerline test-simple loc-changes load-relative tablist org-category-capture alert log4e gntp simple-httpd json-snatcher json-reformat parent-mode request haml-mode gitignore-mode fringe-helper git-gutter+ git-gutter flyspell-correct pos-tip flx magit-popup with-editor iedit anzu goto-chg undo-tree sbt-mode scala-mode autothemer web-completion-data dash-functional tern eclim inflections edn multiple-cursors paredit peg eval-sexp-fu highlight queue bind-map bind-key packed auctex spinner f s dash pkg-info epl avy async auto-complete popup evil ycmd flycheck git-commit fzf elixir-mode ghub sesman clojure-mode smartparens company helm-core skewer-mode js2-mode hydra realgud helm yasnippet pythonic org-plus-contrib cider anaconda-mode lsp-mode markdown-mode projectile magit toml-mode racer flycheck-rust cargo rust-mode company-lsp lsp-python zenburn-theme zen-and-art-theme yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode sql-indent spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate golden-ratio gnuplot glsl-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy flyspell-correct-helm flycheck-ycmd flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-ycmd company-web company-tern company-statistics company-shell company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(powerline-default-separator (quote alternate)))
