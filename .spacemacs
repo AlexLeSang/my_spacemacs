@@ -338,6 +338,7 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  (add-to-list 'load-path "~/.emacs.d/private/local")
   (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
@@ -350,7 +351,6 @@ you should place your code here."
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
   (defun clang-format-bindings ()
-    (setq helm-buffer-max-length nil)
     (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
     (define-key spacemacs-c-mode-map "," 'clang-format-region)
     (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
@@ -412,7 +412,7 @@ you should place your code here."
   (spacemacs/toggle-transparency)
   ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
-  (setq avy-timeout-seconds 0.35)
+  (setq avy-timeout-seconds 0.5)
   (global-auto-revert-mode 1)
 
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
@@ -506,15 +506,6 @@ you should place your code here."
     (define-key spacemacs-c++-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
     (define-key spacemacs-c++-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
     ;; New keybindings for dumb jump elixir mode
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") 'dumb-jump-go)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'dumb-jump-back)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "ge") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gq") 'dumb-jump-quick-look)
     ;; gtags
     ;; New keybindings c
     (define-key spacemacs-c-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
@@ -576,9 +567,9 @@ you should place your code here."
   (eval-after-load 'projectile
     '(progn
        (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+       (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
        (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
        (setq projectile-enable-caching t)
-       (setq projectile-generic-command "find -L . -maxdepth 8 -type f -print0")
        )
     )
 
@@ -629,13 +620,15 @@ you should place your code here."
   ;; If you prefer fuzzy matching
   (setq helm-swoop-use-fuzzy-match t)
 
+
   (eval-after-load 'company
     '(progn
        (setq company-minimum-prefix-length 1)
-       (setq company-idle-delay nil)
+       (setq company-idle-delay 0.5)
        (setq company-show-numbers t)
-       (setq company-tooltip-limit 15)
+       (setq company-tooltip-limit 10)
        (setq company-auto-complete t)
+       ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
        (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
        (setq company-auto-complete-chars (quote (40 41 34 36 60 62 124 33)))
 
@@ -643,8 +636,13 @@ you should place your code here."
        (define-key company-active-map (kbd "M-p") nil)
        (define-key company-active-map (kbd "C-n") #'company-select-next)
        (define-key company-active-map (kbd "C-p") #'company-select-previous)
-       (define-key company-mode-map (kbd "C-i") 'helm-company)
-       (define-key company-active-map (kbd "C-i") 'helm-company)))
+       ;; (define-key company-mode-map (kbd "C-i") 'helm-company)
+       ;; (define-key company-active-map (kbd "C-i") 'helm-company)
+       ;; (define-key company-mode-map (kbd "C-i") 'company-capf)
+       ;; (define-key company-active-map (kbd "C-i") 'helm-company)
+       (define-key company-mode-map (kbd "<C-tab>") 'helm-company)
+       (define-key company-mode-map (kbd "C-i") 'company-capf)
+       ))
 
   ;; translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
@@ -697,9 +695,31 @@ you should place your code here."
                                 )
             )
 
+  ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "d") 'alchemist-goto-definition-at-point)
+
+
   (add-hook 'elixir-mode-hook
             (lambda ()
-              (setq flycheck-checker 'elixir-credo)
+              (setq flycheck-checker 'lsp-ui)
+              (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
+              ;; xref elixir
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+              ;; Lps ui peek
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
+              ;; Dumb jump
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
               ))
 
   (eval-after-load 'anaconda-mode
@@ -716,8 +736,8 @@ you should place your code here."
     '(progn
        (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
        (setq ycmd-force-semantic-completion t)
-       (add-hook 'c++-mode-hook 'ycmd-mode)
-       (add-hook 'c-mode-hook 'ycmd-mode)
+       ;; (add-hook 'c++-mode-hook 'ycmd-mode)
+       ;; (add-hook 'c-mode-hook 'ycmd-mode)
        ;; (add-hook 'python-mode-hook 'ycmd-mode)
        (add-hook 'text-mode 'ycmd-mode)
        ;; Remove old keybindings
@@ -758,15 +778,9 @@ you should place your code here."
        )
     )
 
-  (setq company-backends-python-mode '(
-                                       (:sorted company-lsp :with company-yasnippet company-dabbrev)
-                                       )
-        )
+  (setq company-backends-python-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
 
-  (setq company-backends-c-mode-common '(
-                                         (:sorted company-lsp :with company-yasnippet company-dabbrev)
-                                         )
-        )
+  (setq company-backends-c-mode-common '((company-lsp :with company-dabbrev-code)))
 
   (setq company-transformers '(spacemacs//company-transformer-cancel
                                company-sort-by-backend-importance))
@@ -816,11 +830,27 @@ you should place your code here."
   (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
 
-  (eval-after-load 'alchemist
-    '(progn
-       (define-key spacemacs-elixir-mode-map-prefix (kbd "d") 'alchemist-goto-definition-at-point)
-       )
+  ;; Elixir
+  (require 'elixir-mode)
+  (require 'lsp-mode)
+
+  (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
+  (require 'lsp-elixir)
+
+  (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
+
+  (with-eval-after-load 'lsp-elixir
+    (setq lsp-elixir-ls-command "sh")
+    (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
+    ;; (lsp-define-stdio-client
+    ;;  lsp-elixir
+    ;;  "elixir"
+    ;;  ;; lsp-elixir--get-root
+    ;;  #'projectile-project-root
+    ;;  (lsp-elixir--ls-command))
     )
+
+  (add-hook 'elixir-mode-hook (lambda () (add-hook 'before-save-hook 'lsp-format-buffer)))
 
   (setq org-agenda-files (list
                           "./org/work.org"))
@@ -835,10 +865,11 @@ you should place your code here."
   (setq eshell-history-size 10000)
   (add-hook 'eshell-mode-hook
             (lambda ()
-              (setq eshell-cmpl-ignore-case t)
               (eshell-cmpl-initialize)
               (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete)
               (define-key eshell-mode-map [remap eshell-complete-lisp-symbol] 'helm-lisp-completion-at-point)
+              (define-key eshell-mode-map (kbd "M-l") 'helm-eshell-history)
+              (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
               ))
 
   (defun eshell/clear ()
@@ -900,7 +931,9 @@ you should place your code here."
   ;; cquery
   (require 'lsp-mode)
   (require 'cquery)
-  (setq cquery-executable "/home/halushko/Projects/cquery/build/release/bin/cquery")
+  ;; (setq cquery-executable "/home/halushko/Projects/cquery/build/cquery")
+  ;; (setq cquery-executable "/home/halushko/Projects/cquery/cquery")
+  (setq cquery-executable "/home/halushko/Projects/cquery-tag/cquery/build/cquery")
   (setq cquery-extra-args '("--log-file=/tmp/cq.log"))
 
   (with-eval-after-load 'projectile
