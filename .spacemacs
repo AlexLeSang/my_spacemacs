@@ -1079,9 +1079,26 @@ you should place your code here."
 
   (add-hook 'rust-mode-hook #'flycheck-mode)
 
+  (setq mark-ring-max 128)
+  (setq global-mark-ring-max 128)
+
+  (with-eval-after-load 'google-this
+    (setq google-this-keybind nil)
+    (spacemacs/set-leader-keys "sws" 'google-this-search)
+    (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
+    )
   ;; google this
-  ;;(require 'google-this)
-  ;; (google-this-mode 1)
+  (require 'google-this)
+  (google-this-mode 1)
+
+
+  ;; crystal
+  (add-hook 'crystal-mode-hook
+            (lambda ()
+              (setq flycheck-checker 'lsp-ui)
+              (setq company-backends-crystal-mode '((company-lsp :with company-dabbrev-code)))
+              )
+            )
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
