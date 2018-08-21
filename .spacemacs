@@ -31,16 +31,12 @@ values."
      elixir
      extra-langs
      html
-     graphviz
      octave
-     java
      scala
-     ;; cscope
      vimscript
      shell-scripts
-     sql
+     crystal
      fasd
-     shaders
      (latex
       :variables
       latex-enable-auto-fill nil
@@ -120,7 +116,6 @@ values."
       ibuffer-group-buffers-by 'projects
       )
      themes-megapack
-     crystal
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
