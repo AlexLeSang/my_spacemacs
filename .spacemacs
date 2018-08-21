@@ -129,6 +129,7 @@ values."
                                                     ccls
                                                     helm-xref lsp-ui fzf
                                                     yasnippet-snippets
+                                                    helm-bm
                                                     bm
                                                     google-this
                                                     )
@@ -1039,10 +1040,10 @@ you should place your code here."
     (spacemacs/set-leader-keys "sws" 'google-this-search)
     (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
     )
+
   ;; google this
   (require 'google-this)
   (google-this-mode 1)
-
 
   ;; crystal
   (add-hook 'crystal-mode-hook
@@ -1051,6 +1052,14 @@ you should place your code here."
               (setq company-backends-crystal-mode '((company-lsp :with company-dabbrev-code)))
               )
             )
+
+  ;; helm-bm
+  (spacemacs/set-leader-keys "fb" nil)
+  (spacemacs/set-leader-keys "fbF" 'helm-filtered-bookmarks)
+  (spacemacs/set-leader-keys "fbf" 'helm-bm)
+  (spacemacs/set-leader-keys "fbt" 'bm-toggle)
+  (spacemacs/set-leader-keys "fbn" 'bm-next)
+  (spacemacs/set-leader-keys "fbp" 'bm-previous)
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
