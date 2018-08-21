@@ -576,13 +576,7 @@ you should place your code here."
        (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
        (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
        (setq projectile-enable-caching t)
-       (setq projectile-generic-command "fd -0")
-
-       (projectile-register-project-type 'cmake-exercism '(".solution.json")
-                                         :configure "cmake %s"
-                                         :compile "cmake --build ."
-                                         :test "the test"
-                                         :test-suffix "_test.cpp")
+       (setq projectile-generic-command "fd -0 -t f")
        )
     )
 
