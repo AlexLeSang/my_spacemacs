@@ -412,7 +412,7 @@ you should place your code here."
   (spacemacs/toggle-truncate-lines-off)
   (spacemacs/toggle-indent-guide-on)
   ;; (spacemacs/toggle-golden-ratio-on)
-  (spacemacs/toggle-camel-case-motion-globally-on)
+  ;; (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
