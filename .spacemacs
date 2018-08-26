@@ -344,6 +344,8 @@ you should place your code here."
   (setq gc-cons-threshold 8000000)
 
   (defun my-minibuffer-setup-hook ()
+    (setq helm-buffer-max-length nil)
+    (set-face-attribute 'helm-source-header nil :height 0.1)
     (setq gc-cons-threshold most-positive-fixnum))
 
   (defun my-minibuffer-exit-hook ()
@@ -489,48 +491,9 @@ you should place your code here."
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gR") nil)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") nil)
     (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") nil)
-    ;; New keybindings for dumb jump c mode
-    (define-key spacemacs-c-mode-map-prefix (kbd "dg") 'dumb-jump-go)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-c-mode-map-prefix (kbd "du") 'dumb-jump-back)
-    (define-key spacemacs-c-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
-    ;; New keybindings for dumb jump c++ mode
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dg") 'dumb-jump-go)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "du") 'dumb-jump-back)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
     ;; New keybindings for dumb jump elixir mode
-    ;; gtags
+
     ;; New keybindings c
-    (define-key spacemacs-c-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-    (define-key spacemacs-c-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
-    ;; New keybindings c++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
     ;; ycmd
     ;; C
     ;; (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
@@ -544,26 +507,6 @@ you should place your code here."
     ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
     ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
     ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
-    ;; xref C++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") 'xref-find-references)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-    ;; peek
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "su") 'evil-jump-backward)
-    ;; C
-    (define-key spacemacs-c-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gr") 'xref-find-references)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-    ;; peek
-    (define-key spacemacs-c-mode-map-prefix (kbd "pd") 'lsp-ui-peek-find-definitions)
-    (define-key spacemacs-c-mode-map-prefix (kbd "pr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c-mode-map-prefix (kbd "ps") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key spacemacs-c-mode-map-prefix (kbd "pu") 'evil-jump-backward)
     )
 
   (eval-after-load 'projectile
@@ -573,6 +516,7 @@ you should place your code here."
        (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
        (setq projectile-enable-caching t)
        (setq projectile-generic-command "fd -0 -t f")
+       (setq projectile-project-compilation-cmd "")
        )
     )
 
@@ -830,11 +774,23 @@ you should place your code here."
     )
 
   (defun update-code-navigation-c ()
-    (define-key evil-normal-state-map (kbd "gd") 'lsp-ui-peek-find-definitions)
-    (define-key evil-normal-state-map (kbd "gr") 'lsp-ui-peek-find-references)
+    (define-key evil-normal-state-map (kbd "gd") 'xref-find-definitions)
+    (define-key evil-normal-state-map (kbd "gr") 'xref-find-references)
+    (define-key evil-normal-state-map (kbd "s") nil)
+    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key evil-normal-state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key evil-normal-state-map (kbd "sb") 'ccls/base)
+    (define-key evil-normal-state-map (kbd "sc") 'ccls/callers)
+    (define-key evil-normal-state-map (kbd "sR") 'lsp-ui-peek-find-references)
+    (define-key evil-normal-state-map (kbd "sm") 'ccls/references-macro)
+    (define-key evil-normal-state-map (kbd "sa") 'ccls/references-address)
+    (define-key evil-normal-state-map (kbd "sr") 'ccls/references-read)
+    (define-key evil-normal-state-map (kbd "sw") 'ccls/references-write)
+    (define-key evil-normal-state-map (kbd "sn") 'ccls/references-not-call)
+    (define-key evil-normal-state-map (kbd "su") 'evil-jump-backward)
     (define-key evil-normal-state-map (kbd "gR") 'lsp-rename)
     (define-key evil-normal-state-map (kbd "gu") 'evil-jump-backward)
-    (define-key evil-normal-state-map (kbd "gF") 'rtags-fix-fixit-at-point)
     (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
     (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
     )
@@ -974,10 +930,8 @@ you should place your code here."
   (with-eval-after-load 'ccls
     (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
     (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
-    (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+    (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :highlight (:lsRanges true)))
     ;; (setq ccls-sem-highlight-method 'overlay)
-    ;; (add-hook 'c++-mode-hook 'ccls//enable)
-    ;; (add-hook 'c-mode-hook 'ccls//enable)
     )
 
   ;; ;; Log file
@@ -989,21 +943,176 @@ you should place your code here."
     (add-hook 'c-mode-hook 'ccls//enable)
     )
 
-  ;; (ccls-xref-find-custom "$ccls/base")
-  ;; (ccls-xref-find-custom "$ccls/callers")
-  ;;                                       ; Use lsp-goto-implementation or lsp-ui-peek-find-implementation for derived types/functions
-  ;; (ccls-xref-find-custom "$ccls/vars")
+  (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
+  (defun ccls/callers () (interactive) (lsp-ui-peek-find-custom 'callers "$ccls/callers"))
+  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" (plist-put (lsp--text-document-position-params) :kind kind)))
+  (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
+  (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
 
-  ;; (setq ccls-sem-highlight-method 'font-lock)
-  ;; ;; alternatively,
+  ;; The meaning of :role corresponds to https://github.com/maskray/ccls/blob/master/src/symbol.h
 
-  ;; ;; For rainbow semantic highlighting
-  ;; (ccls-use-default-rainbow-sem-highlight)
+  ;; References w/ Role::Address bit (e.g. variables explicitly being taken addresses)
+  (defun ccls/references-address ()
+    (interactive)
+    (lsp-ui-peek-find-custom
+     'address "textDocument/references"
+     (plist-put (lsp--text-document-position-params) :context
+                '(:role 128))))
 
-  ;; Alternatively, use lsp-ui-peek interface
-  ;; (lsp-ui-peek-find-custom 'base "$ccls/base")
-  ;; (lsp-ui-peek-find-custom 'callers "$ccls/callers")
-  ;; (lsp-ui-peek-find-custom 'random "$ccls/random") ;; jump to a random declaration
+  ;; References w/ Role::Dynamic bit (macro expansions)
+  (defun ccls/references-macro ()
+    (interactive)
+    (lsp-ui-peek-find-custom
+     'address "textDocument/references"
+     (plist-put (lsp--text-document-position-params) :context
+                '(:role 64))))
+
+  ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
+  (defun ccls/references-not-call ()
+    (interactive)
+    (lsp-ui-peek-find-custom
+     'address "textDocument/references"
+     (plist-put (lsp--text-document-position-params) :context
+                '(:excludeRole 32))))
+
+  ;; References w/ Role::Read
+  (defun ccls/references-read ()
+    (interactive)
+    (lsp-ui-peek-find-custom
+     'read "textDocument/references"
+     (plist-put (lsp--text-document-position-params) :context
+                '(:role 8))))
+
+  ;; References w/ Role::Write
+  (defun ccls/references-write ()
+    (interactive)
+    (lsp-ui-peek-find-custom
+     'write "textDocument/references"
+     (plist-put (lsp--text-document-position-params) :context
+                '(:role 16))))
+
+  ;; xref-find-apropos (workspace/symbol)
+
+  (defun my/highlight-pattern-in-text (pattern line)
+    (when (> (length pattern) 0)
+      (let ((i 0))
+        (while (string-match pattern line i)
+          (setq i (match-end 0))
+          (add-face-text-property (match-beginning 0) (match-end 0) 'isearch t line)
+          )
+        line)))
+
+  (with-eval-after-load 'lsp-methods
+  ;;; Override
+    ;; This deviated from the original in that it highlights pattern appeared in symbol
+    (defun lsp--symbol-information-to-xref (pattern symbol)
+      "Return a `xref-item' from SYMBOL information."
+      (let* ((location (gethash "location" symbol))
+             (uri (gethash "uri" location))
+             (range (gethash "range" location))
+             (start (gethash "start" range))
+             (name (gethash "name" symbol)))
+        (xref-make (format "[%s] %s"
+                           (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+                           (my/highlight-pattern-in-text (regexp-quote pattern) name))
+                   (xref-make-file-location (string-remove-prefix "file://" uri)
+                                            (1+ (gethash "line" start))
+                                            (gethash "character" start)))))
+
+    (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
+      (let ((symbols (lsp--send-request (lsp--make-request
+                                         "workspace/symbol"
+                                         `(:query ,pattern)))))
+        (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
+    )
+
+  (defun my-c-hook ()
+    (setq flycheck-checker 'lsp-ui)
+    (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    ;; New keybindings for dumb jump c mode
+    (define-key spacemacs-c-mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-c-mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key spacemacs-c-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    ;; New keybindings for dumb jump c++ mode
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    ;; gtags
+    (define-key spacemacs-c-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key spacemacs-c-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key spacemacs-c-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
+    ;; New keybindings c++
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
+    ;; ;; xref C++
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") 'xref-find-references)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") 'ccls/xref-callers)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gb") 'ccls/xref-base)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+    ;; ;; peek
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sb") 'ccls/base)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sc") 'ccls/callers)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sRm") 'ccls/references-macro)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sRa") 'ccls/references-address)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sRr") 'ccls/references-read)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sRn") 'ccls/references-not-call)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "sRw") 'ccls/references-write)
+    (define-key spacemacs-c++-mode-map-prefix (kbd "su") 'evil-jump-backward)
+    ;; C
+    (define-key spacemacs-c-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gr") 'xref-find-references)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gc") 'ccls/xref-callers)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gb") 'ccls/xref-base)
+    (define-key spacemacs-c-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+    ;; peek
+    (define-key spacemacs-c-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sb") 'ccls/base)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sc") 'ccls/callers)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sc") 'ccls/callers)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sRm") 'ccls/references-macro)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sRa") 'ccls/references-address)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sRr") 'ccls/references-read)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sRn") 'ccls/references-not-call)
+    (define-key spacemacs-c-mode-map-prefix (kbd "sRw") 'ccls/references-write)
+    (define-key spacemacs-c-mode-map-prefix (kbd "su") 'evil-jump-backward)
+    )
+
+  (add-hook 'c++-mode-hook 'my-c-hook)
+  (add-hook 'c-mode-hook 'my-c-hook)
 
   (with-eval-after-load 'projectile
     (setq projectile-project-root-files-top-down-recurring
@@ -1026,6 +1135,7 @@ you should place your code here."
   ;; rust
   (with-eval-after-load 'lsp-mode
     ;; (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls"))
+    (setq xref-prompt-for-identifier nil)
     (setq lsp-rust-rls-command '("rls"))
     (require 'lsp-rust)
     (add-hook 'rust-mode-hook #'lsp-rust-enable))
@@ -1072,8 +1182,8 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-all-windows t)
- '(company-idle-delay nil)
+ '(avy-all-windows t t)
+ '(company-idle-delay nil t)
  '(fzf/window-height 50)
  '(helm-buffer-max-length nil)
  '(helm-display-header-line nil)
@@ -1082,5 +1192,7 @@ you should place your code here."
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
  '(lsp-ui-doc-include-signature t)
  '(lsp-ui-sideline-delay 0.5)
- '(powerline-default-separator (quote alternate))
- )
+ '(package-selected-packages
+   (quote
+    (helm helm-core cider org-plus-contrib flycheck-pycheckers ccls flycheck projectile magit zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-python lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ghub gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+ '(powerline-default-separator (quote alternate)))
