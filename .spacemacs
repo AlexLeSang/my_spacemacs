@@ -102,10 +102,9 @@ values."
       c-c++-default-mode-for-headers 'c++-mode
       )
      (gtags
-      :variables gtags-enable-by-default t
+      :variables gtags-enable-by-default nil
       )
      javascript
-     ;;ycmd
      (python
       :variables
       python-fill-column 119
@@ -340,365 +339,86 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+  ;; Load files from private directory
   (add-to-list 'load-path "~/.emacs.d/private/local")
+
+  ;; Set memory threshold
   (setq gc-cons-threshold 8000000)
+
+
+  ;; Minibuffer setup
+  (defun my-minibuffer-exit-hook ()
+    (setq gc-cons-threshold 8000000))
 
   (defun my-minibuffer-setup-hook ()
     (setq helm-buffer-max-length nil)
     (set-face-attribute 'helm-source-header nil :height 0.1)
     (setq gc-cons-threshold most-positive-fixnum))
 
-  (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 9000000))
-
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
-  (defun clang-format-bindings ()
-    (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
-    (define-key spacemacs-c-mode-map "," 'clang-format-region)
-    (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
-    (define-key spacemacs-c++-mode-map "," 'clang-format-region)
-    )
 
-  (add-hook 'c++-mode-hook 'clang-format-bindings)
-  (add-hook 'c-mode-hook 'clang-format-bindings)
-
-  ;; Org
-  (eval-after-load 'org
-    '(progn
-       (setq org-clock-persist 'history)
-       (org-clock-persistence-insinuate)
-       )
-    )
-
-  (require 'realgud)
-  (eval-after-load 'realgud
-    '(progn
-       (define-key spacemacs-python-mode-map-prefix "dD" 'realgud:pdb)
-       (define-key spacemacs-python-mode-map-prefix "db" 'realgud:cmd-break)
-       (define-key spacemacs-python-mode-map-prefix "dx" 'realgud:cmd-clear)
-       (define-key spacemacs-python-mode-map-prefix "dn" 'realgud:cmd-next-no-arg)
-       (define-key spacemacs-python-mode-map-prefix "ds" 'realgud:cmd-step-no-arg)
-       (define-key spacemacs-python-mode-map-prefix "df" 'realgud:cmd-finish)
-       (define-key spacemacs-python-mode-map-prefix "dc" 'realgud:cmd-continue)
-       (define-key spacemacs-python-mode-map-prefix "de" 'realgud:cmd-eval-region)
-       (define-key spacemacs-python-mode-map-prefix "dr" 'realgud:cmd-restart)
-       (define-key spacemacs-python-mode-map-prefix "dU" 'realgud:cmd-until)
-       (define-key spacemacs-python-mode-map-prefix "du" 'realgud:cmd-older-frame)
-       (define-key spacemacs-python-mode-map-prefix "dd" 'realgud:cmd-newer-frame)
-       )
-    )
-
-  (require 'pycoverage)
-  (defun my-coverage ()
-    (interactive)
-    (when (derived-mode-p 'python-mode)
-      (progn
-        (linum-mode)
-        (pycoverage-mode))))
-
-  (require 'flycheck-mypy)
-  (add-hook 'python-mode-hook 'flycheck-mode)
-
-  (setq ahs-idle-timer 0)
-  (setq vc-follow-symlinks t)
-  ;; (spacemacs/toggle-transparency)
-  ;; (spacemacs/toggle-vi-tilde-fringe-off)
+  ;; Spacemacs switches
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-truncate-lines-off)
   (spacemacs/toggle-indent-guide-on)
-  ;; (spacemacs/toggle-golden-ratio-on)
-  ;; (spacemacs/toggle-camel-case-motion-globally-on)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
   ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
+  (setq dotspacemacs-large-file-size 50)
+
+  (setq fancy-battery-show-percentage nil)
+
+  ;; Misc settings
   (setq avy-timeout-seconds 0.5)
+
+  (indent-guide-global-mode t)
+
   (global-auto-revert-mode 1)
 
-  (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
-  (setenv "NO_PROXY" "127.0.0.1")
-  (setenv "no_proxy" "127.0.0.1")
-  (setq dotspacemacs-large-file-size 50)
-  (indent-guide-global-mode t)
-  (global-company-mode t)
-  (add-hook 'company-mode-hook
-            (lambda()
-              (defun my/downcase-first-char (&optional string)
-                "Downcase only the first character of the input STRING."
-                (when (and string (> (length string) 0))
-                  (let ((first-char (substring string nil 1))
-                        (rest-str   (substring string 1)))
-                    (concat (downcase first-char) rest-str))))
-              ))
-
-  (setq company-dabbrev-downcase nil)
-  (setq dabbrev-case-fold-search nil)
-  (setq dabbrev-upcase-means-case-search t)
-
-  (setq helm-grep-ag-command "ag --follow --line-numbers -S --hidden --color --nogroup %s %s %s")
-  ;; Avy settings
-  (setq avy-all-windows t)
-
-  ;; Semantic
-  (setq hlt-auto-faces-flag t)
-
-  ;; Term
-  (defun bb/setup-term-mode ()
-    (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+  (setq ahs-idle-timer 0)
 
   (auto-fill-mode nil)
 
-  (defun bb/send-C-r ()
-    (interactive)
-    (term-send-raw-string "\C-r"))
+  (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 
-  (add-hook 'term-mode-hook 'bb/setup-term-mode)
+  (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
-  (with-eval-after-load 'ggtags
-    ;; Remove old key c++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gl") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gn") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gp") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gf") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gi") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gs") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gS") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gR") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
-    ;; Remove old key elixir
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gc") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gl") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gn") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gp") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gf") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gi") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gs") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gS") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gR") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gG") nil)
-    (define-key spacemacs-elixir-mode-map-prefix (kbd "gg") nil)
-    ;; New keybindings for dumb jump elixir mode
+  (setq mark-ring-max 128)
 
-    ;; New keybindings c
-    ;; ycmd
-    ;; C
-    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
-    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-    ;; (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
-    ;; C++
-    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
-    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-    ;; (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
-    )
+  (setq global-mark-ring-max 128)
 
-  (eval-after-load 'projectile
-    '(progn
-       (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
-       (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
-       (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
-       (setq projectile-enable-caching t)
-       (setq projectile-generic-command "fd -0 -t f")
-       (setq projectile-project-compilation-cmd "")
-       )
-    )
 
-  ;; Go to the opposite side of line from the end or beginning of line
-  (setq helm-swoop-move-to-line-cycle t)
-
-  ;; Optional face for line numbers
-  ;; Face name is `helm-swoop-line-number-face`
-  (setq helm-swoop-use-line-number-face t)
-
-  ;; If you prefer fuzzy matching
-  (setq helm-swoop-use-fuzzy-match t)
-
-  (eval-after-load 'company
-    '(progn
-       (setq company-minimum-prefix-length 1)
-       (setq company-show-numbers t)
-       (setq company-tooltip-limit 10)
-       (setq company-auto-complete t)
-       (setq company-idle-delay 0.4)
-       (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-       (setq company-auto-complete-chars nil)
-
-       ;; (backtab . spacemacs//company-complete-common-or-cycle-backward)
-       ;; (S-tab . spacemacs//company-complete-common-or-cycle-backward)
-       (define-key company-active-map (kbd "<S-tab>") nil)
-       (define-key company-active-map (kbd "<tab>") nil)
-       (define-key company-active-map (kbd "<backtab>") nil)
-       (define-key company-active-map (kbd "M-n") nil)
-       (define-key company-active-map (kbd "M-p") nil)
-       (define-key company-active-map (kbd "C-n") #'company-select-next)
-       (define-key company-active-map (kbd "C-p") #'company-select-previous)
-       ;; (define-key company-mode-map (kbd "<tab>") 'helm-company)
-       (define-key company-active-map (kbd "<tab>") 'helm-company)
-       (remove-hook 'eshell-directory-change-hook
-                    'spacemacs//toggle-shell-auto-completion-based-on-path)
-       )
-    )
-
-  ;; translate C-h to backspace, and M-h to C-h
+  ;; Translations
+  ;; Translate C-h to backspace, and M-h to C-h
   (keyboard-translate ?\C-h ?\C-?)
   (define-key key-translation-map (kbd "M-h") (kbd "C-h"))
 
-  ;; This snippet allows you to run clang-format before saving
-  ;; given the current file as the correct filetype.
-  ;; This relies on the c-c++ layer being enabled.
-  (defun clang-format-for-filetype ()
-    "Run clang-format if the current file has a file extensions in the filetypes list."
-    (let ((filetypes '("c" "cpp" "h" "hpp")))
-      (when (member (file-name-extension (buffer-file-name)) filetypes)
-        (clang-format-buffer))))
+  (modify-syntax-entry ?_ "w")
 
-  ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
-  ;; what this line means
-  ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
+  ;; Version control
+  (setq vc-follow-symlinks t)
   (setq-default git-enable-magit-svn-plugin t)
   (add-hook 'magit-mode-hook 'turn-off-evil-snipe-override-mode)
 
-  ;; (eval-after-load 'evil
-  ;;   '(progn
-  ;;      (defun my-save-if-bufferfilename ()
-  ;;        (if (buffer-file-name)
-  ;;            (progn (save-buffer) )
-  ;;          (message "no file is associated to this buffer: do nothing")
-  ;;          )
-  ;;        )
-  ;;      (add-hook 'hybrid-mode-insert-state-exit-hook 'my-save-if-bufferfilename)
-  ;;      )
-  ;;   )
-
-  ;; Python
-  ;; http://pythoscope.org/
-  (setq python-shell-interpreter-args "-i")
-  (setq python-shell-interpreter "python")
-
-  (require 'flycheck-pycheckers)
-  (with-eval-after-load 'flycheck
-    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
-    (setq flycheck-python-pylint-executable "pylint")
-    (setq flycheck-display-errors-delay 1.0)
-    )
-
-  (add-hook 'python-mode-hook (lambda ()
-                                (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
-                                (setq flycheck-checker 'lsp-ui)
-                                )
-            )
-
-  ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "d") 'alchemist-goto-definition-at-point)
-
-
-  (add-hook 'elixir-mode-hook
-            (lambda ()
-              (setq flycheck-checker 'lsp-ui)
-              (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
-              ;; xref elixir
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-              ;; Lps ui peek
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
-              ;; Dumb jump
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-              ))
-
-  (eval-after-load 'anaconda-mode
-    '(progn
-       (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
-       (define-key spacemacs-python-mode-map-prefix (kbd "ag") 'anaconda-mode-find-definitions)
-       (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
-       (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
-       (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
-       )
-    )
-
-  (with-eval-after-load 'anaconda-mode
-    (remove-hook 'anaconda-mode-response-read-fail-hook
-                 'anaconda-mode-show-unreadable-response))
-
+  ;; Magit
   (with-eval-after-load 'magit
     (setq magit-revision-show-gravatars nil)
     )
 
-  (eval-after-load 'yasnippet
-    '(progn
-       (define-key yas-keymap (kbd "TAB") nil)
-       (define-key yas-keymap (kbd "<tab>") nil)
-       (define-key yas-keymap (kbd "<S-tab>") nil)
-       (define-key yas-keymap (kbd "<backtab>") nil)
-       (define-key yas-keymap (kbd "C-n") #'yas-next-field)
-       (define-key yas-keymap (kbd "C-p") #'yas-prev-field)
-       )
+
+  ;; Org
+  (with-eval-after-load 'org
+    (setq org-agenda-files (list "./org/work.org"))
+    (setq org-clock-persist 'history)
+    (org-clock-persistence-insinuate)
     )
 
-  (setq company-backends-python-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
-
-  (setq company-backends-c-mode-common '((company-lsp :with company-dabbrev-code)))
-
-  (setq company-transformers '(spacemacs//company-transformer-cancel
-                               company-sort-by-backend-importance))
-
-  ;; pip install --user rope ropemacs
-  ;; pip install -e "git+https://github.com/pinard/Pymacs.git#egg=Pymacs" --user
-  ;; (add-to-list 'load-path "~/.emacs.d/src/pymacs")
-  ;; (require 'pymacs)
-  ;; (setq pymacs-python-command "python")
-  ;; (pymacs-load "ropemacs" "rope-")
-  ;; (setq ropemacs-confirm-saving t)
-
-  ;; (eval-after-load 'ropemacs
-  ;;   '(progn
-  ;;      (define-key spacemacs-python-mode-map-prefix "ro" 'rope-open-project)
-  ;;      (define-key spacemacs-python-mode-map-prefix "rv" 'rope-extract-variable)
-  ;;      (define-key spacemacs-python-mode-map-prefix "rm" 'rope-extract-method)
-  ;;      (define-key spacemacs-python-mode-map-prefix "rr" 'rope-rename)
-  ;;      (define-key spacemacs-python-mode-map-prefix "ri" 'rope-inline)
-  ;;      (define-key spacemacs-python-mode-map-prefix "rcf" 'rope-cleate-file)
-  ;;      )
-  ;;   )
-  (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
-
-  (eval-after-load 'helm
-    '(progn
-       (spacemacs/set-leader-keys "fz" 'helm-fzf)
-       (setq helm-buffer-max-length nil)
-       ;; (setq helm-display-header-line nil)
-       (set-face-attribute 'helm-source-header nil :height 0.1)
-       ;; (setq helm-candidate-number-limit 100)
-       )
-    )
-
+  ;; Function arguments
   ;; bind evil-args text objects
   (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
   (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
@@ -713,63 +433,193 @@ you should place your code here."
   (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
 
-  ;; Elixir
-  (require 'elixir-mode)
-  (require 'lsp-mode)
 
-  (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
-  (require 'lsp-elixir)
-
-  (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
-
-  (with-eval-after-load 'lsp-elixir
-    (setq lsp-elixir-ls-command "sh")
-    (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
+  ;; Yasnippet
+  (with-eval-after-load 'yasnippet
+    (define-key yas-keymap (kbd "TAB") nil)
+    (define-key yas-keymap (kbd "<tab>") nil)
+    (define-key yas-keymap (kbd "<S-tab>") nil)
+    (define-key yas-keymap (kbd "<backtab>") nil)
+    (define-key yas-keymap (kbd "C-n") #'yas-next-field)
+    (define-key yas-keymap (kbd "C-p") #'yas-prev-field)
     )
 
-  (add-hook 'elixir-mode-hook (lambda () (add-hook 'before-save-hook 'lsp-format-buffer)))
 
-  (setq org-agenda-files (list
-                          "./org/work.org"))
+  ;; Realgud
+  (require 'realgud)
+  (with-eval-after-load 'realgud
+    (define-key spacemacs-python-mode-map-prefix "dD" 'realgud:pdb)
+    (define-key spacemacs-python-mode-map-prefix "db" 'realgud:cmd-break)
+    (define-key spacemacs-python-mode-map-prefix "dx" 'realgud:cmd-clear)
+    (define-key spacemacs-python-mode-map-prefix "dn" 'realgud:cmd-next-no-arg)
+    (define-key spacemacs-python-mode-map-prefix "ds" 'realgud:cmd-step-no-arg)
+    (define-key spacemacs-python-mode-map-prefix "df" 'realgud:cmd-finish)
+    (define-key spacemacs-python-mode-map-prefix "dc" 'realgud:cmd-continue)
+    (define-key spacemacs-python-mode-map-prefix "de" 'realgud:cmd-eval-region)
+    (define-key spacemacs-python-mode-map-prefix "dr" 'realgud:cmd-restart)
+    (define-key spacemacs-python-mode-map-prefix "dU" 'realgud:cmd-until)
+    (define-key spacemacs-python-mode-map-prefix "du" 'realgud:cmd-older-frame)
+    (define-key spacemacs-python-mode-map-prefix "dd" 'realgud:cmd-newer-frame)
+    )
 
+
+  ;; Company
+  (global-company-mode t)
+  (add-hook 'company-mode-hook
+            (lambda()
+              (defun my/downcase-first-char (&optional string)
+                "Downcase only the first character of the input STRING."
+                (when (and string (> (length string) 0))
+                  (let ((first-char (substring string nil 1))
+                        (rest-str   (substring string 1)))
+                    (concat (downcase first-char) rest-str))))
+              ))
+
+  (with-eval-after-load 'company
+    '(progn
+       (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
+       (setq company-dabbrev-downcase nil)
+       ))
+
+  ;; Company
+  (with-eval-after-load 'company
+    (setq company-minimum-prefix-length 1)
+    (setq company-show-numbers t)
+    (setq company-tooltip-limit 10)
+    (setq company-auto-complete t)
+    (setq company-idle-delay 0.4)
+    (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+    (setq company-auto-complete-chars nil)
+
+    (define-key company-active-map (kbd "<S-tab>") nil)
+    (define-key company-active-map (kbd "<tab>") nil)
+    (define-key company-active-map (kbd "<backtab>") nil)
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "<tab>") 'helm-company)
+    (remove-hook 'eshell-directory-change-hook
+                 'spacemacs//toggle-shell-auto-completion-based-on-path)
+    )
+
+  ;; company-lsp
+  (require 'company-lsp)
+  (with-eval-after-load 'company-lsp
+    (push 'company-lsp company-backends)
+    (setq company-lsp-enable-recompletion t)
+    )
+
+
+  ;; Dabbrev
+  (with-eval-after-load 'dabbrev
+    (setq dabbrev-case-fold-search nil)
+    (setq dabbrev-upcase-means-case-search t)
+    )
+
+
+  ;; Projectile
+  (with-eval-after-load 'projectile
+    (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+    (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
+    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
+    (setq projectile-enable-caching t)
+    (setq projectile-generic-command "fd -0 -t f")
+    (setq projectile-project-compilation-cmd "")
+    (setq projectile-project-root-files-top-down-recurring
+          (append '("compile_commands.json"
+                    ".cquery"
+                    ".ccls")
+                  projectile-project-root-files-top-down-recurring))
+    )
+
+
+  ;; Helm
+  (with-eval-after-load 'helm
+    ;; helm ag command
+    (setq helm-grep-ag-command "ag --follow --line-numbers -S --hidden --color --nogroup %s %s %s")
+
+    ;; Go to the opposite side of line from the end or beginning of line
+    (setq helm-swoop-move-to-line-cycle t)
+
+    ;; Optional face for line numbers
+    ;; Face name is `helm-swoop-line-number-face`
+    (setq helm-swoop-use-line-number-face t)
+
+    ;; If you prefer fuzzy matching
+    (setq helm-swoop-use-fuzzy-match t)
+
+    (require 'helm-fzf)
+    (spacemacs/set-leader-keys "fz" 'helm-fzf)
+    (setq helm-buffer-max-length nil)
+    (set-face-attribute 'helm-source-header nil :height 0.1)
+
+    )
+
+
+  ;; xref
+  (with-eval-after-load 'xref
+    (require 'helm-xref)
+    (setq xref-show-xrefs-function 'helm-xref-show-xrefs)
+    )
+
+
+  ;; bm
+  (require 'bm)
+  (with-eval-after-load 'bm
+    ;; helm-bm
+    (require 'helm-bm)
+    (spacemacs/set-leader-keys "fb" nil)
+    (spacemacs/set-leader-keys "fbF" 'helm-filtered-bookmarks)
+    (spacemacs/set-leader-keys "fbf" 'helm-bm)
+    (spacemacs/set-leader-keys "fbt" 'bm-toggle)
+    (spacemacs/set-leader-keys "fbn" 'bm-next)
+    (spacemacs/set-leader-keys "fbp" 'bm-previous)
+    )
+
+
+  ;; google this
+  (require 'google-this)
+  (with-eval-after-load 'google-this
+    (google-this-mode 1)
+    (setq google-this-keybind nil)
+    (spacemacs/set-leader-keys "sws" 'google-this-search)
+    (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
+    )
+
+  ;; Avy
+  (setq avy-all-windows t)
+
+
+  ;; Semantic
+  (setq hlt-auto-faces-flag t)
+
+
+  ;; Term
+  (defun bb/setup-term-mode ()
+    (evil-local-set-key 'insert (kbd "C-r") 'bb/send-C-r))
+
+  (defun bb/send-C-r ()
+    (interactive)
+    (term-send-raw-string "\C-r"))
+
+  (add-hook 'term-mode-hook 'bb/setup-term-mode)
+
+
+  ;; Evil
   (setq evil-move-cursor-back nil)
-  (use-package modern-cpp-font-lock :ensure t)
-  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
-  (setq fancy-battery-show-percentage nil)
 
-  ;; eshell
+  ;; Matlab/Octave
+  (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+
+  ;; Eshell
   (with-eval-after-load 'eshell
     (setq eshell-save-history-on-exit t)
     (setq eshell-history-size 10000)
     )
 
-  (defun update-code-navigation-c ()
-    (define-key evil-normal-state-map (kbd "gd") 'xref-find-definitions)
-    (define-key evil-normal-state-map (kbd "gr") 'xref-find-references)
-    (define-key evil-normal-state-map (kbd "s") nil)
-    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key evil-normal-state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key evil-normal-state-map (kbd "sb") 'ccls/base)
-    (define-key evil-normal-state-map (kbd "sc") 'ccls/callers)
-    (define-key evil-normal-state-map (kbd "sR") 'lsp-ui-peek-find-references)
-    (define-key evil-normal-state-map (kbd "sm") 'ccls/references-macro)
-    (define-key evil-normal-state-map (kbd "sa") 'ccls/references-address)
-    (define-key evil-normal-state-map (kbd "sr") 'ccls/references-read)
-    (define-key evil-normal-state-map (kbd "sw") 'ccls/references-write)
-    (define-key evil-normal-state-map (kbd "sn") 'ccls/references-not-call)
-    (define-key evil-normal-state-map (kbd "su") 'evil-jump-backward)
-    (define-key evil-normal-state-map (kbd "gR") 'lsp-rename)
-    (define-key evil-normal-state-map (kbd "gu") 'evil-jump-backward)
-    (define-key evil-normal-state-map (kbd "ga") 'projectile-find-other-file)
-    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file-other-window)
-    )
-
-  (add-hook 'c-mode-hook #'update-code-navigation-c)
-  (add-hook 'c++-mode-hook #'update-code-navigation-c)
-
-  ;; My eshell-initialize
   (defun my-eshell-cmpl-initialize ()
     "Initialize the completions module."
     (set (make-local-variable 'pcomplete-command-completion-function) eshell-command-completion-function)
@@ -840,12 +690,92 @@ you should place your code here."
 
   (bind-key "C-!" 'eshell-here)
 
-  ;; lsp-mode
+
+  ;; lsp
   (require 'lsp-mode)
+  (with-eval-after-load 'lsp-mode
+    (setq xref-prompt-for-identifier nil)
+    )
+
+
+  ;; lsp ui
+  (with-eval-after-load 'lsp-ui
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    (setq lsp-ui-peek-peek-height 60)
+    (setq lsp-ui-peek-list-width 65)
+    (setq lsp-ui-peek-always-show t)
+    (setq lsp-ui-peek-fontify 'always)
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+    (add-hook 'c-mode-common-hook 'flycheck-mode)
+    )
+
+
+  ;; Rust
+  (add-hook 'rust-mode-hook (lambda ()
+                              (setq lsp-rust-rls-command '("rls"))
+                              (require 'lsp-rust)
+                              (add-hook 'rust-mode-hook #'lsp-rust-enable)
+                              )
+            )
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+
+  ;; Crystal
+  (add-hook 'crystal-mode-hook
+            (lambda ()
+              (setq flycheck-checker 'lsp-ui)
+              (setq company-backends-crystal-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
+              )
+            )
+
+  ;; Python
+  (require 'pycoverage)
+  (defun my-coverage ()
+    (interactive)
+    (when (derived-mode-p 'python-mode)
+      (progn
+        (linum-mode)
+        (pycoverage-mode))))
+
+  (require 'flycheck-mypy)
+  (add-hook 'python-mode-hook 'flycheck-mode)
+
+  (add-hook 'python-mode-hook (lambda ()
+                                (setq company-backends-python-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
+                                ))
+
+  (setq python-shell-interpreter-args "-i")
+  (setq python-shell-interpreter "python")
+
+  (require 'flycheck-pycheckers)
+  (with-eval-after-load 'flycheck
+    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+    (setq flycheck-python-pylint-executable "pylint")
+    (setq flycheck-display-errors-delay 1.0)
+    )
+
+  (defun my-python-checkers ()
+    "Set flycheck checkers, set checker to lsp"
+    (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
+    (setq flycheck-checker 'lsp-ui))
+
+  (add-hook 'python-mode-hook 'my-python-checkers)
+
+  ;; anaconda
+  (with-eval-after-load 'anaconda-mode
+    (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
+    (define-key spacemacs-python-mode-map-prefix (kbd "ag") 'anaconda-mode-find-definitions)
+    (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
+    (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
+    (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
+    )
+
+  (with-eval-after-load 'anaconda-mode
+    (remove-hook 'anaconda-mode-response-read-fail-hook
+                 'anaconda-mode-show-unreadable-response))
+
   (require 'lsp-python)
   (add-hook 'python-mode-hook #'lsp-python-enable)
 
-  ;; lsp-python
   (lsp-define-stdio-client lsp-python "python3"
                            #'projectile-project-root
                            '("pyls"))
@@ -859,21 +789,73 @@ you should place your code here."
 
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
 
-  ;; lsp-ui
-  (require 'lsp-ui)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  (setq lsp-ui-sideline-ignore-duplicate t)
-
   (add-hook 'python-mode-hook
             (lambda ()
               (lsp-python-enable)))
 
-  ;; company-lsp
-  (require 'company-lsp)
-  (push 'company-lsp company-backends)
-  (setq company-lsp-enable-recompletion t)
 
+  ;; Elixir
+  (require 'elixir-mode)
   (require 'lsp-mode)
+
+  (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
+  (require 'lsp-elixir)
+
+  (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
+
+  (with-eval-after-load 'lsp-elixir
+    (setq lsp-elixir-ls-command "sh")
+    (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
+    )
+
+  (add-hook 'elixir-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook 'lsp-format-buffer)
+              (setq flycheck-checker 'lsp-ui)
+              (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
+              ;; xref elixir
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+              ;; Lps ui peek
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
+              ;; Dumb jump
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+              (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+              ))
+
+
+  ;; C++ TODO: clean this
+  ;; Clang-format
+  (defun clang-format-bindings ()
+    (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
+    (define-key spacemacs-c-mode-map "," 'clang-format-region)
+    (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
+    (define-key spacemacs-c++-mode-map "," 'clang-format-region)
+    )
+
+  (add-hook 'c++-mode-hook 'clang-format-bindings)
+  (add-hook 'c-mode-hook 'clang-format-bindings)
+
+  (defun clang-format-for-filetype ()
+    "Run clang-format if the current file has a file extensions in the filetypes list."
+    (let ((filetypes '("c" "cpp" "h" "hpp")))
+      (when (member (file-name-extension (buffer-file-name)) filetypes)
+        (clang-format-buffer))))
+
+  ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
+  (use-package modern-cpp-font-lock :ensure t)
+  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
+
   (require 'ccls)
 
   (defun ccls//enable ()
@@ -889,8 +871,6 @@ you should place your code here."
     ;; (setq ccls-sem-highlight-method 'overlay)
     )
 
-  ;; ;; Log file
-
   (use-package ccls
     :commands lsp-ccls-enable
     :init
@@ -898,14 +878,28 @@ you should place your code here."
     (add-hook 'c-mode-hook 'ccls//enable)
     )
 
+  (require 'lsp-ui)
   (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
   (defun ccls/callers () (interactive) (lsp-ui-peek-find-custom 'callers "$ccls/callers"))
   (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" (plist-put (lsp--text-document-position-params) :kind kind)))
+  ;; (ccls/vars 3) ;; field or local variable
+  ;; (ccls/vars 1) ;; field
+  ;; (ccls/vars 4) ;; parameter
   (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
   (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
-
+  (defun ccls/bases ()
+    (interactive)
+    (lsp-ui-peek-find-custom 'base "$ccls/inheritanceHierarchy"
+                             (append (lsp--text-document-position-params) '(:flat t :level 3))))
+  (defun ccls/derived ()
+    (interactive)
+    (lsp-ui-peek-find-custom 'derived "$ccls/inheritanceHierarchy"
+                             (append (lsp--text-document-position-params) '(:flat t :level 3 :derived t))))
+  (defun ccls/members ()
+    (interactive)
+    (lsp-ui-peek-find-custom 'base "$ccls/memberHierarchy"
+                             (append (lsp--text-document-position-params) '(:flat t))))
   ;; The meaning of :role corresponds to https://github.com/maskray/ccls/blob/master/src/symbol.h
-
   ;; References w/ Role::Address bit (e.g. variables explicitly being taken addresses)
   (defun ccls/references-address ()
     (interactive)
@@ -984,175 +978,95 @@ you should place your code here."
   (add-hook 'c++-mode-hook (lambda ()
                              (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
 
-  (modify-syntax-entry ?_ "w")
-
-  (defun my-c-hook ()
+  (defun my-c-settings ()
     (setq flycheck-checker 'lsp-ui)
-    (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    (setq company-lsp-async t company-lsp-cache-candidates nil)
+    (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
     (modify-syntax-entry ?_ "w")
-    ;; New keybindings for dumb jump c mode
-    (define-key spacemacs-c-mode-map-prefix (kbd "dg") 'dumb-jump-go)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-c-mode-map-prefix (kbd "du") 'dumb-jump-back)
-    (define-key spacemacs-c-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
-    ;; New keybindings for dumb jump c++ mode
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dg") 'dumb-jump-go)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "du") 'dumb-jump-back)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    )
+
+  (defun lsp-xref-navigation (state-map)
+    "Setting projectile other file, xref and lsp keybindings"
+    ;; go to keybindings
+    (define-key state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    (define-key state-map (kbd "gd") 'xref-find-definitions)
+    (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key state-map (kbd "gr") 'xref-find-references)
+    (define-key state-map (kbd "gu") 'evil-jump-backward)
+    ;; see keybindings
+    (define-key state-map (kbd "s") nil)
+    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key state-map (kbd "sb") 'ccls/base)
+    (define-key state-map (kbd "sc") 'ccls/callers)
+    (define-key state-map (kbd "sR") 'lsp-ui-peek-find-references)
+    (define-key state-map (kbd "sm") 'ccls/references-macro)
+    (define-key state-map (kbd "sa") 'ccls/references-address)
+    (define-key state-map (kbd "sr") 'ccls/references-read)
+    (define-key state-map (kbd "sw") 'ccls/references-write)
+    (define-key state-map (kbd "sg") 'ccls/references-not-call)
+    (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
+    (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
+    (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+    (define-key state-map (kbd "gR") 'lsp-rename)
+    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
+    )
+
+  (defun my-c-keybindings (mode-map-prefix)
+    "Setting projectile , xref, lsp, dumb and gtags"
+    ;; dumb-jump
+    (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
     ;; gtags
-    (define-key spacemacs-c-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-    (define-key spacemacs-c-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-    (define-key spacemacs-c-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
-    ;; New keybindings c++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tg") 'helm-gtags-dwim)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tG") 'helm-gtags-dwim-other-window)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "tF") 'helm-gtags-find-files)
-    ;; ;; xref C++
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gr") 'xref-find-references)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gc") 'ccls/xref-callers)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gb") 'ccls/xref-base)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-    ;; ;; peek
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sb") 'ccls/base)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sc") 'ccls/callers)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sRm") 'ccls/references-macro)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sRa") 'ccls/references-address)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sRr") 'ccls/references-read)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sRn") 'ccls/references-not-call)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "sRw") 'ccls/references-write)
-    (define-key spacemacs-c++-mode-map-prefix (kbd "su") 'evil-jump-backward)
-    ;; C
-    (define-key spacemacs-c-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gr") 'xref-find-references)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gc") 'ccls/xref-callers)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gb") 'ccls/xref-base)
-    (define-key spacemacs-c-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-    ;; peek
-    (define-key spacemacs-c-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sb") 'ccls/base)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sc") 'ccls/callers)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sc") 'ccls/callers)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sRm") 'ccls/references-macro)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sRa") 'ccls/references-address)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sRr") 'ccls/references-read)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sRn") 'ccls/references-not-call)
-    (define-key spacemacs-c-mode-map-prefix (kbd "sRw") 'ccls/references-write)
-    (define-key spacemacs-c-mode-map-prefix (kbd "su") 'evil-jump-backward)
+    (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
+    (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
+    (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
+    (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
+    ;; reuse keymap
+    (lsp-xref-navigation mode-map-prefix)
+    (lsp-xref-navigation evil-normal-state-map)
     )
 
-  (add-hook 'c++-mode-hook 'my-c-hook)
-  (add-hook 'c-mode-hook 'my-c-hook)
+  (add-hook 'c-mode-hook (lambda () (my-c-keybindings spacemacs-c-mode-map-prefix) ))
+  (add-hook 'c++-mode-hook (lambda () (my-c-keybindings spacemacs-c++-mode-map-prefix) ))
 
-  (with-eval-after-load 'projectile
-    (setq projectile-project-root-files-top-down-recurring
-          (append '("compile_commands.json"
-                    ".cquery"
-                    ".ccls")
-                  projectile-project-root-files-top-down-recurring)))
+  (add-hook 'c++-mode-hook 'my-c-settings)
+  (add-hook 'c-mode-hook 'my-c-settings)
 
-  ;; lsp-ui
-  (require 'lsp-ui)
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  (add-hook 'c-mode-common-hook 'flycheck-mode)
-
-  (setq lsp-ui-peek-peek-height 60)
-  (setq lsp-ui-peek-list-width 65)
-  (setq lsp-ui-peek-always-show t)
-  (setq lsp-ui-peek-fontify 'always)
-
-  ;; helm-xref
-  (require 'helm-xref)
-  (setq xref-show-xrefs-function 'helm-xref-show-xrefs)
-
-  (require 'helm-fzf)
-
-  ;; rust
-  (with-eval-after-load 'lsp-mode
-    ;; (setq lsp-rust-rls-command '("rustup" "run" "nightly" "rls"))
-    (setq xref-prompt-for-identifier nil)
-    (setq lsp-rust-rls-command '("rls"))
-    (require 'lsp-rust)
-    (add-hook 'rust-mode-hook #'lsp-rust-enable))
-
-  (add-hook 'rust-mode-hook #'flycheck-mode)
-
-  (setq mark-ring-max 128)
-  (setq global-mark-ring-max 128)
-
-  (with-eval-after-load 'google-this
-    (setq google-this-keybind nil)
-    (spacemacs/set-leader-keys "sws" 'google-this-search)
-    (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
-    )
-
-  ;; google this
-  (require 'google-this)
-  (google-this-mode 1)
-
-  ;; crystal
-  (add-hook 'crystal-mode-hook
-            (lambda ()
-              (setq flycheck-checker 'lsp-ui)
-              (setq company-backends-crystal-mode '((company-lsp :with company-dabbrev-code)))
-              )
-            )
-
-  ;; helm-bm
-  (spacemacs/set-leader-keys "fb" nil)
-  (spacemacs/set-leader-keys "fbF" 'helm-filtered-bookmarks)
-  (spacemacs/set-leader-keys "fbf" 'helm-bm)
-  (spacemacs/set-leader-keys "fbt" 'bm-toggle)
-  (spacemacs/set-leader-keys "fbn" 'bm-next)
-  (spacemacs/set-leader-keys "fbp" 'bm-previous)
   )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
+ '(default ((t (:background nil))))
+ '(lsp-face-highlight-read ((t (:background "OliveDrab4"))))
+ '(lsp-face-highlight-write ((t (:background "firebrick")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-all-windows t t)
- '(company-idle-delay nil t)
+ '(avy-all-windows t)
+ '(company-idle-delay nil)
  '(fzf/window-height 50)
  '(helm-buffer-max-length nil)
- '(helm-display-header-line nil t)
+ '(helm-display-header-line nil)
  '(helm-eshell-fuzzy-match t)
  '(helm-grep-ag-command
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
