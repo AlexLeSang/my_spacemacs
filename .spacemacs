@@ -601,8 +601,6 @@ you should place your code here."
 
   (add-hook 'python-mode-hook (lambda ()
                                 (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
-                                ;; (setq flycheck-checker 'python-pycheckers)
-                                ;; (setq flycheck-checker-error-threshold 9000)
                                 (setq flycheck-checker 'lsp-ui)
                                 )
             )
@@ -641,33 +639,6 @@ you should place your code here."
        (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
        (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
        (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
-       )
-    )
-
-  (eval-after-load 'ycmd
-    '(progn
-       (setq ycmd-server-command '("python" "/home/halushko/Projects/ycmd/ycmd"))
-       (setq ycmd-force-semantic-completion t)
-       ;; (add-hook 'c++-mode-hook 'ycmd-mode)
-       ;; (add-hook 'c-mode-hook 'ycmd-mode)
-       ;; (add-hook 'python-mode-hook 'ycmd-mode)
-       (add-hook 'text-mode 'ycmd-mode)
-       ;; Remove old keybindings
-       ;; (define-key spacemacs-c++-mode-map-prefix (kbd "gG") nil)
-       ;; (define-key spacemacs-c++-mode-map-prefix (kbd "gg") nil)
-       ;; Create new keybindings
-       ;; C
-       (define-key spacemacs-c-mode-map-prefix (kbd "yg") 'ycmd-goto)
-       (define-key spacemacs-c-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-       (define-key spacemacs-c-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-       (define-key spacemacs-c-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-       (define-key spacemacs-c-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
-       ;; C++
-       (define-key spacemacs-c++-mode-map-prefix (kbd "yg") 'ycmd-goto)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "yi") 'ycmd-goto-imprecise)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "yT") 'ycmd-get-type)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "yd") 'ycmd-goto-definition)
-       (define-key spacemacs-c++-mode-map-prefix (kbd "yD") 'ycmd-goto-declaration)
        )
     )
 
@@ -901,22 +872,6 @@ you should place your code here."
   (require 'company-lsp)
   (push 'company-lsp company-backends)
   (setq company-lsp-enable-recompletion t)
-
-  ;; cquery
-  ;; (require 'lsp-mode)
-  ;; (require 'cquery)
-  ;; (setq cquery-executable "/home/halushko/Projects/cquery-tag/cquery/build/cquery")
-  ;; (setq cquery-extra-args '("--log-file=/tmp/cq.log"))
-
-  ;; (setq cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
-  ;; (defun cquery//enable ()
-  ;;   (condition-case nil
-  ;;       (lsp-cquery-enable)
-  ;;     (user-error nil)))
-
-  ;; (use-package cquery
-  ;;   :commands lsp-cquery-enable
-  ;;   :init (add-hook 'c-mode-common-hook #'cquery//enable))
 
   (require 'lsp-mode)
   (require 'ccls)
