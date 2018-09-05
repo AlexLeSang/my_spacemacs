@@ -885,7 +885,7 @@ you should place your code here."
   (with-eval-after-load 'ccls
     (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
     (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
-    (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :highlight (:lsRanges true)))
+    (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
     ;; (setq ccls-sem-highlight-method 'overlay)
     )
 
@@ -981,9 +981,15 @@ you should place your code here."
         (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
     )
 
+  (add-hook 'c++-mode-hook (lambda ()
+                             (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
+
+  (modify-syntax-entry ?_ "w")
+
   (defun my-c-hook ()
     (setq flycheck-checker 'lsp-ui)
     (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    (modify-syntax-entry ?_ "w")
     ;; New keybindings for dumb jump c mode
     (define-key spacemacs-c-mode-map-prefix (kbd "dg") 'dumb-jump-go)
     (define-key spacemacs-c-mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
@@ -1080,6 +1086,11 @@ you should place your code here."
   (require 'lsp-ui)
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   (add-hook 'c-mode-common-hook 'flycheck-mode)
+
+  (setq lsp-ui-peek-peek-height 60)
+  (setq lsp-ui-peek-list-width 65)
+  (setq lsp-ui-peek-always-show t)
+  (setq lsp-ui-peek-fontify 'always)
 
   ;; helm-xref
   (require 'helm-xref)
