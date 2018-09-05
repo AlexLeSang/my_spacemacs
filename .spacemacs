@@ -126,6 +126,7 @@ values."
                                                     lsp-mode lsp-python company-lsp
                                                     cquery
                                                     ccls
+                                                    cquery
                                                     helm-xref lsp-ui fzf
                                                     yasnippet-snippets
                                                     helm-bm
@@ -369,11 +370,14 @@ you should place your code here."
   (spacemacs/toggle-transparency)
   ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
+  (setq-default spacemacs-show-trailing-whitespace nil)
+
+
+  ;; Misc
   (setq dotspacemacs-large-file-size 50)
 
   (setq fancy-battery-show-percentage nil)
 
-  ;; Misc settings
   (setq avy-timeout-seconds 0.5)
 
   (indent-guide-global-mode t)
@@ -476,12 +480,10 @@ you should place your code here."
               ))
 
   (with-eval-after-load 'company
-    '(progn
-       (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
-       (setq company-dabbrev-downcase nil)
-       ))
+    (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
+    (setq company-dabbrev-downcase nil)
+    )
 
-  ;; Company
   (with-eval-after-load 'company
     (setq company-minimum-prefix-length 1)
     (setq company-show-numbers t)
@@ -522,7 +524,8 @@ you should place your code here."
   (with-eval-after-load 'projectile
     (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
     (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
-    (define-key evil-normal-state-map (kbd "gA") 'projectile-find-other-file)
+    (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
+    (spacemacs/set-leader-keys "pA" 'projectile-find-file-other-window)
     (setq projectile-enable-caching t)
     (setq projectile-generic-command "fd -0 -t f")
     (setq projectile-project-compilation-cmd "")
@@ -613,12 +616,50 @@ you should place your code here."
   ;; Matlab/Octave
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
 
+  ;; ClearCase helper functions
+  (defun clearcase-checkout ()
+    "Checkout file in current view with WI and no commentary"
+    (interactive)
+    (shell-command
+     (format "cleartool co -c '' %s"
+             (shell-quote-argument (buffer-file-name))))
+    (revert-buffer t t t))
+
+  (defun clearcase-uncheckout ()
+    "Checkout file in current view with WI and no commentary"
+    (interactive)
+    (shell-command
+     (format "cleartool unco %s"
+             (shell-quote-argument (buffer-file-name))))
+    (revert-buffer t t t))
+
 
   ;; Eshell
   (with-eval-after-load 'eshell
     (setq eshell-save-history-on-exit t)
     (setq eshell-history-size 10000)
     )
+
+  ;; (defun get-clearcase-string ()
+  ;;   "TODO: finish"
+  ;;   (concat
+  ;;    (shell-command-to-string "echo -n `echo ${CLEARCASE_ROOT} | cut -d/ -f3`")
+  ;;    ": "
+  ;;    (shell-command-to-string "echo -n `cleartool lsact -cact | cut -d\\\" -f2`")
+  ;;    )
+  ;;   )
+
+  ;; (setq eshell-prompt-function (lambda ()
+  ;;                                (concat
+  ;;                                 (propertize (eshell/pwd) 'face `(:foreground "deep sky blue"))
+  ;;                                 " "
+  ;;                                 (propertize
+  ;;                                  (get-clearcase-string)
+  ;;                                  'face `(:foreground "dark orange")
+  ;;                                  )
+  ;;                                 "\n"
+  ;;                                 "λ "
+  ;;                                 )))
 
   (defun my-eshell-cmpl-initialize ()
     "Initialize the completions module."
@@ -710,6 +751,14 @@ you should place your code here."
     )
 
 
+  ;; lsp imenu
+  (require 'lsp-imenu)
+  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+
+
+  ;; ddf mode
+  ;; (require 'ddf-mode)
+
   ;; Rust
   (add-hook 'rust-mode-hook (lambda ()
                               (setq lsp-rust-rls-command '("rls"))
@@ -719,6 +768,7 @@ you should place your code here."
             )
   (add-hook 'rust-mode-hook #'flycheck-mode)
 
+
   ;; Crystal
   (add-hook 'crystal-mode-hook
             (lambda ()
@@ -726,6 +776,7 @@ you should place your code here."
               (setq company-backends-crystal-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
               )
             )
+
 
   ;; Python
   (require 'pycoverage)
@@ -745,6 +796,8 @@ you should place your code here."
 
   (setq python-shell-interpreter-args "-i")
   (setq python-shell-interpreter "python")
+  ;; (setq python-shell-interpreter "ipython3")
+  ;; (setq python-shell-interpreter-args "--simple-prompt -i")
 
   (require 'flycheck-pycheckers)
   (with-eval-after-load 'flycheck
@@ -759,6 +812,23 @@ you should place your code here."
     (setq flycheck-checker 'lsp-ui))
 
   (add-hook 'python-mode-hook 'my-python-checkers)
+
+  (defun my-python-edit-hook ()
+    (setq flycheck-checker 'lsp-ui)
+    (setq company-lsp-async t company-lsp-cache-candidates nil)
+    (modify-syntax-entry ?_ "w")
+    (define-key evil-normal-state-map (kbd "gd") 'xref-find-definitions)
+    (define-key evil-normal-state-map (kbd "gr") 'xref-find-references)
+    (define-key evil-normal-state-map (kbd "gR") 'lsp-rename)
+    (define-key evil-normal-state-map (kbd "gu") 'evil-jump-backward)
+    (define-key evil-normal-state-map (kbd "s") nil)
+    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key evil-normal-state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key evil-normal-state-map (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key evil-normal-state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+    )
+
+  (add-hook 'python-mode-hook 'my-python-edit-hook)
 
   ;; anaconda
   (with-eval-after-load 'anaconda-mode
@@ -856,6 +926,96 @@ you should place your code here."
   (use-package modern-cpp-font-lock :ensure t)
   (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
+
+  ;; cquery
+  ;; (require 'cquery)
+
+  ;; (with-eval-after-load 'cquery
+  ;;   ;; (setq cquery-executable "/home/ohalushk/aux_home/App/cquery/build/release/bin/cquery")
+  ;;   (setq cquery-executable "/home/ohalushk/aux_home/App/cquery-new/cquery/build/cquery")
+  ;;   ;; (setq cquery-extra-args '("--log-file=/tmp/cq.log"))
+  ;;   (setq cquery-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+  ;;   )
+
+  ;; (defun cquery//enable ()
+  ;;   (condition-case nil
+  ;;       (lsp-cquery-enable)
+  ;;     (user-error nil)))
+
+  ;; (use-package cquery
+  ;;   :commands lsp-cquery-enable
+  ;;   :init (add-hook 'c-mode-common-hook #'cquery//enable))
+
+  ;; (defun cquery/inheritance-base () (interactive) (cquery-inheritance-hierarchy nil))
+  ;; (defun cquery/inheritance-derived () (interactive) (cquery-inheritance-hierarchy t))
+  ;; (defun cquery/caller-hierarchy () (interactive) (cquery-call-hierarchy nil))
+  ;; (defun cquery/callee-hierarchy () (interactive) (cquery-call-hierarchy t))
+  ;; (defun cquery/base () (interactive) (lsp-ui-peek-find-custom 'base "$cquery/base"))
+  ;; (defun cquery/callers () (interactive) (lsp-ui-peek-find-custom 'callers "$cquery/callers"))
+  ;; (defun cquery/xref-callers () (interactive) (ccls-xref-find-custom "$cquery/callers"))
+  ;; (defun cquery/xref-base () (interactive) (ccls-xref-find-custom "$cquery/base"))
+
+  ;; (defun lsp-cquery-xref-navigation (state-map)
+  ;;   "Setting projectile other file, xref and lsp keybindings"
+  ;;   ;; go to keybindings
+  ;;   (define-key state-map (kbd "ga") 'projectile-find-other-file)
+  ;;   (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
+  ;;   (define-key state-map (kbd "gd") 'xref-find-definitions)
+  ;;   (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
+  ;;   (define-key state-map (kbd "gr") 'xref-find-references)
+  ;;   (define-key state-map (kbd "gu") 'evil-jump-backward)
+  ;;   (define-key state-map (kbd "gR") 'lsp-rename)
+  ;;   (define-key state-map (kbd "gx") 'lsp-execute-code-action)
+  ;;   ;; see keybindings
+  ;;   (define-key state-map (kbd "s") nil)
+  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;   (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;   (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;   (define-key state-map (kbd "sb") 'cquery/base)
+  ;;   (define-key state-map (kbd "sc") 'cquery/callers)
+  ;;   (define-key state-map (kbd "sCr") 'cquery/caller-hierarchy)
+  ;;   (define-key state-map (kbd "sCe") 'cquery/callee-hierarchy)
+  ;;   (define-key state-map (kbd "sib") 'cquery/inheritance-base)
+  ;;   (define-key state-map (kbd "sid") 'cquery/inheritance-derived)
+  ;;   (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
+  ;;   (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
+  ;;   (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+  ;;   )
+
+  ;; (defun my-c-cquery-keybindings (mode-map-prefix)
+  ;;   "Setting projectile , xref, lsp, dumb and gtags"
+  ;;   ;; dumb-jump
+  ;;   (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
+  ;;   (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+  ;;   (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+  ;;   (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
+  ;;   (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+  ;;   (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+  ;;   (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+  ;;   (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+  ;;   ;; gtags
+  ;;   (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
+  ;;   (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
+  ;;   (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
+  ;;   (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+  ;;   (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+  ;;   (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+  ;;   (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+  ;;   (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+  ;;   (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
+  ;;   ;; reuse keymap
+  ;;   (lsp-cquery-xref-navigation mode-map-prefix)
+  ;;   (lsp-cquery-xref-navigation evil-normal-state-map)
+  ;;   )
+
+  ;; (add-hook 'c-mode-hook (lambda () (my-c-cquery-keybindings spacemacs-c-mode-map-prefix) ))
+  ;; (add-hook 'c++-mode-hook (lambda () (my-c-cquery-keybindings spacemacs-c++-mode-map-prefix) ))
+
+
+  ;; ccls
   (require 'ccls)
 
   (defun ccls//enable ()
@@ -985,7 +1145,7 @@ you should place your code here."
     (modify-syntax-entry ?_ "w")
     )
 
-  (defun lsp-xref-navigation (state-map)
+  (defun lsp-ccls-xref-navigation (state-map)
     "Setting projectile other file, xref and lsp keybindings"
     ;; go to keybindings
     (define-key state-map (kbd "ga") 'projectile-find-other-file)
@@ -994,6 +1154,8 @@ you should place your code here."
     (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
     (define-key state-map (kbd "gr") 'xref-find-references)
     (define-key state-map (kbd "gu") 'evil-jump-backward)
+    (define-key state-map (kbd "gR") 'lsp-rename)
+    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
     ;; see keybindings
     (define-key state-map (kbd "s") nil)
     (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
@@ -1010,11 +1172,9 @@ you should place your code here."
     (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
     (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
     (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
-    (define-key state-map (kbd "gR") 'lsp-rename)
-    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
     )
 
-  (defun my-c-keybindings (mode-map-prefix)
+  (defun my-c-ccls-keybindings (mode-map-prefix)
     "Setting projectile , xref, lsp, dumb and gtags"
     ;; dumb-jump
     (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
@@ -1038,12 +1198,12 @@ you should place your code here."
     (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
     (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
     ;; reuse keymap
-    (lsp-xref-navigation mode-map-prefix)
-    (lsp-xref-navigation evil-normal-state-map)
+    (lsp-ccls-xref-navigation mode-map-prefix)
+    (lsp-ccls-xref-navigation evil-normal-state-map)
     )
 
-  (add-hook 'c-mode-hook (lambda () (my-c-keybindings spacemacs-c-mode-map-prefix) ))
-  (add-hook 'c++-mode-hook (lambda () (my-c-keybindings spacemacs-c++-mode-map-prefix) ))
+  (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
+  (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
 
   (add-hook 'c++-mode-hook 'my-c-settings)
   (add-hook 'c-mode-hook 'my-c-settings)
