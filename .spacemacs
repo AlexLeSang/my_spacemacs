@@ -373,6 +373,7 @@ you should place your code here."
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
+  (spacemacs/toggle-truncate-lines-off)
   ;; (spacemacs/toggle-which-key-off)
   (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
   (setq-default spacemacs-show-trailing-whitespace nil)
@@ -440,8 +441,6 @@ you should place your code here."
 
   ;; bind evil-jump-out-args
   (define-key evil-normal-state-map "K" 'evil-jump-out-args)
-
-
 
   ;; Yasnippet
   (with-eval-after-load 'yasnippet
@@ -537,7 +536,8 @@ you should place your code here."
     (setq projectile-project-root-files-top-down-recurring
           (append '("compile_commands.json"
                     ".cquery"
-                    ".ccls")
+                    ".ccls"
+                    ".git")
                   projectile-project-root-files-top-down-recurring))
     )
 
@@ -1112,10 +1112,15 @@ you should place your code here."
     )
 
   (with-eval-after-load 'ccls
-    (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
+    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
+    ;; (setq ccls-executable "/home/halushko/bin/my-ccls")
+    ;; (setq ccls-executable "/home/halushko/Projects/ccls/ccls") ;; Works
+    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
+    (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
     (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
     (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
     ;; (setq ccls-sem-highlight-method 'overlay)
+    (setq ccls-sem-highlight-method nil)
     )
 
   (use-package ccls
@@ -1125,23 +1130,80 @@ you should place your code here."
     (add-hook 'c-mode-hook 'ccls//enable)
     )
 
-  (require 'lsp-ui)
-  (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
-  (defun ccls/callers () (interactive) (lsp-ui-peek-find-custom 'callers "$ccls/callers"))
-  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" (plist-put (lsp--text-document-position-params) :kind kind)))
+  (defun ccls/member (kind)
+    (interactive)
+    (lsp-ui-peek-find-custom 'member "$ccls/member" `(:kind ,kind)))
+
+  (defun ccls/member-type ()
+    (interactive)
+    (ccls/member 2))
+
+  (defun ccls/member-func ()
+    (interactive)
+    (ccls/member 3))
+
+  (defun ccls/member-var ()
+    (interactive)
+    (ccls/member 0))
+
+  (defun ccls/down ()
+    (interactive)
+    (ccls-navigate "D"))
+
+  (defun ccls/up ()
+    (interactive)
+    (ccls-navigate "U"))
+
+  (defun ccls/left ()
+    (interactive)
+    (ccls-navigate "L"))
+
+  (defun ccls/right ()
+    (interactive)
+    (ccls-navigate "R"))
+  
+  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
   ;; (ccls/vars 3) ;; field or local variable
   ;; (ccls/vars 1) ;; field
   ;; (ccls/vars 4) ;; parameter
+
+  (defun ccls/field-or-local-variable ()
+    (interactive)
+    (ccls/vars 3))
+
+  (defun ccls/field ()
+    (interactive)
+    (ccls/vars 1))
+
+  (defun ccls/parameter ()
+    (interactive)
+    (ccls/vars 4))
+
+  (defun ccls/callee ()
+    (interactive)
+    (lsp-ui-peek-find-custom 'callee "$ccls/call" '(:callee t)))
+
+  (defun ccls/caller ()
+    (interactive)
+    (lsp-ui-peek-find-custom 'caller "$ccls/call"))
+
+  (require 'lsp-ui)
+  (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
+  (defun ccls/callees () (interactive) (ccls-call-hierarchy t))
+  (defun ccls/callers () (interactive) (ccls-call-hierarchy nil))
+
+  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
+
   (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
   (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
   (defun ccls/bases ()
     (interactive)
-    (lsp-ui-peek-find-custom 'base "$ccls/inheritanceHierarchy"
-                             (append (lsp--text-document-position-params) '(:flat t :level 3))))
+    (ccls-inheritance-hierarchy nil))
+
   (defun ccls/derived ()
     (interactive)
-    (lsp-ui-peek-find-custom 'derived "$ccls/inheritanceHierarchy"
-                             (append (lsp--text-document-position-params) '(:flat t :level 3 :derived t))))
+    (ccls-inheritance-hierarchy t))
+
   (defun ccls/members ()
     (interactive)
     (lsp-ui-peek-find-custom 'base "$ccls/memberHierarchy"
@@ -1227,8 +1289,10 @@ you should place your code here."
 
   (defun my-c-settings ()
     (setq flycheck-checker 'lsp-ui)
-    (setq company-lsp-async t company-lsp-cache-candidates nil)
-    (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
+    ;; (setq company-lsp-async t company-lsp-cache-candidates nil)
+    (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    ;; (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
+    (setq company-backends-c-mode-common '((company-lsp)))
     (modify-syntax-entry ?_ "w")
     )
 
@@ -1249,7 +1313,13 @@ you should place your code here."
     (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
     (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
     (define-key state-map (kbd "sb") 'ccls/base)
-    (define-key state-map (kbd "sc") 'ccls/callers)
+    (define-key state-map (kbd "sc") 'ccls/callee)
+    (define-key state-map (kbd "sC") 'ccls/caller)
+    (define-key state-map (kbd "shc") 'ccls/callees)
+    (define-key state-map (kbd "shC") 'ccls/callers)
+    (define-key state-map (kbd "shb") 'ccls/bases)
+    (define-key state-map (kbd "shd") 'ccls/derived)
+    (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
     (define-key state-map (kbd "sR") 'lsp-ui-peek-find-references)
     (define-key state-map (kbd "sm") 'ccls/references-macro)
     (define-key state-map (kbd "sa") 'ccls/references-address)
