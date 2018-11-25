@@ -193,9 +193,9 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         zenburn
                          spacemacs-dark
                          monokai
-                         zenburn
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -301,7 +301,7 @@ values."
    ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
    ;; derivatives. If set to `relative', also turns on relative line numbers.
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers nil
    ;; If non\\\\\-nil smartparens-strict-mode will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
@@ -454,21 +454,21 @@ you should place your code here."
 
 
   ;; Realgud
-  (require 'realgud)
-  (with-eval-after-load 'realgud
-    (define-key spacemacs-python-mode-map-prefix "dD" 'realgud:pdb)
-    (define-key spacemacs-python-mode-map-prefix "db" 'realgud:cmd-break)
-    (define-key spacemacs-python-mode-map-prefix "dx" 'realgud:cmd-clear)
-    (define-key spacemacs-python-mode-map-prefix "dn" 'realgud:cmd-next-no-arg)
-    (define-key spacemacs-python-mode-map-prefix "ds" 'realgud:cmd-step-no-arg)
-    (define-key spacemacs-python-mode-map-prefix "df" 'realgud:cmd-finish)
-    (define-key spacemacs-python-mode-map-prefix "dc" 'realgud:cmd-continue)
-    (define-key spacemacs-python-mode-map-prefix "de" 'realgud:cmd-eval-region)
-    (define-key spacemacs-python-mode-map-prefix "dr" 'realgud:cmd-restart)
-    (define-key spacemacs-python-mode-map-prefix "dU" 'realgud:cmd-until)
-    (define-key spacemacs-python-mode-map-prefix "du" 'realgud:cmd-older-frame)
-    (define-key spacemacs-python-mode-map-prefix "dd" 'realgud:cmd-newer-frame)
-    )
+  ;; (require 'realgud)
+  ;; (with-eval-after-load 'realgud
+  ;;   (define-key spacemacs-python-mode-map-prefix "dD" 'realgud:pdb)
+  ;;   (define-key spacemacs-python-mode-map-prefix "db" 'realgud:cmd-break)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dx" 'realgud:cmd-clear)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dn" 'realgud:cmd-next-no-arg)
+  ;;   (define-key spacemacs-python-mode-map-prefix "ds" 'realgud:cmd-step-no-arg)
+  ;;   (define-key spacemacs-python-mode-map-prefix "df" 'realgud:cmd-finish)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dc" 'realgud:cmd-continue)
+  ;;   (define-key spacemacs-python-mode-map-prefix "de" 'realgud:cmd-eval-region)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dr" 'realgud:cmd-restart)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dU" 'realgud:cmd-until)
+  ;;   (define-key spacemacs-python-mode-map-prefix "du" 'realgud:cmd-older-frame)
+  ;;   (define-key spacemacs-python-mode-map-prefix "dd" 'realgud:cmd-newer-frame)
+  ;;   )
 
 
   ;; Company
@@ -561,8 +561,11 @@ you should place your code here."
     (spacemacs/set-leader-keys "fz" 'helm-fzf)
     (setq helm-buffer-max-length nil)
     (set-face-attribute 'helm-source-header nil :height 0.1)
-
     )
+
+
+  ;; Buffer switch
+  (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
 
 
   ;; xref
@@ -591,6 +594,11 @@ you should place your code here."
   (with-eval-after-load 'google-this
     (google-this-mode 1)
     (setq google-this-keybind nil)
+    (setq google-this-base-url "https://duckduckgo.")
+    ;; (setq google-this-base-url "https://www.google.")
+    (defun google-this-url ()
+      "URL for google searches."
+      (concat google-this-base-url google-this-location-suffix "?q=%s"))
     (spacemacs/set-leader-keys "sws" 'google-this-search)
     (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
     )
@@ -644,6 +652,67 @@ you should place your code here."
     (setq eshell-save-history-on-exit t)
     (setq eshell-history-size 10000)
     )
+
+  (setenv "PAGER" "cat")
+
+  (defun eshell/gst (&rest args)
+    (magit-status (pop args) nil)
+    (eshell/echo))   ;; The echo command suppresses output
+
+  (defun eshell/f (filename &optional dir try-count)
+    "Searches for files matching FILENAME in either DIR or the
+     current directory. Just a typical wrapper around the standard
+     `find' executable.
+     
+     Since any wildcards in FILENAME need to be escaped, this wraps the shell command.
+     
+     If not results were found, it calls the `find' executable up to
+     two more times, wrapping the FILENAME pattern in wildcat
+     matches. This seems to be more helpful to me."
+    ;; (let* ((cmd (concat
+    ;;              (executable-find "find")
+    ;;              " " (or dir ".")
+    ;;              "      -not -path '*/.git*'"
+    ;;              " -and -not -path '*node_modules*'"
+    ;;              " -and -not -path '*classes*'"
+    ;;              " -and "
+    ;;              " -type f -and "
+    ;;              "-iname '" filename "'"))
+    (let* ((cmd (concat
+                 (executable-find "fd")
+                 " -t f "
+                 "'" filename "'"))
+           (results (shell-command-to-string cmd)))
+
+      (if (not (s-blank-str? results))
+          results
+        (cond
+         ((or (null try-count) (= 0 try-count))
+          (eshell/f (concat filename "*") dir 1))
+         ((or (null try-count) (= 1 try-count))
+          (eshell/f (concat "*" filename) dir 2))
+         (t "")))))
+
+  (defun eshell/ef (filename &optional dir)
+    "Searches for the first matching filename and loads it into a file to edit."
+    (let* ((files (eshell/f filename dir))
+           (file (car (s-split "\n" files))))
+      (find-file file)))
+
+  (defun curr-dir-git-branch-string (pwd)
+    "Returns current git branch as a string, or the empty string if
+PWD is not in a git repo (or the git command is not found)."
+    (interactive)
+    (when (and (not (file-remote-p pwd))
+               (eshell-search-path "git")
+               (locate-dominating-file pwd ".git"))
+      (let* ((git-url (shell-command-to-string "git config --get remote.origin.url"))
+             (git-repo (file-name-base (s-trim git-url)))
+             (git-output (shell-command-to-string (concat "git rev-parse --abbrev-ref HEAD")))
+             (git-branch (s-trim git-output))
+             (git-icon  "\xe0a0")
+             (git-icon2 (propertize "\xf020" 'face `(:family "octicons"))))
+        (concat git-repo " " git-icon2 " " git-branch))))
 
   ;; (defun get-clearcase-string ()
   ;;   "TODO: finish"
@@ -716,10 +785,12 @@ you should place your code here."
               ))
 
   (defun eshell/clear ()
-    "Clear the eshell buffer."
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (eshell-send-input)))
+    "Clear `eshell' buffer, comint-style."
+    (interactive)
+    (let ((input (eshell-get-old-input)))
+      (eshell/clear-scrollback)
+      (eshell-emit-prompt)
+      (insert input)))
 
   ;; eshell here
   (defun eshell-here ()
@@ -741,6 +812,18 @@ you should place your code here."
   (require 'lsp-mode)
   (with-eval-after-load 'lsp-mode
     (setq xref-prompt-for-identifier nil)
+    (defun lsp--on-notification (p notification)
+      "Call the appropriate handler for NOTIFICATION."
+      (let* ((params (gethash "params" notification))
+             (client (lsp--workspace-client (lsp--parser-workspace p)))
+             (method (gethash "method" notification))
+             (handler (gethash method
+                               (lsp--client-notification-handlers client)
+                               (gethash method lsp--default-notification-handlers))))
+        (if handler
+            (funcall handler (lsp--parser-workspace p) params)
+          ;; (lsp-warn "Unknown method: %s" method))))
+          (message (format "Unknown method: %s" method)))))
     )
 
 
@@ -1116,7 +1199,8 @@ you should place your code here."
     ;; (setq ccls-executable "/home/halushko/bin/my-ccls")
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/ccls") ;; Works
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
-    (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
+    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
+    (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
     (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
     (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
     ;; (setq ccls-sem-highlight-method 'overlay)
@@ -1161,7 +1245,7 @@ you should place your code here."
   (defun ccls/right ()
     (interactive)
     (ccls-navigate "R"))
-  
+
   (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
   ;; (ccls/vars 3) ;; field or local variable
   ;; (ccls/vars 1) ;; field
@@ -1290,10 +1374,16 @@ you should place your code here."
   (defun my-c-settings ()
     (setq flycheck-checker 'lsp-ui)
     ;; (setq company-lsp-async t company-lsp-cache-candidates nil)
-    (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    ;; (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    (setq  company-lsp-async t)
     ;; (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
     (setq company-backends-c-mode-common '((company-lsp)))
     (modify-syntax-entry ?_ "w")
+    (setq color-identifiers-mode nil)
+    (setq ccls-sem-highlight-method 'overlay)
+    (ccls-use-default-rainbow-sem-highlight)
+    ;; (spacemacs/toggle-truncate-lines-off)
+    (setq truncate-lines t)
     )
 
   (defun lsp-ccls-xref-navigation (state-map)
@@ -1320,10 +1410,10 @@ you should place your code here."
     (define-key state-map (kbd "shb") 'ccls/bases)
     (define-key state-map (kbd "shd") 'ccls/derived)
     (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
-    (define-key state-map (kbd "sR") 'lsp-ui-peek-find-references)
+    (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
     (define-key state-map (kbd "sm") 'ccls/references-macro)
     (define-key state-map (kbd "sa") 'ccls/references-address)
-    (define-key state-map (kbd "sr") 'ccls/references-read)
+    (define-key state-map (kbd "sR") 'ccls/references-read)
     (define-key state-map (kbd "sw") 'ccls/references-write)
     (define-key state-map (kbd "sg") 'ccls/references-not-call)
     (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
@@ -1402,7 +1492,7 @@ you should place your code here."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (org-jira with-editor magit-popup anaconda-mode highlight rust-mode bm mu4e-maildirs-extension mu4e-alert ht autothemer pythonic realgud hydra yasnippet flyspell-correct avy multiple-cursors git-commit graphql olivetti evil treepy company markdown-mode dash sesman iedit clojure-mode smartparens crystal-mode lsp-mode alert helm helm-core cider org-plus-contrib flycheck-pycheckers ccls flycheck projectile magit zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-python lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ghub gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (tern org-jira with-editor magit-popup anaconda-mode highlight rust-mode bm mu4e-maildirs-extension mu4e-alert ht autothemer pythonic realgud hydra yasnippet flyspell-correct avy multiple-cursors git-commit graphql olivetti evil treepy company markdown-mode dash sesman iedit clojure-mode smartparens crystal-mode lsp-mode alert helm helm-core cider org-plus-contrib flycheck-pycheckers ccls flycheck projectile magit zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-python lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ghub gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator (quote alternate))
  '(send-mail-function (quote smtpmail-send-it))
