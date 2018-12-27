@@ -128,11 +128,15 @@ values."
    dotspacemacs-additional-packages '(flycheck-mypy flycheck-pycheckers
                                                     pycoverage realgud realgud-pry helm-tramp
                                                     modern-cpp-font-lock org-projectile
-                                                    lsp-mode lsp-python company-lsp
+                                                    lsp-mode
+                                                    ;; lsp-python
+                                                    company-lsp
+                                                    lsp-ui
                                                     cquery
                                                     ccls
                                                     cquery
-                                                    helm-xref lsp-ui fzf
+                                                    helm-xref
+                                                    fzf
                                                     yasnippet-snippets
                                                     helm-bm
                                                     bm
@@ -840,8 +844,8 @@ PWD is not in a git repo (or the git command is not found)."
 
 
   ;; lsp imenu
-  (require 'lsp-imenu)
-  (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
+  ;; (require 'lsp-imenu)
+  ;; (add-hook 'lsp-after-open-hook 'lsp-enable-imenu)
 
 
   ;; Gnus
@@ -1013,12 +1017,12 @@ PWD is not in a git repo (or the git command is not found)."
     (remove-hook 'anaconda-mode-response-read-fail-hook
                  'anaconda-mode-show-unreadable-response))
 
-  (require 'lsp-python)
-  (add-hook 'python-mode-hook #'lsp-python-enable)
+  ;; (require 'lsp-python)
+  ;; (add-hook 'python-mode-hook #'lsp-python-enable)
 
-  (lsp-define-stdio-client lsp-python "python3"
-                           #'projectile-project-root
-                           '("pyls"))
+  ;; (lsp-define-stdio-client lsp-python "python3"
+  ;;                          #'projectile-project-root
+  ;;                          '("pyls"))
 
   (add-hook 'lsp-mode-hook 'flycheck-mode)
 
@@ -1029,24 +1033,23 @@ PWD is not in a git repo (or the git command is not found)."
 
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
 
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (lsp-python-enable)))
+  ;; (add-hook 'python-mode-hook
+  ;;           (lambda ()
+  ;;             (lsp-python-enable)))
 
 
   ;; Elixir
   (require 'elixir-mode)
-  (require 'lsp-mode)
 
   (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
-  (require 'lsp-elixir)
+  ;; (require 'lsp-elixir)
 
   (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
 
-  (with-eval-after-load 'lsp-elixir
-    (setq lsp-elixir-ls-command "sh")
-    (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
-    )
+  ;; (with-eval-after-load 'lsp-elixir
+  ;;   (setq lsp-elixir-ls-command "sh")
+  ;;   (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
+  ;;   )
 
   (add-hook 'elixir-mode-hook
             (lambda ()
@@ -1188,11 +1191,32 @@ PWD is not in a git repo (or the git command is not found)."
   ;; ccls
   (require 'ccls)
 
-  (defun ccls//enable ()
-    (condition-case nil
-        (lsp-ccls-enable)
-      (user-error nil))
-    )
+  ;; (defun ccls//enable ()
+  ;;   (condition-case nil
+  ;;       (lsp-ccls-enable)
+  ;;     (user-error nil))
+  ;;   )
+
+  ;; (use-package ccls
+  ;;   :commands lsp-ccls-enable
+  ;;   :init
+  ;;   (add-hook 'c++-mode-hook 'ccls//enable)
+  ;;   (add-hook 'c-mode-hook 'ccls//enable)
+  ;;   )
+
+  ;; (defun +ccls/enable ()
+  ;;   (condition-case nil
+  ;;       (lsp-ccls-enable)
+  ;;     (user-error nil)))
+
+  ;; (use-package ccls
+  ;;   :commands lsp-ccls-enable
+  ;;   :init
+  ;;   (add-hook 'c-mode-hook #'+ccls/enable)
+  ;;   (add-hook 'c++-mode-hook #'+ccls/enable)
+  ;;   (add-hook 'objc-mode-hook #'+ccls/enable)
+  ;;   (add-hook 'cuda-mode-hook #'+ccls/enable)
+  ;;   )
 
   (with-eval-after-load 'ccls
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
@@ -1200,19 +1224,14 @@ PWD is not in a git repo (or the git command is not found)."
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/ccls") ;; Works
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
     ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
-    (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
+    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
+    (setq ccls-executable "/home/halushko/Projects/ccls/Release-20181111/ccls")
     (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
     (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
     ;; (setq ccls-sem-highlight-method 'overlay)
     (setq ccls-sem-highlight-method nil)
     )
 
-  (use-package ccls
-    :commands lsp-ccls-enable
-    :init
-    (add-hook 'c++-mode-hook 'ccls//enable)
-    (add-hook 'c-mode-hook 'ccls//enable)
-    )
 
   (defun ccls/member (kind)
     (interactive)
@@ -1380,10 +1399,12 @@ PWD is not in a git repo (or the git command is not found)."
     (setq company-backends-c-mode-common '((company-lsp)))
     (modify-syntax-entry ?_ "w")
     (setq color-identifiers-mode nil)
-    (setq ccls-sem-highlight-method 'overlay)
-    (ccls-use-default-rainbow-sem-highlight)
+    ;; (setq ccls-sem-highlight-method 'overlay)
+    ;; (ccls-use-default-rainbow-sem-highlight)
     ;; (spacemacs/toggle-truncate-lines-off)
     (setq truncate-lines t)
+    (remove-hook 'company-mode-hook 'company-statistics-mode)
+    (lsp)
     )
 
   (defun lsp-ccls-xref-navigation (state-map)
@@ -1461,7 +1482,7 @@ PWD is not in a git repo (or the git command is not found)."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight normal :height 116 :width normal))))
+ '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F"))))
  '(lsp-face-highlight-read ((t (:background "OliveDrab4"))))
  '(lsp-face-highlight-write ((t (:background "firebrick")))))
 (custom-set-variables
@@ -1472,7 +1493,7 @@ PWD is not in a git repo (or the git command is not found)."
  '(avy-all-windows t t)
  '(blink-cursor-mode nil)
  '(column-number-mode t)
- '(company-idle-delay nil t)
+ '(company-idle-delay nil)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(display-time-mode t)
@@ -1484,6 +1505,7 @@ PWD is not in a git repo (or the git command is not found)."
  '(helm-eshell-fuzzy-match t)
  '(helm-grep-ag-command
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
+ '(lsp-project-whitelist (quote ("/home/halushko/Projects/*")))
  '(lsp-ui-doc-include-signature t)
  '(lsp-ui-sideline-delay 2.0)
  '(menu-bar-mode nil)
@@ -1492,7 +1514,7 @@ PWD is not in a git repo (or the git command is not found)."
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
  '(package-selected-packages
    (quote
-    (tern org-jira with-editor magit-popup anaconda-mode highlight rust-mode bm mu4e-maildirs-extension mu4e-alert ht autothemer pythonic realgud hydra yasnippet flyspell-correct avy multiple-cursors git-commit graphql olivetti evil treepy company markdown-mode dash sesman iedit clojure-mode smartparens crystal-mode lsp-mode alert helm helm-core cider org-plus-contrib flycheck-pycheckers ccls flycheck projectile magit zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-python lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ ghub gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+    (magit git-commit cider flyspell-correct helm helm-core lsp-mode org-plus-contrib async lsp-python zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-present org-pomodoro org-mime org-jira org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term mu4e-maildirs-extension mu4e-alert move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme ccls cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(powerline-default-separator (quote alternate))
  '(send-mail-function (quote smtpmail-send-it))
