@@ -1,55 +1,80 @@
-;; -*- mode: emacs-lisp -*-
+;; -*- mode: emacs-lisp; lexical-binding: t -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
 (defun dotspacemacs/layers ()
-  "Configuration Layers declaration.
-You should not put any user code in this function besides modifying the variable
-values."
+  "Layer configuration:
+This function should only modify configuration layer settings."
   (setq-default
    ;; Base distribution to use. This is a layer contained in the directory
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
+
+   ;; Lazy installation of layers (i.e. layers are installed only when a file
+   ;; with a supported type is opened). Possible values are `all', `unused'
+   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
+   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
+   ;; lazy install any layer that support lazy installation even the layers
+   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
+   ;; installation feature and you have to explicitly list a layer in the
+   ;; variable `dotspacemacs-configuration-layers' to install it.
+   ;; (default 'unused)
+   dotspacemacs-enable-lazy-installation 'unused
+
+   ;; If non-nil then Spacemacs will ask for confirmation before installing
+   ;; a layer lazily. (default t)
+   dotspacemacs-ask-for-lazy-installation t
+
+   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
-   ;; List of configuration layers to load. If it is the symbol `all' instead
-   ;; of a list then all discovered layers will be installed.
+
+   ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     gnus
-     (mu4e :variables
-           mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e")
-     rust
      yaml
+     lsp
+     (helm
+      :variables
+      helm-enable-auto-resize t
+      helm-no-header t
+      helm-position 'bottom
+      )
+     multiple-cursors
+     treemacs
+     ;; gnus
+     ;; (mu4e :variables
+     ;;       mu4e-installation-path "/usr/share/emacs/site-lisp/mu4e")
+     ;; rust
+     ;; yaml
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
-     ;; <M-m f e R> (Emacs style) to install them.
+     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
+     ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      markdown
      csv
      erlang
      elixir
-     extra-langs
      html
      octave
      scala
      vimscript
      shell-scripts
-     crystal
+     ;;crystal
      fasd
      (latex
       :variables
       latex-enable-auto-fill nil
       )
-     pdf-tools
+     ;; pdf-tools
      (org
       :variables
       org-enable-github-support t
       )
-     org-jira
+     ;;org-jira
      (clojure
       :variables clojure-enable-fancify-symbols nil
       )
@@ -61,6 +86,7 @@ values."
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-enable-company-help-tooltip nil
       auto-completion-enable-sort-by-usage t
+      auto-completion-idle-delay nil
       )
      (better-defaults
       :variables
@@ -88,11 +114,12 @@ values."
       )
      (spell-checking
       :variables
-      spell-checking-enable-by-default t
+      spell-checking-enable-by-default nil
+      enable-flyspell-auto-completion nil
       )
      (syntax-checking
       :variables
-      syntax-checking-enable-by-default t
+      syntax-checking-enable-by-default nil
       syntax-checking-enable-tooltips nil
       )
      (version-control
@@ -103,6 +130,19 @@ values."
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
+      c-c++-backend 'lsp-ccls
+      c-c++-lsp-cache-dir ".lsp-ccls-cache"
+      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/Release-12-25/ccls.sh"
+      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/build-master/Release/ccls"
+      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/build-1a8edc137bd84bc0b94929487a3c486476ed2ff3/Release/ccls"
+      c-c++-lsp-executable "/home/halushko/Projects/ccls/build-pi-day/Release/ccls"
+      ;; c-c++-backend 'lsp-cquery
+      ;; c-c++-lsp-executable "/home/halushko/Projects/cquery-tag/cquery/build/cquery"
+      c-c++-lsp-sem-highlight-method nil
+      c-c++-lsp-sem-highlight-rainbow nil
+      c-c++-enable-auto-newline nil
+      c-c++-adopt-subprojects t
+      c-c++-enable-google-newline t
       )
      (gtags
       :variables gtags-enable-by-default nil
@@ -112,285 +152,447 @@ values."
       :variables
       python-fill-column 119
       python-test-runner 'pytest
+      python-backend 'lsp
       )
      (ibuffer
       :variables
       ibuffer-group-buffers-by 'projects
       )
+     cmake
+     plantuml
      themes-megapack
      ;; private layers
      ;; olivetti
      )
+
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(flycheck-mypy flycheck-pycheckers
-                                                    pycoverage realgud realgud-pry helm-tramp
-                                                    modern-cpp-font-lock org-projectile
-                                                    lsp-mode
-                                                    ;; lsp-python
-                                                    company-lsp
-                                                    lsp-ui
-                                                    cquery
-                                                    ccls
-                                                    cquery
-                                                    helm-xref
-                                                    fzf
-                                                    yasnippet-snippets
-                                                    helm-bm
-                                                    bm
-                                                    google-this
-                                                    )
-   ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '(org-projectile)
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+   ;; To use a local version of a package, use the `:location' property:
+   ;; '(your-package :location "~/path/to/your-package/")
+   ;; Also include the dependencies as they will not be resolved automatically.
+   dotspacemacs-additional-packages '(modern-cpp-font-lock lsp-elixir)
+
+   ;; A list of packages that cannot be updated.
+   dotspacemacs-frozen-packages '()
+
+   ;; A list of packages that will not be installed and loaded.
+   dotspacemacs-excluded-packages '(alchemist)
+
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and deletes any unused
+   ;; packages as well as their unused dependencies. `used-but-keep-unused'
+   ;; installs only the used packages but won't delete unused ones. `all'
+   ;; installs *all* packages supported by Spacemacs and never uninstalls them.
+   ;; (default is `used-only')
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
-  "Initialization function.
-This function is called at the very startup of Spacemacs initialization
-before layers configuration.
-You should not put any user code in there besides modifying the variable
-values."
+  "Initialization:
+This function is called at the very beginning of Spacemacs startup,
+before layer configuration.
+It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non nil ELPA repositories are contacted via HTTPS whenever it's
+   ;; If non-nil then enable support for the portable dumper. You'll need
+   ;; to compile Emacs 27 from source following the instructions in file
+   ;; EXPERIMENTAL.org at to root of the git repository.
+   ;; (default nil)
+   dotspacemacs-enable-emacs-pdumper nil
+
+   ;; File path pointing to emacs 27.1 executable compiled with support
+   ;; for the portable dumper (this is currently the branch pdumper).
+   ;; (default "emacs-27.0.50")
+   dotspacemacs-emacs-pdumper-executable-file "emacs-27.0.50"
+
+   ;; Name of the Spacemacs dump file. This is the file will be created by the
+   ;; portable dumper in the cache directory under dumps sub-directory.
+   ;; To load it when starting Emacs add the parameter `--dump-file'
+   ;; when invoking Emacs 27.1 executable on the command line, for instance:
+   ;;   ./emacs --dump-file=~/.emacs.d/.cache/dumps/spacemacs.pdmp
+   ;; (default spacemacs.pdmp)
+   dotspacemacs-emacs-dumper-dump-file "spacemacs.pdmp"
+
+   ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
    ;; possible. Set it to nil if you have no way to use HTTPS in your
    ;; environment, otherwise it is strongly recommended to let it set to t.
    ;; This variable has no effect if Emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
    dotspacemacs-elpa-https t
+
    ;; Maximum allowed time in seconds to contact an ELPA repository.
-   dotspacemacs-elpa-timeout 20
-   ;; If non nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. (default t)
-   dotspacemacs-check-for-update nil
-   ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
-   ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
-   ;; uses emacs key bindings for vim's insert mode, but otherwise leaves evil
-   ;; unchanged. (default 'vim)
+   ;; (default 5)
+   dotspacemacs-elpa-timeout 5
+
+   ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
+   ;; This is an advanced option and should not be changed unless you suspect
+   ;; performance issues due to garbage collection operations.
+   ;; (default '(100000000 0.1))
+   dotspacemacs-gc-cons '(100000000 0.1)
+
+   ;; If non-nil then Spacelpa repository is the primary source to install
+   ;; a locked version of packages. If nil then Spacemacs will install the
+   ;; latest version of packages from MELPA. (default nil)
+   dotspacemacs-use-spacelpa nil
+
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default nil)
+   dotspacemacs-verify-spacelpa-archives t
+
+   ;; If non-nil then spacemacs will check for updates at startup
+   ;; when the current branch is not `develop'. Note that checking for
+   ;; new versions works via git commands, thus it calls GitHub services
+   ;; whenever you start Emacs. (default nil)
+   dotspacemacs-check-for-update t
+
+   ;; If non-nil, a form that evaluates to a package directory. For example, to
+   ;; use different package directories for different Emacs versions, set this
+   ;; to `emacs-version'. (default 'emacs-version)
+   dotspacemacs-elpa-subdirectory 'emacs-version
+
+   ;; One of `vim', `emacs' or `hybrid'.
+   ;; `hybrid' is like `vim' except that `insert state' is replaced by the
+   ;; `hybrid state' with `emacs' key bindings. The value can also be a list
+   ;; with `:variables' keyword (similar to layers). Check the editing styles
+   ;; section of the documentation for details on available variables.
+   ;; (default 'vim)
    dotspacemacs-editing-style 'hybrid
-   ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
+
+   ;; If non-nil output loading progress in `*Messages*' buffer. (default nil)
    dotspacemacs-verbose-loading t
+
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
    ;; banner, `random' chooses a random text banner in `core/banners'
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
-   ;; List of items to show in the startup buffer. If nil it is disabled.
-   ;; Possible values are: `recents' `bookmarks' `projects'.
-   ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
-   ;; Number of recent files to show in the startup buffer. Ignored if
-   ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
-   dotspacemacs-startup-recent-list-size 5
+   ;; dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner nil
+
+   ;; List of items to show in startup buffer or an association list of
+   ;; the form `(list-type . list-size)`. If nil then it is disabled.
+   ;; Possible values for list-type are:
+   ;; `recents' `bookmarks' `projects' `agenda' `todos'.
+   ;; List sizes may be nil, in which case
+   ;; `spacemacs-buffer-startup-lists-length' takes effect.
+   ;; dotspacemacs-startup-lists '((recents . 5)
+   ;;                              (projects . 7))
+   dotspacemacs-startup-lists nil
+
+   ;; True if the home buffer should respond to resize events. (default t)
+   dotspacemacs-startup-buffer-responsive t
+
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
+
+   ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
+   ;; (default nil)
+   dotspacemacs-initial-scratch-message nil
+
    ;; List of themes, the first of the list is loaded when spacemacs starts.
-   ;; Press <SPC> T n to cycle to the next theme in the list (works great
+   ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         kaolin-galaxy
+                         kaolin-ocean
+                         kaolin-dark
                          zenburn
-                         spacemacs-dark
-                         monokai
                          )
-   ;; If non nil the cursor color matches the state color in GUI Emacs.
+
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
+   ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
+   ;; `vanilla' is default Emacs mode-line. `custom' is a user defined themes,
+   ;; refer to the DOCUMENTATION.org for more info on how to create your own
+   ;; spaceline theme. Value can be a symbol or list with additional properties.
+   ;; (default '(spacemacs :separator wave :separator-scale 1.5))
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.05)
+
+   ;; If non-nil the cursor color matches the state color in GUI Emacs.
+   ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
-   ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
-   ;; size to make separators look not too crappy.
+
+   ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
+   ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
-                               :width normal
-                               :powerline-scale 1.1)
-   ;; The leader key
+                               :width normal)
+
+   ;; The leader key (default "SPC")
    dotspacemacs-leader-key "SPC"
+
+   ;; The key used for Emacs commands `M-x' (after pressing on the leader key).
+   ;; (default "SPC")
+   dotspacemacs-emacs-command-key "SPC"
+
+   ;; The key used for Vim Ex commands (default ":")
+   dotspacemacs-ex-command-key ":"
+
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
    dotspacemacs-emacs-leader-key "M-m"
+
    ;; Major mode leader key is a shortcut key which is the equivalent of
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
    dotspacemacs-major-mode-leader-key ","
+
    ;; Major mode leader key accessible in `emacs state' and `insert state'.
-   ;; (default "C-M-m)
+   ;; (default "C-M-m")
    dotspacemacs-major-mode-emacs-leader-key "C-M-m"
+
    ;; These variables control whether separate commands are bound in the GUI to
-   ;; the key pairs C-i, TAB and C-m, RET.
-   ;; Setting it to a non-nil value, allows for separate commands under <C-i>
-   ;; and TAB or <C-m> and RET.
+   ;; the key pairs `C-i', `TAB' and `C-m', `RET'.
+   ;; Setting it to a non-nil value, allows for separate commands under `C-i'
+   ;; and TAB or `C-m' and `RET'.
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
    dotspacemacs-distinguish-gui-tab nil
-   ;; (Not implemented) dotspacemacs-distinguish-gui-ret nil
-   ;; The command key used for Evil commands (ex-commands) and
-   ;; Emacs commands (M-x).
-   ;; By default the command key is `:' so ex-commands are executed like in Vim
-   ;; with `:' and Emacs commands are executed with `<leader> :'.
-   dotspacemacs-command-key ":"
-   ;; If non nil `Y' is remapped to `y$'. (default t)
-   dotspacemacs-remap-Y-to-y$ t
+
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
-   ;; If non nil the default layout name is displayed in the mode-line.
+
+   ;; If non-nil the default layout name is displayed in the mode-line.
    ;; (default nil)
    dotspacemacs-display-default-layout nil
-   ;; If non nil then the last auto saved layouts are resume automatically upon
+
+   ;; If non-nil then the last auto saved layouts are resumed automatically upon
    ;; start. (default nil)
    dotspacemacs-auto-resume-layouts nil
+
+   ;; If non-nil, auto-generate layout name when creating new layouts. Only has
+   ;; effect when using the "jump to layout by number" commands. (default nil)
+   dotspacemacs-auto-generate-layout-names nil
+
+   ;; Size (in MB) above which spacemacs will prompt to open the large file
+   ;; literally to avoid performance issues. Opening a file literally means that
+   ;; no major mode or minor modes are active. (default is 1)
+   dotspacemacs-large-file-size 10
+
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
    ;; file stored in the cache directory and `nil' to disable auto-saving.
    ;; (default 'cache)
    dotspacemacs-auto-save-file-location 'cache
+
    ;; Maximum number of rollback slots to keep in the cache. (default 5)
    dotspacemacs-max-rollback-slots 5
-   ;; If non nil then `ido' replaces `helm' for some commands. For now only
-   ;; `find-files' (SPC f f), `find-spacemacs-file' (SPC f e s), and
-   ;; `find-contrib-file' (SPC f e c) are replaced. (default nil)
-   dotspacemacs-use-ido nil
-   ;; If non nil, `helm' will try to minimize the space it uses. (default nil)
-   dotspacemacs-helm-resize nil
-   ;; if non nil, the helm header is hidden when there is only one source.
-   ;; (default nil)
-   dotspacemacs-helm-no-header nil
-   ;; define the position to display `helm', options are `bottom', `top',
-   ;; `left', or `right'. (default 'bottom)
-   dotspacemacs-helm-position 'left
-   ;; If non nil the paste micro-state is enabled. When enabled pressing `p`
-   ;; several times cycle between the kill ring content. (default nil)
-   dotspacemacs-enable-paste-micro-state nil
+
+   ;; If non-nil, the paste transient-state is enabled. While enabled, after you
+   ;; paste something, pressing `C-j' and `C-k' several times cycles through the
+   ;; elements in the `kill-ring'. (default nil)
+   dotspacemacs-enable-paste-transient-state nil
+
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
    dotspacemacs-which-key-delay 2.0
+
    ;; Which-key frame position. Possible values are `right', `bottom' and
    ;; `right-then-bottom'. right-then-bottom tries to display the frame to the
    ;; right; if there is insufficient space it displays it at the bottom.
    ;; (default 'bottom)
    dotspacemacs-which-key-position 'bottom
-   ;; If non nil a progress bar is displayed when spacemacs is loading. This
+
+   ;; Control where `switch-to-buffer' displays the buffer. If nil,
+   ;; `switch-to-buffer' displays the buffer in the current window even if
+   ;; another same-purpose window is available. If non-nil, `switch-to-buffer'
+   ;; displays the buffer in a same-purpose window even if the buffer can be
+   ;; displayed in the current window. (default nil)
+   dotspacemacs-switch-to-buffer-prefers-purpose nil
+
+   ;; If non-nil a progress bar is displayed when spacemacs is loading. This
    ;; may increase the boot time on some systems and emacs builds, set it to
    ;; nil to boost the loading time. (default t)
    dotspacemacs-loading-progress-bar t
-   ;; If non nil the frame is fullscreen when Emacs starts up. (default nil)
+
+   ;; If non-nil the frame is fullscreen when Emacs starts up. (default nil)
    ;; (Emacs 24.4+ only)
-   dotspacemacs-fullscreen-at-startup t
-   ;; If non nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
+   dotspacemacs-fullscreen-at-startup nil
+
+   ;; If non-nil `spacemacs/toggle-fullscreen' will not use native fullscreen.
    ;; Use to disable fullscreen animations in OSX. (default nil)
    dotspacemacs-fullscreen-use-non-native nil
-   ;; If non nil the frame is maximized when Emacs starts up.
+
+   ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
    dotspacemacs-maximized-at-startup t
+
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-active-transparency 100
+
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 100
-   ;; If non nil unicode symbols are displayed in the mode line. (default t)
+
+   ;; If non-nil show the titles of transient states. (default t)
+   dotspacemacs-show-transient-state-title t
+
+   ;; If non-nil show the color guide hint for transient state keys. (default t)
+   dotspacemacs-show-transient-state-color-guide t
+
+   ;; If non-nil unicode symbols are displayed in the mode line.
+   ;; If you use Emacs as a daemon and wants unicode characters only in GUI set
+   ;; the value to quoted `display-graphic-p'. (default t)
    dotspacemacs-mode-line-unicode-symbols t
-   ;; If non nil smooth scrolling (native-scrolling) is enabled. Smooth
-   ;; scrolling overrides the default behavior of Emacs which recenters the
-   ;; point when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling nil
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+
+   ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
+   ;; scrolling overrides the default behavior of Emacs which recenters point
+   ;; when it reaches the top or bottom of the screen. (default t)
+   dotspacemacs-smooth-scrolling t
+
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
    dotspacemacs-line-numbers nil
-   ;; If non\\\\\-nil smartparens-strict-mode will be enabled in programming modes.
+
+   ;; Code folding method. Possible values are `evil' and `origami'.
+   ;; (default 'evil)
+   dotspacemacs-folding-method 'evil
+
+   ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode nil
+
+   ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
+   ;; over any automatically added closing parenthesis, bracket, quote, etc…
+   ;; This can be temporary disabled by pressing `C-q' before `)'. (default nil)
+   dotspacemacs-smart-closing-parenthesis t
+
    ;; Select a scope to highlight delimiters. Possible values are `any',
    ;; `current', `all' or `nil'. Default is `all' (highlight any scope and
    ;; emphasis the current one). (default 'all)
    dotspacemacs-highlight-delimiters 'all
-   ;; If non nil advises quit functions to keep server open when quitting.
+
+   ;; If non-nil, start an Emacs server if one is not already running.
    ;; (default nil)
-   dotspacemacs-persistent-server t
+   dotspacemacs-enable-server nil
+
+   ;; Set the emacs server socket location.
+   ;; If nil, uses whatever the Emacs default is, otherwise a directory path
+   ;; like \"~/.emacs.d/server\". It has no effect if
+   ;; `dotspacemacs-enable-server' is nil.
+   ;; (default nil)
+   dotspacemacs-server-socket-dir nil
+
+   ;; If non-nil, advise quit functions to keep server open when quitting.
+   ;; (default nil)
+   dotspacemacs-persistent-server nil
+
    ;; List of search tool executable names. Spacemacs uses the first installed
-   ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
-   ;; (default '("ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("ag" "pt" "ack" "grep")
-   ;; The default package repository used if no explicit repository has been
-   ;; specified with an installed package.
-   ;; Not used for now. (default nil)
-   dotspacemacs-default-package-repository nil
+   ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
+   ;; (default '("rg" "ag" "pt" "ack" "grep"))
+   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+
+   ;; Format specification for setting the frame title.
+   ;; %a - the `abbreviated-file-name', or `buffer-name'
+   ;; %t - `projectile-project-name'
+   ;; %I - `invocation-name'
+   ;; %S - `system-name'
+   ;; %U - contents of $USER
+   ;; %b - buffer name
+   ;; %f - visited file name
+   ;; %F - frame name
+   ;; %s - process status
+   ;; %p - percent of buffer above top of window, or Top, Bot or All
+   ;; %P - percent of buffer above bottom of window, perhaps plus Top, or Bot or All
+   ;; %m - mode name
+   ;; %n - Narrow if appropriate
+   ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
+   ;; %Z - like %z, but including the end-of-line format
+   ;; (default "%I@%S")
+   dotspacemacs-frame-title-format "%I@%S"
+
+   ;; Format specification for setting the icon title format
+   ;; (default nil - same as frame-title-format)
+   dotspacemacs-icon-title-format nil
+
    ;; Delete whitespace while saving buffer. Possible values are `all'
    ;; to aggressively delete empty line and long sequences of whitespace,
-   ;; `trailing' to delete only the whitespace at end of lines, `changed'to
+   ;; `trailing' to delete only the whitespace at end of lines, `changed' to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
-   ))
+
+   ;; Either nil or a number of seconds. If non-nil zone out after the specified
+   ;; number of seconds. (default nil)
+   dotspacemacs-zone-out-when-idle nil
+
+   ;; Run `spacemacs/prettify-org-buffer' when
+   ;; visiting README.org files of Spacemacs.
+   ;; (default nil)
+   dotspacemacs-pretty-docs nil))
+
+(defun dotspacemacs/user-env ()
+  "Environment variables setup.
+This function defines the environment variables for your Emacs session. By
+default it calls `spacemacs/load-spacemacs-env' which loads the environment
+variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
+See the header of this file for more information."
+  (spacemacs/load-spacemacs-env))
 
 (defun dotspacemacs/user-init ()
-  "Initialization function for user code.
-It is called immediately after `dotspacemacs/init', before layer configuration
-executes.
- This function is mostly useful for variables that need to be set
-before packages are loaded. If you are unsure, you should try in setting them in
-`dotspacemacs/user-config' first."
+  "Initialization for user code:
+This function is called immediately after `dotspacemacs/init', before layer
+configuration.
+It is mostly for variables that should be set before packages are loaded.
+If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  ;; (setq configuration-layer-elpa-archives '(("melpa" . "melpa.org/packages/")   
+  ;;                                           ("org" . "orgmode.org/elpa/") ("gnu" . "elpa.gnu.org/packages/")))
+  )
+
+(defun dotspacemacs/user-load ()
+  "Library to load while dumping.
+This function is called only while dumping Spacemacs configuration. You can
+`require' or `load' the libraries of your choice that will be included in the
+dump."
   )
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
-This function is called at the very end of Spacemacs initialization after
-layers configuration.
-This is the place where most of your configurations should be done. Unless it is
-explicitly specified that a variable should be set before a package is loaded,
-you should place your code here."
+  "Configuration for user code:
+This function is called at the very end of Spacemacs startup, after layer
+configuration.
+Put your configuration code here, except for variables that should be set
+before packages are loaded."
 
   ;; Load files from private directory
-  (add-to-list 'load-path "~/.emacs.d/private/local")
-
-  ;; Set memory threshold
-  (setq gc-cons-threshold 8000000)
-
-
-  ;; Minibuffer setup
-  (defun my-minibuffer-exit-hook ()
-    (setq gc-cons-threshold 8000000))
-
-  (defun my-minibuffer-setup-hook ()
-    (setq helm-buffer-max-length nil)
-    (set-face-attribute 'helm-source-header nil :height 0.1)
-    (setq gc-cons-threshold most-positive-fixnum))
-
-  (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-  (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
-
+  ;; (add-to-list 'load-path "~/.emacs.d/private/local")
 
   ;; Spacemacs switches
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-truncate-lines-off)
-  (spacemacs/toggle-indent-guide-on)
+  (spacemacs/toggle-indent-guide-off)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-transparency)
   (spacemacs/toggle-truncate-lines-off)
   ;; (spacemacs/toggle-which-key-off)
-  (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
+  ;; (spacemacs/set-leader-keys "SPC" 'avy-goto-char-timer)
   (setq-default spacemacs-show-trailing-whitespace nil)
 
-
   ;; Misc
-  (setq dotspacemacs-large-file-size 50)
-
   (setq fancy-battery-show-percentage nil)
 
-  (setq avy-timeout-seconds 0.5)
-
-  (indent-guide-global-mode t)
+  ;; (indent-guide-global-mode t)
 
   (global-auto-revert-mode 1)
 
@@ -476,7 +678,7 @@ you should place your code here."
 
 
   ;; Company
-  (global-company-mode t)
+  ;; (global-company-mode t)
   (add-hook 'company-mode-hook
             (lambda()
               (defun my/downcase-first-char (&optional string)
@@ -492,33 +694,33 @@ you should place your code here."
     (setq company-dabbrev-downcase nil)
     )
 
-  (with-eval-after-load 'company
-    (setq company-minimum-prefix-length 1)
-    (setq company-show-numbers t)
-    (setq company-tooltip-limit 10)
-    (setq company-auto-complete t)
-    (setq company-idle-delay 0.4)
-    (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
-    (setq company-auto-complete-chars nil)
+  ;; (with-eval-after-load 'company
+  ;;   (setq company-minimum-prefix-length 1)
+  ;;   (setq company-show-numbers t)
+  ;;   (setq company-tooltip-limit 10)
+  ;;   (setq company-auto-complete t)
+  ;;   (setq company-idle-delay 0.4)
+  ;;   (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+  ;;   (setq company-auto-complete-chars nil)
 
-    (define-key company-active-map (kbd "<S-tab>") nil)
-    (define-key company-active-map (kbd "<tab>") nil)
-    (define-key company-active-map (kbd "<backtab>") nil)
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    (define-key company-active-map (kbd "<tab>") 'helm-company)
-    (remove-hook 'eshell-directory-change-hook
-                 'spacemacs//toggle-shell-auto-completion-based-on-path)
-    )
+  ;;   (define-key company-active-map (kbd "<S-tab>") nil)
+  ;;   (define-key company-active-map (kbd "<tab>") nil)
+  ;;   (define-key company-active-map (kbd "<backtab>") nil)
+  ;;   (define-key company-active-map (kbd "M-n") nil)
+  ;;   (define-key company-active-map (kbd "M-p") nil)
+  ;;   (define-key company-active-map (kbd "C-n") #'company-select-next)
+  ;;   (define-key company-active-map (kbd "C-p") #'company-select-previous)
+  ;;   (define-key company-active-map (kbd "<tab>") 'helm-company)
+  ;;   (remove-hook 'eshell-directory-change-hook
+  ;;                'spacemacs//toggle-shell-auto-completion-based-on-path)
+  ;;   )
 
   ;; company-lsp
-  (require 'company-lsp)
-  (with-eval-after-load 'company-lsp
-    (push 'company-lsp company-backends)
-    (setq company-lsp-enable-recompletion t)
-    )
+  ;; (require 'company-lsp)
+  ;; (with-eval-after-load 'company-lsp
+  ;;   (push 'company-lsp company-backends)
+  ;;   (setq company-lsp-enable-recompletion t)
+  ;;   )
 
 
   ;; Dabbrev
@@ -531,7 +733,7 @@ you should place your code here."
   ;; Projectile
   (with-eval-after-load 'projectile
     (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
-    (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
+    ;; (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
     (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
     (spacemacs/set-leader-keys "pA" 'projectile-find-file-other-window)
     (setq projectile-enable-caching t)
@@ -552,19 +754,19 @@ you should place your code here."
     (setq helm-grep-ag-command "ag --follow --line-numbers -S --hidden --color --nogroup %s %s %s")
 
     ;; Go to the opposite side of line from the end or beginning of line
-    (setq helm-swoop-move-to-line-cycle t)
+    ;; (setq helm-swoop-move-to-line-cycle t)
 
     ;; Optional face for line numbers
     ;; Face name is `helm-swoop-line-number-face`
-    (setq helm-swoop-use-line-number-face t)
+    ;; (setq helm-swoop-use-line-number-face t)
 
     ;; If you prefer fuzzy matching
-    (setq helm-swoop-use-fuzzy-match t)
+    ;; (setq helm-swoop-use-fuzzy-match t)
 
-    (require 'helm-fzf)
-    (spacemacs/set-leader-keys "fz" 'helm-fzf)
-    (setq helm-buffer-max-length nil)
-    (set-face-attribute 'helm-source-header nil :height 0.1)
+    ;; (require 'helm-fzf)
+    ;; (spacemacs/set-leader-keys "fz" 'helm-fzf)
+    ;; (setq helm-buffer-max-length nil)
+    ;; (set-face-attribute 'helm-source-header nil :height 0.1)
     )
 
 
@@ -580,31 +782,33 @@ you should place your code here."
 
 
   ;; bm
-  (require 'bm)
-  (with-eval-after-load 'bm
-    ;; helm-bm
-    (require 'helm-bm)
-    (spacemacs/set-leader-keys "fb" nil)
-    (spacemacs/set-leader-keys "fbF" 'helm-filtered-bookmarks)
-    (spacemacs/set-leader-keys "fbf" 'helm-bm)
-    (spacemacs/set-leader-keys "fbt" 'bm-toggle)
-    (spacemacs/set-leader-keys "fbn" 'bm-next)
-    (spacemacs/set-leader-keys "fbp" 'bm-previous)
-    )
+  ;; (require 'bm)
+  ;; (with-eval-after-load 'bm
+  ;;   ;; helm-bm
+  ;;   (require 'helm-bm)
+  ;;   (spacemacs/set-leader-keys "fb" nil)
+  ;;   (spacemacs/set-leader-keys "fbF" 'helm-filtered-bookmarks)
+  ;;   (spacemacs/set-leader-keys "fbf" 'helm-bm)
+  ;;   (spacemacs/set-leader-keys "fbt" 'bm-toggle)
+  ;;   (spacemacs/set-leader-keys "fbn" 'bm-next)
+  ;;   (spacemacs/set-leader-keys "fbp" 'bm-previous)
+  ;;   )
 
 
   ;; google this
-  (require 'google-this)
+  ;; (require 'google-this)
   (with-eval-after-load 'google-this
-    (google-this-mode 1)
-    (setq google-this-keybind nil)
-    (setq google-this-base-url "https://duckduckgo.")
-    ;; (setq google-this-base-url "https://www.google.")
-    (defun google-this-url ()
-      "URL for google searches."
-      (concat google-this-base-url google-this-location-suffix "?q=%s"))
-    (spacemacs/set-leader-keys "sws" 'google-this-search)
-    (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
+    (lambda ()
+     (google-this-mode 1)
+     (setq google-this-keybind nil)
+     (setq google-this-base-url "https://duckduckgo.")
+     ;; (setq google-this-base-url "https://www.google.")
+     (defun google-this-url ()
+       "URL for google searches."
+       (concat google-this-base-url google-this-location-suffix "?q=%s"))
+     ;;   (spacemacs/set-leader-keys "sws" 'google-this-search)
+     ;;   (spacemacs/set-leader-keys "swc" 'google-this-cpp-reference)
+     )
     )
 
   ;; Avy
@@ -667,9 +871,9 @@ you should place your code here."
     "Searches for files matching FILENAME in either DIR or the
      current directory. Just a typical wrapper around the standard
      `find' executable.
-     
+
      Since any wildcards in FILENAME need to be escaped, this wraps the shell command.
-     
+
      If not results were found, it calls the `find' executable up to
      two more times, wrapping the FILENAME pattern in wildcat
      matches. This seems to be more helpful to me."
@@ -774,7 +978,7 @@ PWD is not in a git repo (or the git command is not found)."
     (define-key eshell-command-map [(control ?i)] 'pcomplete-expand-and-complete)
     (define-key eshell-command-map [space] 'pcomplete-expand)
     (define-key eshell-command-map [? ] 'pcomplete-expand)
-    (define-key eshell-mode-map [tab] 'helm-esh-pcomplete)
+    (define-key eshell-mode-map (kbd "<tab>") 'helm-esh-pcomplete)
     (define-key eshell-mode-map [(control ?i)] 'helm-esh-pcomplete)
     (add-hook 'completion-at-point-functions #'pcomplete-completions-at-point nil t)
     (define-key eshell-mode-map [(meta ??)] 'pcomplete-list))
@@ -813,34 +1017,34 @@ PWD is not in a git repo (or the git command is not found)."
 
 
   ;; lsp
-  (require 'lsp-mode)
-  (with-eval-after-load 'lsp-mode
-    (setq xref-prompt-for-identifier nil)
-    (defun lsp--on-notification (p notification)
-      "Call the appropriate handler for NOTIFICATION."
-      (let* ((params (gethash "params" notification))
-             (client (lsp--workspace-client (lsp--parser-workspace p)))
-             (method (gethash "method" notification))
-             (handler (gethash method
-                               (lsp--client-notification-handlers client)
-                               (gethash method lsp--default-notification-handlers))))
-        (if handler
-            (funcall handler (lsp--parser-workspace p) params)
-          ;; (lsp-warn "Unknown method: %s" method))))
-          (message (format "Unknown method: %s" method)))))
-    )
+  ;; (require 'lsp-mode)
+  ;; (with-eval-after-load 'lsp-mode
+  ;;   (setq xref-prompt-for-identifier nil)
+  ;;   (defun lsp--on-notification (p notification)
+  ;;     "Call the appropriate handler for NOTIFICATION."
+  ;;     (let* ((params (gethash "params" notification))
+  ;;            (client (lsp--workspace-client (lsp--parser-workspace p)))
+  ;;            (method (gethash "method" notification))
+  ;;            (handler (gethash method
+  ;;                              (lsp--client-notification-handlers client)
+  ;;                              (gethash method lsp--default-notification-handlers))))
+  ;;       (if handler
+  ;;           (funcall handler (lsp--parser-workspace p) params)
+  ;;         ;; (lsp-warn "Unknown method: %s" method))))
+  ;;         (message (format "Unknown method: %s" method)))))
+  ;;   )
 
 
   ;; lsp ui
-  (with-eval-after-load 'lsp-ui
-    (setq lsp-ui-sideline-ignore-duplicate t)
-    (setq lsp-ui-peek-peek-height 60)
-    (setq lsp-ui-peek-list-width 65)
-    (setq lsp-ui-peek-always-show t)
-    (setq lsp-ui-peek-fontify 'always)
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-    (add-hook 'c-mode-common-hook 'flycheck-mode)
-    )
+  ;; (with-eval-after-load 'lsp-ui
+  ;;   (setq lsp-ui-sideline-ignore-duplicate t)
+  ;;   (setq lsp-ui-peek-peek-height 60)
+  ;;   (setq lsp-ui-peek-list-width 65)
+  ;;   (setq lsp-ui-peek-always-show t)
+  ;;   (setq lsp-ui-peek-fontify 'always)
+  ;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  ;;   (add-hook 'c-mode-common-hook 'flycheck-mode)
+  ;;   )
 
 
   ;; lsp imenu
@@ -952,152 +1156,174 @@ PWD is not in a git repo (or the git command is not found)."
             )
 
 
-  ;; Python
-  (require 'pycoverage)
-  (defun my-coverage ()
-    (interactive)
-    (when (derived-mode-p 'python-mode)
-      (progn
-        (linum-mode)
-        (pycoverage-mode))))
+  ;; ;; Python
+  ;; (require 'pycoverage)
+  ;; (defun my-coverage ()
+  ;;   (interactive)
+  ;;   (when (derived-mode-p 'python-mode)
+  ;;     (progn
+  ;;       (linum-mode)
+  ;;       (pycoverage-mode))))
 
-  (require 'flycheck-mypy)
-  (add-hook 'python-mode-hook 'flycheck-mode)
+  ;; (require 'flycheck-mypy)
+  ;; (add-hook 'python-mode-hook 'flycheck-mode)
 
   (add-hook 'python-mode-hook (lambda ()
                                 (setq company-backends-python-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
                                 ))
 
-  (setq python-shell-interpreter-args "-i")
-  (setq python-shell-interpreter "python")
-  ;; (setq python-shell-interpreter "ipython3")
-  ;; (setq python-shell-interpreter-args "--simple-prompt -i")
+  ;; (setq python-shell-interpreter-args "-i")
+  ;; (setq python-shell-interpreter "python")
+  ;; ;; (setq python-shell-interpreter "ipython3")
+  ;; ;; (setq python-shell-interpreter-args "--simple-prompt -i")
 
-  (require 'flycheck-pycheckers)
-  (with-eval-after-load 'flycheck
-    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
-    (setq flycheck-python-pylint-executable "pylint")
-    (setq flycheck-display-errors-delay 1.0)
-    )
+  ;; (require 'flycheck-pycheckers)
+  ;; (with-eval-after-load 'flycheck
+  ;;   (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+  ;;   (setq flycheck-python-pylint-executable "pylint")
+  ;;   (setq flycheck-display-errors-delay 1.0)
+  ;;   )
 
-  (defun my-python-checkers ()
-    "Set flycheck checkers, set checker to lsp"
-    (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
-    (setq flycheck-checker 'lsp-ui))
+  ;; (defun my-python-checkers ()
+  ;;   "Set flycheck checkers, set checker to lsp"
+  ;;   (setq flycheck-pycheckers-checkers '(pylint pep8 flake8 pyflakes mypy2))
+  ;;   (setq flycheck-checker 'lsp-ui))
 
-  (add-hook 'python-mode-hook 'my-python-checkers)
+  ;; (add-hook 'python-mode-hook 'my-python-checkers)
 
-  (defun my-python-edit-hook ()
-    (setq flycheck-checker 'lsp-ui)
-    (setq company-lsp-async t company-lsp-cache-candidates nil)
-    (modify-syntax-entry ?_ "w")
-    (define-key evil-normal-state-map (kbd "gd") 'xref-find-definitions)
-    (define-key evil-normal-state-map (kbd "gr") 'xref-find-references)
-    (define-key evil-normal-state-map (kbd "gR") 'lsp-rename)
-    (define-key evil-normal-state-map (kbd "gu") 'evil-jump-backward)
-    (define-key evil-normal-state-map (kbd "s") nil)
-    (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key evil-normal-state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key evil-normal-state-map (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key evil-normal-state-map (kbd "su") 'lsp-ui-peek-jump-backward)
-    )
+  ;; (defun my-python-edit-hook ()
+  ;;   (setq flycheck-checker 'lsp-ui)
+  ;;   (setq company-lsp-async t company-lsp-cache-candidates nil)
+  ;;   (modify-syntax-entry ?_ "w")
+  ;;   (define-key evil-normal-state-map (kbd "gd") 'xref-find-definitions)
+  ;;   (define-key evil-normal-state-map (kbd "gr") 'xref-find-references)
+  ;;   (define-key evil-normal-state-map (kbd "gR") 'lsp-rename)
+  ;;   (define-key evil-normal-state-map (kbd "gu") 'evil-jump-backward)
+  ;;   (define-key evil-normal-state-map (kbd "s") nil)
+  ;;   (define-key evil-normal-state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;   (define-key evil-normal-state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;   (define-key evil-normal-state-map (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;   (define-key evil-normal-state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+  ;;   )
 
-  (add-hook 'python-mode-hook 'my-python-edit-hook)
+  ;; (add-hook 'python-mode-hook 'my-python-edit-hook)
 
-  ;; anaconda
-  (with-eval-after-load 'anaconda-mode
-    (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
-    (define-key spacemacs-python-mode-map-prefix (kbd "ag") 'anaconda-mode-find-definitions)
-    (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
-    (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
-    (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
-    )
+  ;; ;; anaconda
+  ;; (with-eval-after-load 'anaconda-mode
+  ;;   (define-key spacemacs-python-mode-map-prefix (kbd "ah") 'anaconda-mode-show-doc)
+  ;;   (define-key spacemacs-python-mode-map-prefix (kbd "ag") 'anaconda-mode-find-definitions)
+  ;;   (define-key spacemacs-python-mode-map-prefix (kbd "ar") 'anaconda-mode-find-references)
+  ;;   (define-key spacemacs-python-mode-map-prefix (kbd "aa") 'anaconda-mode-find-assignments)
+  ;;   (define-key spacemacs-python-mode-map-prefix (kbd "au") 'anaconda-mode-go-back)
+  ;;   )
 
-  (with-eval-after-load 'anaconda-mode
-    (remove-hook 'anaconda-mode-response-read-fail-hook
-                 'anaconda-mode-show-unreadable-response))
+  ;; (with-eval-after-load 'anaconda-mode
+  ;;   (remove-hook 'anaconda-mode-response-read-fail-hook
+  ;;                'anaconda-mode-show-unreadable-response))
 
-  ;; (require 'lsp-python)
-  ;; (add-hook 'python-mode-hook #'lsp-python-enable)
+  ;; ;; (require 'lsp-python)
+  ;; ;; (add-hook 'python-mode-hook #'lsp-python-enable)
 
-  ;; (lsp-define-stdio-client lsp-python "python3"
-  ;;                          #'projectile-project-root
-  ;;                          '("pyls"))
+  ;; ;; (lsp-define-stdio-client lsp-python "python3"
+  ;; ;;                          #'projectile-project-root
+  ;; ;;                          '("pyls"))
 
-  (add-hook 'lsp-mode-hook 'flycheck-mode)
+  ;; (add-hook 'lsp-mode-hook 'flycheck-mode)
 
-  (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
-      ;; TODO: check lsp--cur-workspace here to decide per server / project
-      (lsp--set-configuration lsp-cfg)))
+  ;; (defun lsp-set-cfg ()
+  ;;   (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+  ;;     ;; TODO: check lsp--cur-workspace here to decide per server / project
+  ;;     (lsp--set-configuration lsp-cfg)))
 
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
+  ;; (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
 
-  ;; (add-hook 'python-mode-hook
-  ;;           (lambda ()
-  ;;             (lsp-python-enable)))
+  ;; ;; (add-hook 'python-mode-hook
+  ;; ;;           (lambda ()
+  ;; ;;             (lsp-python-enable)))
 
 
   ;; Elixir
-  (require 'elixir-mode)
+  (use-package lsp-mode
+    :commands lsp
+    :ensure t
+    :diminish lsp-mode
+    :hook
+    (elixir-mode . lsp)
+    :init
+    (add-to-list 'exec-path "/home/halushko/Projects/Elixir/elixir-lsp/elixir-ls/release"))
 
-  (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
+  ;; (with-eval-after-load 'elixir-mode
+  ;;   (spacemacs/declare-prefix-for-mode 'elixir-mode
+  ;;     "mt" "tests" "testing related functionality")
+  ;;   (spacemacs/set-leader-keys-for-major-mode 'elixir-mode
+  ;;     "tb" 'exunit-verify-all
+  ;;     "ta" 'exunit-verify
+  ;;     "tk" 'exunit-rerun
+  ;;     "tt" 'exunit-verify-single))
+
+  ;; (require 'elixir-mode)
+
+  ;; (add-to-list 'load-path "/opt/spacemacs-distro/.emacs.d/private/local/lsp-elixir")
   ;; (require 'lsp-elixir)
 
-  (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
+  ;; (add-hook 'elixir-mode-hook #'lsp-elixir-enable)
 
   ;; (with-eval-after-load 'lsp-elixir
-  ;;   (setq lsp-elixir-ls-command "sh")
-  ;;   (setq lsp-elixir-ls-args '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
+  ;;   ;; (setq lsp-elixir-ls-command "sh")
+  ;;   (add-hook ‘elixir-mode-hook ’lsp)
+  ;;   (setq lsp-clients-elixir-server-executable '("/home/halushko/Projects/Elixir/elixir-ls-0.2.23/release/language_server.sh"))
   ;;   )
 
-  (add-hook 'elixir-mode-hook
-            (lambda ()
-              (add-hook 'before-save-hook 'lsp-format-buffer)
-              (setq flycheck-checker 'lsp-ui)
-              (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
-              ;; xref elixir
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-              ;; Lps ui peek
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
-              ;; Dumb jump
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-              (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-              ))
+  ;; (add-hook 'elixir-mode-hook
+  ;;           (lambda ()
+  ;;             (add-hook 'before-save-hook 'lsp-format-buffer)
+  ;;             (setq flycheck-checker 'lsp-ui)
+  ;;             (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
+  ;;             ;; xref elixir
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+  ;;             ;; Lps ui peek
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
+  ;;             ;; Dumb jump
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+  ;;             (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+  ;;             ))
 
 
   ;; C++ TODO: clean this
   ;; Clang-format
-  (defun clang-format-bindings ()
-    (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
-    (define-key spacemacs-c-mode-map "," 'clang-format-region)
-    (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
-    (define-key spacemacs-c++-mode-map "," 'clang-format-region)
-    )
+  ;; (with-eval-after-load 'clang-format
+  ;;   (setq clang-format-executable "clang-format-7"))
 
-  (add-hook 'c++-mode-hook 'clang-format-bindings)
-  (add-hook 'c-mode-hook 'clang-format-bindings)
+  ;; (defun clang-format-bindings ()
+  ;;   (define-key spacemacs-c-mode-map "=" 'clang-format-buffer)
+  ;;   (define-key spacemacs-c-mode-map "," 'clang-format-region)
+  ;;   (define-key spacemacs-c++-mode-map "=" 'clang-format-buffer)
+  ;;   (define-key spacemacs-c++-mode-map "," 'clang-format-region)
+  ;;   )
 
-  (defun clang-format-for-filetype ()
-    "Run clang-format if the current file has a file extensions in the filetypes list."
-    (let ((filetypes '("c" "cpp" "h" "hpp")))
-      (when (member (file-name-extension (buffer-file-name)) filetypes)
-        (clang-format-buffer))))
+  ;; (add-hook 'c++-mode-hook 'clang-format-bindings)
+  ;; (add-hook 'c-mode-hook 'clang-format-bindings)
+
+  ;; (defun clang-format-for-filetype ()
+  ;;   "Run clang-format if the current file has a file extensions in the filetypes list."
+  ;;   (let ((filetypes '("c" "cpp" "h" "hpp")))
+  ;;     (when (member (file-name-extension (buffer-file-name)) filetypes)
+  ;;       (clang-format-buffer))))
 
   ;; (add-hook 'before-save-hook 'clang-format-for-filetype)
-  (use-package modern-cpp-font-lock :ensure t)
-  (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
+  ;; (use-package modern-cpp-font-lock :ensure t)
+  ;; (add-hook 'c++-mode-hook #'modern-c++-font-lock-mode)
 
 
   ;; cquery
@@ -1189,7 +1415,16 @@ PWD is not in a git repo (or the git command is not found)."
 
 
   ;; ccls
-  (require 'ccls)
+  (use-package lsp-mode :commands lsp)
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
+
+  (use-package ccls
+    :hook ((c-mode c++-mode objc-mode) .
+           (lambda () (require 'ccls) (lsp))))
+  (setq ccls-executable "/home/halushko/Projects/ccls/build-1a8edc137bd84bc0b94929487a3c486476ed2ff3/Release/ccls")
+
+  ;; (require 'ccls)
 
   ;; (defun ccls//enable ()
   ;;   (condition-case nil
@@ -1217,306 +1452,320 @@ PWD is not in a git repo (or the git command is not found)."
   ;;   (add-hook 'objc-mode-hook #'+ccls/enable)
   ;;   (add-hook 'cuda-mode-hook #'+ccls/enable)
   ;;   )
+  ;; (with-eval-after-load 'ccls
+  ;;   (setq ccls-initialization-options '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+  ;;   )
 
-  (with-eval-after-load 'ccls
-    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
-    ;; (setq ccls-executable "/home/halushko/bin/my-ccls")
-    ;; (setq ccls-executable "/home/halushko/Projects/ccls/ccls") ;; Works
-    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
-    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
-    ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
-    (setq ccls-executable "/home/halushko/Projects/ccls/Release-20181111/ccls")
-    (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
-    (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
-    ;; (setq ccls-sem-highlight-method 'overlay)
-    (setq ccls-sem-highlight-method nil)
-    )
+  ;; (with-eval-after-load 'ccls
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/build/ccls")
+  ;;   ;; (setq ccls-executable "/home/halushko/bin/my-ccls")
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/ccls") ;; Works
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20181010/Release/ccls")
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/build-0.20180924/Release/ccls")
+  ;;   ;; (setq ccls-executable "/home/halushko/Projects/ccls/Release-20181111/ccls")
+  ;;   (setq ccls-executable "/home/halushko/Projects/ccls/Release-12-25/ccls")
+  ;;   (setq ccls-extra-args '("--log-file=/tmp/cq.log"))
+  ;;   (setq ccls-extra-init-params '(:index (:comments 2) :cacheFormat "msgpack" :completion (:detailedLabel t)))
+  ;;   ;; (setq ccls-sem-highlight-method 'overlay)
+  ;;   (setq ccls-sem-highlight-method nil)
+  ;;   )
 
+  ;; (defun ccls/member (kind)
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom 'member "$ccls/member" `(:kind ,kind)))
 
-  (defun ccls/member (kind)
-    (interactive)
-    (lsp-ui-peek-find-custom 'member "$ccls/member" `(:kind ,kind)))
+  ;; (defun ccls/member-type ()
+  ;;   (interactive)
+  ;;   (ccls/member 2))
 
-  (defun ccls/member-type ()
-    (interactive)
-    (ccls/member 2))
+  ;; (defun ccls/member-func ()
+  ;;   (interactive)
+  ;;   (ccls/member 3))
 
-  (defun ccls/member-func ()
-    (interactive)
-    (ccls/member 3))
+  ;; (defun ccls/member-var ()
+  ;;   (interactive)
+  ;;   (ccls/member 0))
 
-  (defun ccls/member-var ()
-    (interactive)
-    (ccls/member 0))
+  ;; (defun ccls/down ()
+  ;;   (interactive)
+  ;;   (ccls-navigate "D"))
 
-  (defun ccls/down ()
-    (interactive)
-    (ccls-navigate "D"))
+  ;; (defun ccls/up ()
+  ;;   (interactive)
+  ;;   (ccls-navigate "U"))
 
-  (defun ccls/up ()
-    (interactive)
-    (ccls-navigate "U"))
+  ;; (defun ccls/left ()
+  ;;   (interactive)
+  ;;   (ccls-navigate "L"))
 
-  (defun ccls/left ()
-    (interactive)
-    (ccls-navigate "L"))
+  ;; (defun ccls/right ()
+  ;;   (interactive)
+  ;;   (ccls-navigate "R"))
 
-  (defun ccls/right ()
-    (interactive)
-    (ccls-navigate "R"))
+  ;; (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
+  ;; ;; (ccls/vars 3) ;; field or local variable
+  ;; ;; (ccls/vars 1) ;; field
+  ;; ;; (ccls/vars 4) ;; parameter
 
-  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
-  ;; (ccls/vars 3) ;; field or local variable
-  ;; (ccls/vars 1) ;; field
-  ;; (ccls/vars 4) ;; parameter
+  ;; (defun ccls/field-or-local-variable ()
+  ;;   (interactive)
+  ;;   (ccls/vars 3))
 
-  (defun ccls/field-or-local-variable ()
-    (interactive)
-    (ccls/vars 3))
+  ;; (defun ccls/field ()
+  ;;   (interactive)
+  ;;   (ccls/vars 1))
 
-  (defun ccls/field ()
-    (interactive)
-    (ccls/vars 1))
+  ;; (defun ccls/parameter ()
+  ;;   (interactive)
+  ;;   (ccls/vars 4))
 
-  (defun ccls/parameter ()
-    (interactive)
-    (ccls/vars 4))
+  ;; (defun ccls/callee ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom 'callee "$ccls/call" '(:callee t)))
 
-  (defun ccls/callee ()
-    (interactive)
-    (lsp-ui-peek-find-custom 'callee "$ccls/call" '(:callee t)))
+  ;; (defun ccls/caller ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom 'caller "$ccls/call"))
 
-  (defun ccls/caller ()
-    (interactive)
-    (lsp-ui-peek-find-custom 'caller "$ccls/call"))
+  ;; (require 'lsp-ui)
+  ;; (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
+  ;; (defun ccls/callees () (interactive) (ccls-call-hierarchy t))
+  ;; (defun ccls/callers () (interactive) (ccls-call-hierarchy nil))
 
-  (require 'lsp-ui)
-  (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
-  (defun ccls/callees () (interactive) (ccls-call-hierarchy t))
-  (defun ccls/callers () (interactive) (ccls-call-hierarchy nil))
+  ;; (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
 
-  (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
+  ;; (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
+  ;; (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
+  ;; (defun ccls/bases ()
+  ;;   (interactive)
+  ;;   (ccls-inheritance-hierarchy nil))
 
-  (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
-  (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
-  (defun ccls/bases ()
-    (interactive)
-    (ccls-inheritance-hierarchy nil))
+  ;; (defun ccls/derived ()
+  ;;   (interactive)
+  ;;   (ccls-inheritance-hierarchy t))
 
-  (defun ccls/derived ()
-    (interactive)
-    (ccls-inheritance-hierarchy t))
+  ;; (defun ccls/members ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom 'base "$ccls/memberHierarchy"
+  ;;                            (append (lsp--text-document-position-params) '(:flat t))))
+  ;; ;; The meaning of :role corresponds to https://github.com/maskray/ccls/blob/master/src/symbol.h
+  ;; ;; References w/ Role::Address bit (e.g. variables explicitly being taken addresses)
+  ;; (defun ccls/references-address ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom
+  ;;    'address "textDocument/references"
+  ;;    (plist-put (lsp--text-document-position-params) :context
+  ;;               '(:role 128))))
 
-  (defun ccls/members ()
-    (interactive)
-    (lsp-ui-peek-find-custom 'base "$ccls/memberHierarchy"
-                             (append (lsp--text-document-position-params) '(:flat t))))
-  ;; The meaning of :role corresponds to https://github.com/maskray/ccls/blob/master/src/symbol.h
-  ;; References w/ Role::Address bit (e.g. variables explicitly being taken addresses)
-  (defun ccls/references-address ()
-    (interactive)
-    (lsp-ui-peek-find-custom
-     'address "textDocument/references"
-     (plist-put (lsp--text-document-position-params) :context
-                '(:role 128))))
+  ;; ;; References w/ Role::Dynamic bit (macro expansions)
+  ;; (defun ccls/references-macro ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom
+  ;;    'address "textDocument/references"
+  ;;    (plist-put (lsp--text-document-position-params) :context
+  ;;               '(:role 64))))
 
-  ;; References w/ Role::Dynamic bit (macro expansions)
-  (defun ccls/references-macro ()
-    (interactive)
-    (lsp-ui-peek-find-custom
-     'address "textDocument/references"
-     (plist-put (lsp--text-document-position-params) :context
-                '(:role 64))))
+  ;; ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
+  ;; (defun ccls/references-not-call ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom
+  ;;    'address "textDocument/references"
+  ;;    (plist-put (lsp--text-document-position-params) :context
+  ;;               '(:excludeRole 32))))
 
-  ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
-  (defun ccls/references-not-call ()
-    (interactive)
-    (lsp-ui-peek-find-custom
-     'address "textDocument/references"
-     (plist-put (lsp--text-document-position-params) :context
-                '(:excludeRole 32))))
+  ;; ;; References w/ Role::Read
+  ;; (defun ccls/references-read ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom
+  ;;    'read "textDocument/references"
+  ;;    (plist-put (lsp--text-document-position-params) :context
+  ;;               '(:role 8))))
 
-  ;; References w/ Role::Read
-  (defun ccls/references-read ()
-    (interactive)
-    (lsp-ui-peek-find-custom
-     'read "textDocument/references"
-     (plist-put (lsp--text-document-position-params) :context
-                '(:role 8))))
+  ;; ;; References w/ Role::Write
+  ;; (defun ccls/references-write ()
+  ;;   (interactive)
+  ;;   (lsp-ui-peek-find-custom
+  ;;    'write "textDocument/references"
+  ;;    (plist-put (lsp--text-document-position-params) :context
+  ;;               '(:role 16))))
 
-  ;; References w/ Role::Write
-  (defun ccls/references-write ()
-    (interactive)
-    (lsp-ui-peek-find-custom
-     'write "textDocument/references"
-     (plist-put (lsp--text-document-position-params) :context
-                '(:role 16))))
+  ;; ;; xref-find-apropos (workspace/symbol)
 
-  ;; xref-find-apropos (workspace/symbol)
+  ;; (defun my/highlight-pattern-in-text (pattern line)
+  ;;   (when (> (length pattern) 0)
+  ;;     (let ((i 0))
+  ;;       (while (string-match pattern line i)
+  ;;         (setq i (match-end 0))
+  ;;         (add-face-text-property (match-beginning 0) (match-end 0) 'isearch t line)
+  ;;         )
+  ;;       line)))
 
-  (defun my/highlight-pattern-in-text (pattern line)
-    (when (> (length pattern) 0)
-      (let ((i 0))
-        (while (string-match pattern line i)
-          (setq i (match-end 0))
-          (add-face-text-property (match-beginning 0) (match-end 0) 'isearch t line)
-          )
-        line)))
+  ;; (with-eval-after-load 'lsp-methods
+  ;; ;;; Override
+  ;;   ;; This deviated from the original in that it highlights pattern appeared in symbol
+  ;;   (defun lsp--symbol-information-to-xref (pattern symbol)
+  ;;     "Return a `xref-item' from SYMBOL information."
+  ;;     (let* ((location (gethash "location" symbol))
+  ;;            (uri (gethash "uri" location))
+  ;;            (range (gethash "range" location))
+  ;;            (start (gethash "start" range))
+  ;;            (name (gethash "name" symbol)))
+  ;;       (xref-make (format "[%s] %s"
+  ;;                          (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+  ;;                          (my/highlight-pattern-in-text (regexp-quote pattern) name))
+  ;;                  (xref-make-file-location (string-remove-prefix "file://" uri)
+  ;;                                           (1+ (gethash "line" start))
+  ;;                                           (gethash "character" start)))))
 
-  (with-eval-after-load 'lsp-methods
-  ;;; Override
-    ;; This deviated from the original in that it highlights pattern appeared in symbol
-    (defun lsp--symbol-information-to-xref (pattern symbol)
-      "Return a `xref-item' from SYMBOL information."
-      (let* ((location (gethash "location" symbol))
-             (uri (gethash "uri" location))
-             (range (gethash "range" location))
-             (start (gethash "start" range))
-             (name (gethash "name" symbol)))
-        (xref-make (format "[%s] %s"
-                           (alist-get (gethash "kind" symbol) lsp--symbol-kind)
-                           (my/highlight-pattern-in-text (regexp-quote pattern) name))
-                   (xref-make-file-location (string-remove-prefix "file://" uri)
-                                            (1+ (gethash "line" start))
-                                            (gethash "character" start)))))
+  ;;   (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
+  ;;     (let ((symbols (lsp--send-request (lsp--make-request
+  ;;                                        "workspace/symbol"
+  ;;                                        `(:query ,pattern)))))
+  ;;       (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
+  ;;   )
 
-    (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
-      (let ((symbols (lsp--send-request (lsp--make-request
-                                         "workspace/symbol"
-                                         `(:query ,pattern)))))
-        (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
-    )
+  ;; (add-hook 'c++-mode-hook (lambda ()
+  ;;                            (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
 
-  (add-hook 'c++-mode-hook (lambda ()
-                             (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
+  ;; (defun my-c-settings ()
+  ;;   (setq flycheck-checker 'lsp-ui)
+  ;;   ;; (setq company-lsp-async t company-lsp-cache-candidates nil)
+  ;;   ;; (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+  ;;   (setq  company-lsp-async t)
+  ;;   ;; (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
+  ;;   (setq company-backends-c-mode-common '((company-lsp)))
+  ;;   (modify-syntax-entry ?_ "w")
+  ;;   (setq color-identifiers-mode nil)
+  ;;   ;; (setq ccls-sem-highlight-method 'overlay)
+  ;;   ;; (ccls-use-default-rainbow-sem-highlight)
+  ;;   ;; (spacemacs/toggle-truncate-lines-off)
+  ;;   (setq truncate-lines t)
+  ;;   (remove-hook 'company-mode-hook 'company-statistics-mode)
+  ;;   (lsp)
+  ;;   )
 
-  (defun my-c-settings ()
-    (setq flycheck-checker 'lsp-ui)
-    ;; (setq company-lsp-async t company-lsp-cache-candidates nil)
-    ;; (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
-    (setq  company-lsp-async t)
-    ;; (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
-    (setq company-backends-c-mode-common '((company-lsp)))
-    (modify-syntax-entry ?_ "w")
-    (setq color-identifiers-mode nil)
-    ;; (setq ccls-sem-highlight-method 'overlay)
-    ;; (ccls-use-default-rainbow-sem-highlight)
-    ;; (spacemacs/toggle-truncate-lines-off)
-    (setq truncate-lines t)
-    (remove-hook 'company-mode-hook 'company-statistics-mode)
-    (lsp)
-    )
+  ;; (defun lsp-ccls-xref-navigation (state-map)
+  ;;   "Setting projectile other file, xref and lsp keybindings"
+  ;;   ;; go to keybindings
+  ;;   (define-key state-map (kbd "ga") 'projectile-find-other-file)
+  ;;   (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
+  ;;   (define-key state-map (kbd "gd") 'xref-find-definitions)
+  ;;   (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
+  ;;   (define-key state-map (kbd "gr") 'xref-find-references)
+  ;;   (define-key state-map (kbd "gu") 'evil-jump-backward)
+  ;;   (define-key state-map (kbd "gR") 'lsp-rename)
+  ;;   (define-key state-map (kbd "gx") 'lsp-execute-code-action)
+  ;;   ;; see keybindings
+  ;;   (define-key state-map (kbd "s") nil)
+  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;   (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;   (define-key state-map (kbd "sb") 'ccls/base)
+  ;;   (define-key state-map (kbd "sc") 'ccls/callee)
+  ;;   (define-key state-map (kbd "sC") 'ccls/caller)
+  ;;   (define-key state-map (kbd "shc") 'ccls/callees)
+  ;;   (define-key state-map (kbd "shC") 'ccls/callers)
+  ;;   (define-key state-map (kbd "shb") 'ccls/bases)
+  ;;   (define-key state-map (kbd "shd") 'ccls/derived)
+  ;;   (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
+  ;;   (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;   (define-key state-map (kbd "sm") 'ccls/references-macro)
+  ;;   (define-key state-map (kbd "sa") 'ccls/references-address)
+  ;;   (define-key state-map (kbd "sR") 'ccls/references-read)
+  ;;   (define-key state-map (kbd "sw") 'ccls/references-write)
+  ;;   (define-key state-map (kbd "sg") 'ccls/references-not-call)
+  ;;   (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
+  ;;   (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
+  ;;   (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+  ;;   )
 
-  (defun lsp-ccls-xref-navigation (state-map)
-    "Setting projectile other file, xref and lsp keybindings"
-    ;; go to keybindings
-    (define-key state-map (kbd "ga") 'projectile-find-other-file)
-    (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
-    (define-key state-map (kbd "gd") 'xref-find-definitions)
-    (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
-    (define-key state-map (kbd "gr") 'xref-find-references)
-    (define-key state-map (kbd "gu") 'evil-jump-backward)
-    (define-key state-map (kbd "gR") 'lsp-rename)
-    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
-    ;; see keybindings
-    (define-key state-map (kbd "s") nil)
-    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key state-map (kbd "sb") 'ccls/base)
-    (define-key state-map (kbd "sc") 'ccls/callee)
-    (define-key state-map (kbd "sC") 'ccls/caller)
-    (define-key state-map (kbd "shc") 'ccls/callees)
-    (define-key state-map (kbd "shC") 'ccls/callers)
-    (define-key state-map (kbd "shb") 'ccls/bases)
-    (define-key state-map (kbd "shd") 'ccls/derived)
-    (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
-    (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key state-map (kbd "sm") 'ccls/references-macro)
-    (define-key state-map (kbd "sa") 'ccls/references-address)
-    (define-key state-map (kbd "sR") 'ccls/references-read)
-    (define-key state-map (kbd "sw") 'ccls/references-write)
-    (define-key state-map (kbd "sg") 'ccls/references-not-call)
-    (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
-    (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
-    (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
-    )
+  ;; (defun my-c-ccls-keybindings (mode-map-prefix)
+  ;;   "Setting projectile , xref, lsp, dumb and gtags"
+  ;;   ;; dumb-jump
+  ;;   (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
+  ;;   (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+  ;;   (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+  ;;   (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
+  ;;   (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+  ;;   (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+  ;;   (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+  ;;   (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+  ;;   ;; gtags
+  ;;   (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
+  ;;   (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
+  ;;   (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
+  ;;   (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+  ;;   (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+  ;;   (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+  ;;   (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+  ;;   (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+  ;;   (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
+  ;;   ;; reuse keymap
+  ;;   (lsp-ccls-xref-navigation mode-map-prefix)
+  ;;   (lsp-ccls-xref-navigation evil-normal-state-map)
+  ;;   )
 
-  (defun my-c-ccls-keybindings (mode-map-prefix)
-    "Setting projectile , xref, lsp, dumb and gtags"
-    ;; dumb-jump
-    (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
-    (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-    (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-    (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
-    (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-    (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-    (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-    (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
-    ;; gtags
-    (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
-    (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
-    (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
-    (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-    (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-    (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-    (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-    (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-    (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
-    ;; reuse keymap
-    (lsp-ccls-xref-navigation mode-map-prefix)
-    (lsp-ccls-xref-navigation evil-normal-state-map)
-    )
+  ;; (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
+  ;; (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
 
-  (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
-  (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
-
-  (add-hook 'c++-mode-hook 'my-c-settings)
-  (add-hook 'c-mode-hook 'my-c-settings)
+  ;; (add-hook 'c++-mode-hook 'my-c-settings)
+  ;; (add-hook 'c-mode-hook 'my-c-settings)
 
   )
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F"))))
- '(lsp-face-highlight-read ((t (:background "OliveDrab4"))))
- '(lsp-face-highlight-write ((t (:background "firebrick")))))
+
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-all-windows t t)
+ '(avy-all-windows t)
  '(blink-cursor-mode nil)
+ '(clang-format-executable "clang-format-8")
  '(column-number-mode t)
- '(company-idle-delay nil)
+ '(company-idle-delay 0)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
+ '(company-transformers
+   (quote
+    (spacemacs//company-transformer-cancel company-sort-by-backend-importance)))
  '(display-time-mode t)
- '(evil-want-Y-yank-to-eol t)
+ '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-color "#383838" t)
  '(fzf/window-height 50)
+ '(garbage-collection-messages t)
+ '(gc-cons-percentage 0.12)
+ '(global-vi-tilde-fringe-mode nil)
  '(helm-buffer-max-length nil)
- '(helm-display-header-line nil t)
+ '(helm-display-header-line nil)
  '(helm-eshell-fuzzy-match t)
  '(helm-grep-ag-command
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
+ '(lsp-clients-clangd-executable "clangd-8")
  '(lsp-project-whitelist (quote ("/home/halushko/Projects/*")))
+ '(lsp-ui-doc-enable nil)
+ '(lsp-ui-doc-header nil)
  '(lsp-ui-doc-include-signature t)
+ '(lsp-ui-doc-position (quote at-point))
+ '(lsp-ui-doc-use-childframe nil)
+ '(lsp-ui-imenu-enable nil)
+ '(lsp-ui-imenu-kind-position (quote left))
  '(lsp-ui-sideline-delay 2.0)
+ '(lsp-ui-sideline-ignore-duplicate nil)
+ '(lsp-ui-sideline-show-code-actions nil)
+ '(lsp-ui-sideline-show-hover nil)
  '(menu-bar-mode nil)
  '(nrepl-message-colors
    (quote
     ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(package-selected-packages
-   (quote
-    (magit git-commit cider flyspell-correct helm helm-core lsp-mode org-plus-contrib async lsp-python zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toml-mode toc-org thrift tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stan-mode spaceline spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode scad-mode sass-mode reverse-theme restart-emacs rebecca-theme realgud-pry rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme racer qml-mode pyvenv pytest pyenv-mode pycoverage py-isort purple-haze-theme pug-mode professional-theme popwin play-crystal planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pdf-tools pcre2el paradox ox-gfm orgit organic-green-theme org-present org-pomodoro org-mime org-jira org-download org-bullets open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir ob-crystal noflet noctilux-theme neotree naquadah-theme mwim mustang-theme multi-term mu4e-maildirs-extension mu4e-alert move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme matlab-mode material-theme markdown-toc majapahit-theme magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme julia-mode json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme inf-crystal indent-guide ibuffer-projectile hy-mode hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-tramp helm-themes helm-swoop helm-pydoc helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-bm helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme google-translate google-this golden-ratio gnuplot gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fzf fuzzy flyspell-correct-helm flycheck-rust flycheck-pycheckers flycheck-pos-tip flycheck-mypy flycheck-mix flycheck-crystal flycheck-credo flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eyebrowse expand-region exotica-theme exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav dumb-jump dracula-theme django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery company-web company-tern company-statistics company-shell company-lsp company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode coffee-mode cmake-mode clues-theme clojure-snippets clj-refactor clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme ccls cargo busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk arduino-mode apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme ameba alect-themes alchemist aggressive-indent afternoon-theme adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(powerline-default-separator (quote alternate))
  '(send-mail-function (quote smtpmail-send-it))
  '(smtpmail-debug-info t)
  '(smtpmail-debug-verb t)
@@ -1543,3 +1792,11 @@ PWD is not in a git repo (or the git command is not found)."
      (340 . "#94BFF3")
      (360 . "#DC8CC3"))))
  '(vc-annotate-very-old-color "#DC8CC3"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(lsp-face-highlight-read ((t (:background "OliveDrab4"))))
+ '(lsp-face-highlight-write ((t (:background "firebrick")))))
+)
