@@ -33,7 +33,8 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(graphviz
+     windows-scripts
      yaml
      lsp
      (helm
@@ -57,7 +58,7 @@ This function should only modify configuration layer settings."
      markdown
      csv
      erlang
-     elixir
+     ;; elixir
      html
      octave
      scala
@@ -114,7 +115,7 @@ This function should only modify configuration layer settings."
       )
      (spell-checking
       :variables
-      spell-checking-enable-by-default nil
+      spell-checking-enable-by-default t
       enable-flyspell-auto-completion nil
       )
      (syntax-checking
@@ -131,11 +132,9 @@ This function should only modify configuration layer settings."
       :variables
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-backend 'lsp-ccls
-      c-c++-lsp-cache-dir ".lsp-ccls-cache"
-      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/Release-12-25/ccls.sh"
-      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/build-master/Release/ccls"
-      ;; c-c++-lsp-executable "/home/halushko/Projects/ccls/build-1a8edc137bd84bc0b94929487a3c486476ed2ff3/Release/ccls"
-      c-c++-lsp-executable "/home/halushko/Projects/ccls/build-pi-day/Release/ccls"
+      c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
+      ;; c-c++-lsp-executable "/home/halushko/aux_software/ccls/Release/ccls"
+      c-c++-lsp-executable "/home/halushko/bin/ccls.sh"
       ;; c-c++-backend 'lsp-cquery
       ;; c-c++-lsp-executable "/home/halushko/Projects/cquery-tag/cquery/build/cquery"
       c-c++-lsp-sem-highlight-method nil
@@ -148,6 +147,7 @@ This function should only modify configuration layer settings."
       :variables gtags-enable-by-default nil
       )
      javascript
+     confluence
      (python
       :variables
       python-fill-column 119
@@ -172,7 +172,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(modern-cpp-font-lock lsp-elixir)
+   dotspacemacs-additional-packages '(modern-cpp-font-lock lsp-elixir fzf)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -222,7 +222,7 @@ It should only modify the values of Spacemacs settings."
    ;; This variable has no effect if Emacs is launched with the parameter
    ;; `--insecure' which forces the value of this variable to nil.
    ;; (default t)
-   dotspacemacs-elpa-https t
+   dotspacemacs-elpa-https nil
 
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    ;; (default 5)
@@ -237,7 +237,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
    ;; latest version of packages from MELPA. (default nil)
-   dotspacemacs-use-spacelpa nil
+   dotspacemacs-use-spacelpa t
 
    ;; If non-nil then verify the signature for downloaded Spacelpa archives.
    ;; (default nil)
@@ -288,7 +288,7 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-startup-buffer-responsive t
 
    ;; Default major mode of the scratch buffer (default `text-mode')
-   dotspacemacs-scratch-mode 'text-mode
+   dotspacemacs-scratch-mode 'emacs-lisp-mode
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -298,10 +298,11 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         spacemacs-dark
+                         zenburn
                          kaolin-galaxy
                          kaolin-ocean
                          kaolin-dark
-                         zenburn
                          )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -320,7 +321,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 12
                                :weight normal
                                :width normal)
 
@@ -574,12 +575,11 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
   ;; Load files from private directory
-  ;; (add-to-list 'load-path "~/.emacs.d/private/local")
+  (add-to-list 'load-path "~/.emacs.d/private/local")
 
   ;; Spacemacs switches
   (spacemacs/toggle-mode-line-battery-on)
   (spacemacs/toggle-display-time-on)
-  (spacemacs/toggle-truncate-lines-off)
   (spacemacs/toggle-indent-guide-off)
   (spacemacs/toggle-syntax-checking-on)
   (spacemacs/toggle-auto-fill-mode-off)
@@ -733,7 +733,7 @@ before packages are loaded."
   ;; Projectile
   (with-eval-after-load 'projectile
     (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
-    ;; (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
+    (spacemacs/set-leader-keys "pz" 'helm-fzf-project-root)
     (spacemacs/set-leader-keys "ps" 'helm-multi-swoop-projectile)
     (spacemacs/set-leader-keys "pA" 'projectile-find-file-other-window)
     (setq projectile-enable-caching t)
@@ -763,8 +763,8 @@ before packages are loaded."
     ;; If you prefer fuzzy matching
     ;; (setq helm-swoop-use-fuzzy-match t)
 
-    ;; (require 'helm-fzf)
-    ;; (spacemacs/set-leader-keys "fz" 'helm-fzf)
+    (require 'helm-fzf)
+    (spacemacs/set-leader-keys "fz" 'helm-fzf)
     ;; (setq helm-buffer-max-length nil)
     ;; (set-face-attribute 'helm-source-header nil :height 0.1)
     )
@@ -830,12 +830,14 @@ before packages are loaded."
   (add-hook 'term-mode-hook 'bb/setup-term-mode)
 
 
-  ;; Evil
-  (setq evil-move-cursor-back nil)
-
-
   ;; Matlab/Octave
   (setq auto-mode-alist (cons '("\\.m$" . octave-mode) auto-mode-alist))
+
+
+  ;; RPM spec
+  (autoload 'rpm-spec-mode "rpm-spec-mode.el" "RPM spec mode." t)
+  (setq auto-mode-alist (append '(("\\.spec" . rpm-spec-mode))
+ 			                          auto-mode-alist))
 
   ;; ClearCase helper functions
   (defun clearcase-checkout ()
@@ -1145,7 +1147,14 @@ PWD is not in a git repo (or the git command is not found)."
                               )
             )
   (add-hook 'rust-mode-hook #'flycheck-mode)
+  
+  (defun remove-dos-eol ()
+    "Do not show ^M in files containing mixed UNIX and DOS line endings."
+    (interactive)
+    (setq buffer-display-table (make-display-table))
+    (aset buffer-display-table ?\^M []))
 
+  (add-hook 'c++-mode-hook #'remove-dos-eol)
 
   ;; Crystal
   (add-hook 'crystal-mode-hook
@@ -1155,6 +1164,8 @@ PWD is not in a git repo (or the git command is not found)."
               )
             )
 
+  ;; Action Script
+  (require 'actionscript-mode)
 
   ;; ;; Python
   ;; (require 'pycoverage)
@@ -1171,11 +1182,6 @@ PWD is not in a git repo (or the git command is not found)."
   (add-hook 'python-mode-hook (lambda ()
                                 (setq company-backends-python-mode '((company-lsp :with company-yasnippet company-dabbrev-code)))
                                 ))
-
-  ;; (setq python-shell-interpreter-args "-i")
-  ;; (setq python-shell-interpreter "python")
-  ;; ;; (setq python-shell-interpreter "ipython3")
-  ;; ;; (setq python-shell-interpreter-args "--simple-prompt -i")
 
   ;; (require 'flycheck-pycheckers)
   ;; (with-eval-after-load 'flycheck
@@ -1243,14 +1249,14 @@ PWD is not in a git repo (or the git command is not found)."
 
 
   ;; Elixir
-  (use-package lsp-mode
-    :commands lsp
-    :ensure t
-    :diminish lsp-mode
-    :hook
-    (elixir-mode . lsp)
-    :init
-    (add-to-list 'exec-path "/home/halushko/Projects/Elixir/elixir-lsp/elixir-ls/release"))
+  ;; (use-package lsp-mode
+  ;;   :commands lsp
+  ;;   :ensure t
+  ;;   :diminish lsp-mode
+  ;;   :hook
+  ;;   (elixir-mode . lsp)
+  ;;   :init
+  ;;   (add-to-list 'exec-path "/home/halushko/Projects/Elixir/elixir-lsp/elixir-ls/release"))
 
   ;; (with-eval-after-load 'elixir-mode
   ;;   (spacemacs/declare-prefix-for-mode 'elixir-mode
@@ -1415,14 +1421,14 @@ PWD is not in a git repo (or the git command is not found)."
 
 
   ;; ccls
-  (use-package lsp-mode :commands lsp)
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
+  ;; (use-package lsp-mode :commands lsp)
+  ;; (use-package lsp-ui :commands lsp-ui-mode)
+  ;; (use-package company-lsp :commands company-lsp)
 
-  (use-package ccls
-    :hook ((c-mode c++-mode objc-mode) .
-           (lambda () (require 'ccls) (lsp))))
-  (setq ccls-executable "/home/halushko/Projects/ccls/build-1a8edc137bd84bc0b94929487a3c486476ed2ff3/Release/ccls")
+  ;; (use-package ccls
+  ;;   :hook ((c-mode c++-mode objc-mode) .
+  ;;          (lambda () (require 'ccls) (lsp))))
+  ;; (setq ccls-executable "/home/halushko/aux_software/ccls/Release/ccls")
 
   ;; (require 'ccls)
 
@@ -1528,214 +1534,145 @@ PWD is not in a git repo (or the git command is not found)."
   ;;   (interactive)
   ;;   (lsp-ui-peek-find-custom 'caller "$ccls/call"))
 
+  (defun ccls/callee () (interactive) (lsp-ui-peek-find-custom "$ccls/call" '(:callee t)))
+  (defun ccls/caller () (interactive) (lsp-ui-peek-find-custom "$ccls/call"))
+  (defun ccls/vars (kind) (lsp-ui-peek-find-custom "$ccls/vars" `(:kind ,kind)))
+  (defun ccls/base (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels)))
+  (defun ccls/derived (levels) (lsp-ui-peek-find-custom "$ccls/inheritance" `(:levels ,levels :derived t)))
+  (defun ccls/member (kind) (interactive) (lsp-ui-peek-find-custom "$ccls/member" `(:kind ,kind)))
+
+  ;; References w/ Role::Role
+  (defun ccls/references-read () (interactive)
+         (lsp-ui-peek-find-custom "textDocument/references"
+                                  (plist-put (lsp--text-document-position-params) :role 8)))
+
+  ;; References w/ Role::Write
+  (defun ccls/references-write ()
+    (interactive)
+    (lsp-ui-peek-find-custom "textDocument/references"
+                             (plist-put (lsp--text-document-position-params) :role 16)))
+
+  ;; References w/ Role::Dynamic bit (macro expansions)
+  (defun ccls/references-macro () (interactive)
+         (lsp-ui-peek-find-custom "textDocument/references"
+                                  (plist-put (lsp--text-document-position-params) :role 64)))
+
+  ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
+  (defun ccls/references-not-call () (interactive)
+         (lsp-ui-peek-find-custom "textDocument/references"
+                                  (plist-put (lsp--text-document-position-params) :excludeRole 32)))
+
+  ;; ccls/vars ccls/base ccls/derived ccls/members have a parameter while others are interactive.
+  ;; (ccls/base 1) direct bases
+  ;; (ccls/derived 1) direct derived
+  ;; (ccls/member 2) => 2 (Type) => nested classes / types in a namespace
+  ;; (ccls/member 3) => 3 (Func) => member functions / functions in a namespace
+  ;; (ccls/member 0) => member variables / variables in a namespace
+  ;; (ccls/vars 1) => field
+  ;; (ccls/vars 2) => local variable
+  ;; (ccls/vars 3) => field or local variable. 3 = 1 | 2
+  ;; (ccls/vars 4) => parameter
+
+  ;; References whose filenames are under this project
   ;; (require 'lsp-ui)
-  ;; (defun ccls/base () (interactive) (lsp-ui-peek-find-custom 'base "$ccls/base"))
-  ;; (defun ccls/callees () (interactive) (ccls-call-hierarchy t))
-  ;; (defun ccls/callers () (interactive) (ccls-call-hierarchy nil))
-
-  ;; (defun ccls/vars (kind) (lsp-ui-peek-find-custom 'vars "$ccls/vars" `(:kind ,kind)))
-
-  ;; (defun ccls/xref-base () (interactive) (ccls-xref-find-custom "$ccls/base"))
-  ;; (defun ccls/xref-callers () (interactive) (ccls-xref-find-custom "$ccls/callers"))
-  ;; (defun ccls/bases ()
-  ;;   (interactive)
-  ;;   (ccls-inheritance-hierarchy nil))
-
-  ;; (defun ccls/derived ()
-  ;;   (interactive)
-  ;;   (ccls-inheritance-hierarchy t))
-
-  ;; (defun ccls/members ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom 'base "$ccls/memberHierarchy"
-  ;;                            (append (lsp--text-document-position-params) '(:flat t))))
-  ;; ;; The meaning of :role corresponds to https://github.com/maskray/ccls/blob/master/src/symbol.h
-  ;; ;; References w/ Role::Address bit (e.g. variables explicitly being taken addresses)
-  ;; (defun ccls/references-address ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom
-  ;;    'address "textDocument/references"
-  ;;    (plist-put (lsp--text-document-position-params) :context
-  ;;               '(:role 128))))
-
-  ;; ;; References w/ Role::Dynamic bit (macro expansions)
-  ;; (defun ccls/references-macro ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom
-  ;;    'address "textDocument/references"
-  ;;    (plist-put (lsp--text-document-position-params) :context
-  ;;               '(:role 64))))
-
-  ;; ;; References w/o Role::Call bit (e.g. where functions are taken addresses)
-  ;; (defun ccls/references-not-call ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom
-  ;;    'address "textDocument/references"
-  ;;    (plist-put (lsp--text-document-position-params) :context
-  ;;               '(:excludeRole 32))))
-
-  ;; ;; References w/ Role::Read
-  ;; (defun ccls/references-read ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom
-  ;;    'read "textDocument/references"
-  ;;    (plist-put (lsp--text-document-position-params) :context
-  ;;               '(:role 8))))
-
-  ;; ;; References w/ Role::Write
-  ;; (defun ccls/references-write ()
-  ;;   (interactive)
-  ;;   (lsp-ui-peek-find-custom
-  ;;    'write "textDocument/references"
-  ;;    (plist-put (lsp--text-document-position-params) :context
-  ;;               '(:role 16))))
-
-  ;; ;; xref-find-apropos (workspace/symbol)
-
-  ;; (defun my/highlight-pattern-in-text (pattern line)
-  ;;   (when (> (length pattern) 0)
-  ;;     (let ((i 0))
-  ;;       (while (string-match pattern line i)
-  ;;         (setq i (match-end 0))
-  ;;         (add-face-text-property (match-beginning 0) (match-end 0) 'isearch t line)
-  ;;         )
-  ;;       line)))
-
-  ;; (with-eval-after-load 'lsp-methods
-  ;; ;;; Override
-  ;;   ;; This deviated from the original in that it highlights pattern appeared in symbol
-  ;;   (defun lsp--symbol-information-to-xref (pattern symbol)
-  ;;     "Return a `xref-item' from SYMBOL information."
-  ;;     (let* ((location (gethash "location" symbol))
-  ;;            (uri (gethash "uri" location))
-  ;;            (range (gethash "range" location))
-  ;;            (start (gethash "start" range))
-  ;;            (name (gethash "name" symbol)))
-  ;;       (xref-make (format "[%s] %s"
-  ;;                          (alist-get (gethash "kind" symbol) lsp--symbol-kind)
-  ;;                          (my/highlight-pattern-in-text (regexp-quote pattern) name))
-  ;;                  (xref-make-file-location (string-remove-prefix "file://" uri)
-  ;;                                           (1+ (gethash "line" start))
-  ;;                                           (gethash "character" start)))))
-
-  ;;   (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
-  ;;     (let ((symbols (lsp--send-request (lsp--make-request
-  ;;                                        "workspace/symbol"
-  ;;                                        `(:query ,pattern)))))
-  ;;       (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
-  ;;   )
+  ;; (lsp-ui-peek-find-references nil (list :folders (vector (projectile-project-root))))
 
   ;; (add-hook 'c++-mode-hook (lambda ()
   ;;                            (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
 
-  ;; (defun my-c-settings ()
-  ;;   (setq flycheck-checker 'lsp-ui)
-  ;;   ;; (setq company-lsp-async t company-lsp-cache-candidates nil)
-  ;;   ;; (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
-  ;;   (setq  company-lsp-async t)
-  ;;   ;; (setq company-backends-c-mode-common '((company-lsp :with company-yasnippet company-dabbrev-code)))
-  ;;   (setq company-backends-c-mode-common '((company-lsp)))
-  ;;   (modify-syntax-entry ?_ "w")
-  ;;   (setq color-identifiers-mode nil)
-  ;;   ;; (setq ccls-sem-highlight-method 'overlay)
-  ;;   ;; (ccls-use-default-rainbow-sem-highlight)
-  ;;   ;; (spacemacs/toggle-truncate-lines-off)
-  ;;   (setq truncate-lines t)
-  ;;   (remove-hook 'company-mode-hook 'company-statistics-mode)
-  ;;   (lsp)
-  ;;   )
+  (defun my-c-settings ()
+    (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+    ;; (setq company-backends-c-mode-common '((company-lsp)))
+    (setq company-backends-c-mode-common '((company-capf)))
+    (modify-syntax-entry ?_ "w")
+    (remove-hook 'company-mode-hook 'company-statistics-mode)
+    )
 
-  ;; (defun lsp-ccls-xref-navigation (state-map)
-  ;;   "Setting projectile other file, xref and lsp keybindings"
-  ;;   ;; go to keybindings
-  ;;   (define-key state-map (kbd "ga") 'projectile-find-other-file)
-  ;;   (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
-  ;;   (define-key state-map (kbd "gd") 'xref-find-definitions)
-  ;;   (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
-  ;;   (define-key state-map (kbd "gr") 'xref-find-references)
-  ;;   (define-key state-map (kbd "gu") 'evil-jump-backward)
-  ;;   (define-key state-map (kbd "gR") 'lsp-rename)
-  ;;   (define-key state-map (kbd "gx") 'lsp-execute-code-action)
-  ;;   ;; see keybindings
-  ;;   (define-key state-map (kbd "s") nil)
-  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-  ;;   (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-  ;;   (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-  ;;   (define-key state-map (kbd "sb") 'ccls/base)
-  ;;   (define-key state-map (kbd "sc") 'ccls/callee)
-  ;;   (define-key state-map (kbd "sC") 'ccls/caller)
-  ;;   (define-key state-map (kbd "shc") 'ccls/callees)
-  ;;   (define-key state-map (kbd "shC") 'ccls/callers)
-  ;;   (define-key state-map (kbd "shb") 'ccls/bases)
-  ;;   (define-key state-map (kbd "shd") 'ccls/derived)
-  ;;   (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
-  ;;   (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
-  ;;   (define-key state-map (kbd "sm") 'ccls/references-macro)
-  ;;   (define-key state-map (kbd "sa") 'ccls/references-address)
-  ;;   (define-key state-map (kbd "sR") 'ccls/references-read)
-  ;;   (define-key state-map (kbd "sw") 'ccls/references-write)
-  ;;   (define-key state-map (kbd "sg") 'ccls/references-not-call)
-  ;;   (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
-  ;;   (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
-  ;;   (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
-  ;;   )
+  (defun lsp-ccls-xref-navigation (state-map)
+    "Setting projectile other file, xref and lsp keybindings"
+    ;; go to keybindings
+    (define-key state-map (kbd "ga") 'projectile-find-other-file)
+    (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
+    (define-key state-map (kbd "gd") 'xref-find-definitions)
+    (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key state-map (kbd "gr") 'xref-find-references)
+    (define-key state-map (kbd "gu") 'evil-jump-backward)
+    (define-key state-map (kbd "gR") 'lsp-rename)
+    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
+    ;; see keybindings
+    (define-key state-map (kbd "s") nil)
+    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    (define-key state-map (kbd "sb") 'ccls/base)
+    (define-key state-map (kbd "sc") 'ccls/callee)
+    (define-key state-map (kbd "sC") 'ccls/caller)
+    (define-key state-map (kbd "shc") 'ccls/callees)
+    (define-key state-map (kbd "shC") 'ccls/callers)
+    (define-key state-map (kbd "shb") 'ccls/bases)
+    (define-key state-map (kbd "shd") 'ccls/derived)
+    (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
+    (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
+    (define-key state-map (kbd "sm") 'ccls/references-macro)
+    (define-key state-map (kbd "sa") 'ccls/references-address)
+    (define-key state-map (kbd "sR") 'ccls/references-read)
+    (define-key state-map (kbd "sw") 'ccls/references-write)
+    (define-key state-map (kbd "sg") 'ccls/references-not-call)
+    (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
+    (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
+    (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+    )
 
-  ;; (defun my-c-ccls-keybindings (mode-map-prefix)
-  ;;   "Setting projectile , xref, lsp, dumb and gtags"
-  ;;   ;; dumb-jump
-  ;;   (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
-  ;;   (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
-  ;;   (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-  ;;   (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
-  ;;   (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-  ;;   (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-  ;;   (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-  ;;   (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
-  ;;   ;; gtags
-  ;;   (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
-  ;;   (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
-  ;;   (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
-  ;;   (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
-  ;;   (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
-  ;;   (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
-  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
-  ;;   (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
-  ;;   (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
-  ;;   (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
-  ;;   (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
-  ;;   ;; reuse keymap
-  ;;   (lsp-ccls-xref-navigation mode-map-prefix)
-  ;;   (lsp-ccls-xref-navigation evil-normal-state-map)
-  ;;   )
+  (defun my-c-ccls-keybindings (mode-map-prefix)
+    "Setting projectile , xref, lsp, dumb and gtags"
+    ;; dumb-jump
+    (define-key mode-map-prefix (kbd "dg") 'dumb-jump-go)
+    (define-key mode-map-prefix (kbd "dG") 'dumb-jump-go-other-window)
+    (define-key mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+    (define-key mode-map-prefix (kbd "du") 'dumb-jump-back)
+    (define-key mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+    (define-key mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+    (define-key mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+    (define-key mode-map-prefix (kbd "dq") 'dumb-jump-quick-look)
+    ;; gtags
+    (define-key mode-map-prefix (kbd "td") 'helm-gtags-dwim)
+    (define-key mode-map-prefix (kbd "tD") 'helm-gtags-dwim-other-window)
+    (define-key mode-map-prefix (kbd "tr") 'helm-gtags-dwim)
+    (define-key mode-map-prefix (kbd "tu") 'helm-gtags-previous-history)
+    (define-key mode-map-prefix (kbd "tU") 'helm-gtags-next-history)
+    (define-key mode-map-prefix (kbd "te") 'helm-gtags-parse-file)
+    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-show-stack)
+    (define-key mode-map-prefix (kbd "tn") 'helm-gtags-next-history)
+    (define-key mode-map-prefix (kbd "tp") 'helm-gtags-previous-history)
+    (define-key mode-map-prefix (kbd "tf") 'helm-gtags-tags-in-this-function)
+    (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
+    ;; reuse keymap
+    (lsp-ccls-xref-navigation mode-map-prefix)
+    (lsp-ccls-xref-navigation evil-normal-state-map)
+    )
 
-  ;; (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
-  ;; (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
+  (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
+  (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
 
-  ;; (add-hook 'c++-mode-hook 'my-c-settings)
-  ;; (add-hook 'c-mode-hook 'my-c-settings)
+  (add-hook 'c++-mode-hook 'my-c-settings)
+  (add-hook 'c-mode-hook 'my-c-settings)
 
   )
 
-(defun dotspacemacs/emacs-custom-settings ()
-  "Emacs custom settings.
-This is an auto-generated function, do not modify its content directly, use
-Emacs customize menu instead.
-This function is called at the very end of Spacemacs initialization."
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(avy-all-windows t)
+ '(avy-all-windows 'all-frames)
  '(blink-cursor-mode nil)
- '(clang-format-executable "clang-format-8")
+ '(clang-format-executable "clang-format")
  '(column-number-mode t)
  '(company-idle-delay 0)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(company-transformers
-   (quote
-    (spacemacs//company-transformer-cancel company-sort-by-backend-importance)))
+   '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
  '(display-time-mode t)
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-color "#383838" t)
@@ -1748,32 +1685,34 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-eshell-fuzzy-match t)
  '(helm-grep-ag-command
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
+ '(inhibit-eol-conversion nil)
  '(lsp-clients-clangd-executable "clangd-8")
- '(lsp-project-whitelist (quote ("/home/halushko/Projects/*")))
+ '(lsp-project-whitelist '("/home/halushko/Projects/*"))
  '(lsp-ui-doc-enable nil)
  '(lsp-ui-doc-header nil)
  '(lsp-ui-doc-include-signature t)
- '(lsp-ui-doc-position (quote at-point))
+ '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-imenu-enable nil)
- '(lsp-ui-imenu-kind-position (quote left))
+ '(lsp-ui-imenu-kind-position 'left)
  '(lsp-ui-sideline-delay 2.0)
  '(lsp-ui-sideline-ignore-duplicate nil)
  '(lsp-ui-sideline-show-code-actions nil)
  '(lsp-ui-sideline-show-hover nil)
  '(menu-bar-mode nil)
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(send-mail-function (quote smtpmail-send-it))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+ '(package-selected-packages
+   '(powershell counsel-gtags fzf zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox ox-gfm overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme naquadah-theme nameless mwim mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-java lsp-elixir lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes doom-modeline django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery counsel-projectile confluence company-web company-tern company-statistics company-shell company-rtags company-lsp company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode cmake-ide clues-theme clojure-snippets clean-aindent-mode clang-format cider-eval-sexp-fu cider cherry-blossom-theme centered-cursor-mode ccls busybee-theme bubbleberry-theme browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+ '(projectile-svn-command "fd -0 -t f")
+ '(send-mail-function 'smtpmail-send-it)
  '(smtpmail-debug-info t)
  '(smtpmail-debug-verb t)
  '(tool-bar-mode nil)
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
+   '((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
@@ -1790,13 +1729,92 @@ This function is called at the very end of Spacemacs initialization."
      (300 . "#7CB8BB")
      (320 . "#8CD0D3")
      (340 . "#94BFF3")
-     (360 . "#DC8CC3"))))
+     (360 . "#DC8CC3")))
+ '(vc-annotate-very-old-color "#DC8CC3"))
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(avy-all-windows 'all-frames)
+ '(blink-cursor-mode nil)
+ '(clang-format-executable "clang-format")
+ '(column-number-mode t)
+ '(company-idle-delay 0)
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
+ '(company-transformers
+   '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
+ '(display-time-mode t)
+ '(evil-move-cursor-back nil)
+ '(evil-want-Y-yank-to-eol nil)
+ '(fci-rule-color "#383838" t)
+ '(fzf/window-height 50)
+ '(garbage-collection-messages t)
+ '(gc-cons-percentage 0.12)
+ '(global-vi-tilde-fringe-mode nil)
+ '(helm-buffer-max-length nil)
+ '(helm-display-header-line nil)
+ '(helm-eshell-fuzzy-match t)
+ '(helm-grep-ag-command
+   "rg --color=always --smart-case --no-heading --line-number %s %s %s")
+ '(inhibit-eol-conversion nil)
+ '(lsp-clients-clangd-executable "clangd-8")
+ '(lsp-project-whitelist '("/home/halushko/Projects/*"))
+ '(lsp-ui-doc-enable nil)
+ '(lsp-ui-doc-header nil)
+ '(lsp-ui-doc-include-signature t)
+ '(lsp-ui-doc-position 'at-point)
+ '(lsp-ui-doc-use-childframe nil)
+ '(lsp-ui-imenu-enable nil)
+ '(lsp-ui-imenu-kind-position 'left)
+ '(lsp-ui-sideline-delay 2.0)
+ '(lsp-ui-sideline-ignore-duplicate nil)
+ '(lsp-ui-sideline-show-code-actions nil)
+ '(lsp-ui-sideline-show-hover nil)
+ '(menu-bar-mode nil)
+ '(nrepl-message-colors
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+ '(package-selected-packages
+   '(powershell counsel-gtags fzf zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox ox-gfm overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme naquadah-theme nameless mwim mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-java lsp-elixir lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes doom-modeline django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery counsel-projectile confluence company-web company-tern company-statistics company-shell company-rtags company-lsp company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode cmake-ide clues-theme clojure-snippets clean-aindent-mode clang-format cider-eval-sexp-fu cider cherry-blossom-theme centered-cursor-mode ccls busybee-theme bubbleberry-theme browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+ '(projectile-svn-command "fd -0 -t f")
+ '(python-shell-interpreter "ipython3")
+ '(python-shell-interpreter-args "--simple-prompt -i")
+ '(send-mail-function 'smtpmail-send-it)
+ '(smtpmail-debug-info t)
+ '(smtpmail-debug-verb t)
+ '(tool-bar-mode nil)
+ '(vc-annotate-background "#2B2B2B")
+ '(vc-annotate-color-map
+   '((20 . "#BC8383")
+     (40 . "#CC9393")
+     (60 . "#DFAF8F")
+     (80 . "#D0BF8F")
+     (100 . "#E0CF9F")
+     (120 . "#F0DFAF")
+     (140 . "#5F7F5F")
+     (160 . "#7F9F7F")
+     (180 . "#8FB28F")
+     (200 . "#9FC59F")
+     (220 . "#AFD8AF")
+     (240 . "#BFEBBF")
+     (260 . "#93E0E3")
+     (280 . "#6CA0A3")
+     (300 . "#7CB8BB")
+     (320 . "#8CD0D3")
+     (340 . "#94BFF3")
+     (360 . "#DC8CC3")))
  '(vc-annotate-very-old-color "#DC8CC3"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(lsp-face-highlight-read ((t (:background "OliveDrab4"))))
- '(lsp-face-highlight-write ((t (:background "firebrick")))))
+ )
 )
