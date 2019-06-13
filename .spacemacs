@@ -35,6 +35,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(
      yaml
+     dap
      lsp
      (helm
       :variables
@@ -84,8 +85,8 @@ This function should only modify configuration layer settings."
       auto-completion-complete-with-key-sequence-delay 0.3
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-enable-company-help-tooltip nil
-      auto-completion-enable-sort-by-usage t
+      auto-completion-enable-company-help-tooltip t
+      auto-completion-enable-sort-by-usage nil
       auto-completion-idle-delay nil
       )
      (better-defaults
@@ -107,14 +108,14 @@ This function should only modify configuration layer settings."
       )
      (shell
       :variables
-      shell-default-shell 'multi-term
+      shell-default-shell 'eshell
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
       shell-default-position 'left
       )
      (spell-checking
       :variables
-      spell-checking-enable-by-default nil
+      spell-checking-enable-by-default t
       enable-flyspell-auto-completion nil
       )
      (syntax-checking
@@ -447,7 +448,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling t
+   dotspacemacs-smooth-scrolling nil
 
    ;; Control line numbers activation.
    ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
@@ -692,6 +693,25 @@ before packages are loaded."
   (with-eval-after-load 'company
     (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
     (setq company-dabbrev-downcase nil)
+    ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+    (setq company-auto-complete-chars nil)
+
+    (define-key company-active-map (kbd "<S-tab>") nil)
+    (define-key company-active-map (kbd "<tab>") nil)
+    (define-key company-active-map (kbd "<backtab>") nil)
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "<tab>") 'helm-company)
+
+    ;; With use-package:
+    ;; (use-package company-box
+    ;;   :hook (company-mode . company-box-mode))
+
+    ;; Or:
+    ;; (require 'company-box)
+    ;; (add-hook 'company-mode-hook 'company-box-mode)
     )
 
   ;; (with-eval-after-load 'company
@@ -1749,31 +1769,32 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-grep-ag-command
    "rg --color=always --smart-case --no-heading --line-number %s %s %s")
  '(lsp-clients-clangd-executable "clangd-8")
- '(lsp-project-whitelist (quote ("/home/halushko/Projects/*")))
+ '(lsp-project-whitelist '("/home/halushko/Projects/*"))
  '(lsp-ui-doc-enable nil)
  '(lsp-ui-doc-header nil)
  '(lsp-ui-doc-include-signature t)
- '(lsp-ui-doc-position (quote at-point))
+ '(lsp-ui-doc-position 'at-point)
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-imenu-enable nil)
- '(lsp-ui-imenu-kind-position (quote left))
+ '(lsp-ui-imenu-kind-position 'left)
  '(lsp-ui-sideline-delay 2.0)
  '(lsp-ui-sideline-ignore-duplicate nil)
  '(lsp-ui-sideline-show-code-actions nil)
  '(lsp-ui-sideline-show-hover nil)
  '(menu-bar-mode nil)
  '(nrepl-message-colors
-   (quote
-    ("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3")))
- '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
- '(send-mail-function (quote smtpmail-send-it))
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+ '(package-selected-packages
+   '(web-mode symbol-overlay org-cliplink kaolin-themes doom-modeline company-lsp cider anaconda-mode counsel swiper ivy helm lsp-mode flycheck magit treemacs ht org-plus-contrib zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shrink-path shell-pop seti-theme sesman scss-mode sass-mode reverse-theme restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme queue pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pfuture persp-mode pcre2el password-generator parseedn paradox ox-gfm overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-elixir noflet noctilux-theme naquadah-theme nameless mwim mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-treemacs lsp-python-ms lsp-java lsp-elixir lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-lsp helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flycheck-package flycheck-mix flycheck-credo flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes django-theme disaster diminish diff-hl devdocs define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dap-mode dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery cpp-auto-include counsel-projectile company-web company-tern company-statistics company-shell company-rtags company-reftex company-emacs-eclim company-c-headers company-box company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode cmake-ide clues-theme clojure-snippets clojure-mode clean-aindent-mode clang-format cider-eval-sexp-fu cherry-blossom-theme centered-cursor-mode ccls busybee-theme bubbleberry-theme browse-at-remote blacken birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell))
+ '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
+ '(send-mail-function 'smtpmail-send-it)
  '(smtpmail-debug-info t)
  '(smtpmail-debug-verb t)
  '(tool-bar-mode nil)
+ '(undo-tree-enable-undo-in-region nil)
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
-   (quote
-    ((20 . "#BC8383")
+   '((20 . "#BC8383")
      (40 . "#CC9393")
      (60 . "#DFAF8F")
      (80 . "#D0BF8F")
