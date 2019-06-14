@@ -38,6 +38,7 @@ This function should only modify configuration layer settings."
      graphviz
      windows-scripts
      yaml
+     dap
      lsp
      (helm
       :variables
@@ -87,8 +88,8 @@ This function should only modify configuration layer settings."
       auto-completion-complete-with-key-sequence-delay 0.3
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-enable-company-help-tooltip nil
-      auto-completion-enable-sort-by-usage t
+      auto-completion-enable-company-help-tooltip t
+      auto-completion-enable-sort-by-usage nil
       auto-completion-idle-delay nil
       )
      (better-defaults
@@ -110,7 +111,7 @@ This function should only modify configuration layer settings."
       )
      (shell
       :variables
-      shell-default-shell 'multi-term
+      shell-default-shell 'eshell
       shell-default-term-shell "/usr/bin/zsh"
       shell-default-height 30
       shell-default-position 'left
@@ -450,7 +451,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling t
+   dotspacemacs-smooth-scrolling nil
 
    ;; Control line numbers activation.
    ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
@@ -694,9 +695,21 @@ before packages are loaded."
   (with-eval-after-load 'company
     (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
     (setq company-dabbrev-downcase nil)
+    ;; (setq company-frontends (quote (company-pseudo-tooltip-frontend)))
+    (setq company-auto-complete-chars nil)
+
+    (define-key company-active-map (kbd "<S-tab>") nil)
+    (define-key company-active-map (kbd "<tab>") nil)
+    (define-key company-active-map (kbd "<backtab>") nil)
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "<tab>") 'helm-company)
+
     ;; With use-package:
-    (use-package company-box
-      :hook (company-mode . company-box-mode))
+    ;; (use-package company-box
+    ;;   :hook (company-mode . company-box-mode))
 
     ;; Or:
     ;; (require 'company-box)
@@ -1758,6 +1771,7 @@ This function is called at the very end of Spacemacs initialization."
  '(smtpmail-debug-info t)
  '(smtpmail-debug-verb t)
  '(tool-bar-mode nil)
+ '(undo-tree-enable-undo-in-region nil)
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
    '((20 . "#BC8383")
