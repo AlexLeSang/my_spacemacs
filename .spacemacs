@@ -33,7 +33,9 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(graphviz
+   '(
+     dap
+     graphviz
      windows-scripts
      yaml
      lsp
@@ -172,7 +174,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(modern-cpp-font-lock lsp-elixir fzf)
+   dotspacemacs-additional-packages '(modern-cpp-font-lock lsp-elixir fzf company-box)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -298,8 +300,8 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         spacemacs-dark
                          zenburn
+                         spacemacs-dark
                          kaolin-galaxy
                          kaolin-ocean
                          kaolin-dark
@@ -692,6 +694,13 @@ before packages are loaded."
   (with-eval-after-load 'company
     (setq company-transformers '(spacemacs//company-transformer-cancel company-sort-by-backend-importance))
     (setq company-dabbrev-downcase nil)
+    ;; With use-package:
+    (use-package company-box
+      :hook (company-mode . company-box-mode))
+
+    ;; Or:
+    ;; (require 'company-box)
+    ;; (add-hook 'company-mode-hook 'company-box-mode)
     )
 
   ;; (with-eval-after-load 'company
@@ -1577,6 +1586,30 @@ PWD is not in a git repo (or the git command is not found)."
   ;; (add-hook 'c++-mode-hook (lambda ()
   ;;                            (push '(?< . ("< " . " >")) evil-surround-pairs-alist)))
 
+  (with-eval-after-load 'lsp-methods
+  ;;; Override
+    ;; This deviated from the original in that it highlights pattern appeared in symbol
+    (defun lsp--symbol-information-to-xref (pattern symbol)
+      "Return a `xref-item' from SYMBOL information."
+      (let* ((location (gethash "location" symbol))
+             (uri (gethash "uri" location))
+             (range (gethash "range" location))
+             (start (gethash "start" range))
+             (name (gethash "name" symbol)))
+        (xref-make (format "[%s] %s"
+                           (alist-get (gethash "kind" symbol) lsp--symbol-kind)
+                           (my/highlight-pattern-in-text (regexp-quote pattern) name))
+                   (xref-make-file-location (string-remove-prefix "file://" uri)
+                                            (1+ (gethash "line" start))
+                                            (gethash "character" start)))))
+
+    (cl-defmethod xref-backend-apropos ((_backend (eql xref-lsp)) pattern)
+      (let ((symbols (lsp--send-request (lsp--make-request
+                                         "workspace/symbol"
+                                         `(:query ,pattern)))))
+        (mapcar (lambda (x) (lsp--symbol-information-to-xref pattern x)) symbols)))
+    )
+
   (defun my-c-settings ()
     (setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
     ;; (setq company-backends-c-mode-common '((company-lsp)))
@@ -1588,36 +1621,38 @@ PWD is not in a git repo (or the git command is not found)."
   (defun lsp-ccls-xref-navigation (state-map)
     "Setting projectile other file, xref and lsp keybindings"
     ;; go to keybindings
+    (define-key state-map (kbd "g") nil)
     (define-key state-map (kbd "ga") 'projectile-find-other-file)
     (define-key state-map (kbd "gA") 'projectile-find-other-file-other-window)
     (define-key state-map (kbd "gd") 'xref-find-definitions)
-    (define-key state-map (kbd "gD") 'xref-find-definitions-other-frame)
+    (define-key state-map (kbd "gD") 'lsp-ui-peek-find-definitions)
     (define-key state-map (kbd "gr") 'xref-find-references)
+    (define-key state-map (kbd "gR") 'lsp-ui-peek-find-references)
     (define-key state-map (kbd "gu") 'xref-pop-marker-stack)
-    (define-key state-map (kbd "gR") 'lsp-rename)
-    (define-key state-map (kbd "gx") 'lsp-execute-code-action)
+    (define-key state-map (kbd "gU") 'lsp-ui-peek-jump-backward)
+    (define-key state-map (kbd "gsd") 'ccls/member)
     ;; see keybindings
-    (define-key state-map (kbd "s") nil)
-    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
-    (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-    (define-key state-map (kbd "sb") 'ccls/base)
-    (define-key state-map (kbd "sc") 'ccls/callee)
-    (define-key state-map (kbd "sC") 'ccls/caller)
-    (define-key state-map (kbd "shc") 'ccls/callees)
-    (define-key state-map (kbd "shC") 'ccls/callers)
-    (define-key state-map (kbd "shb") 'ccls/bases)
-    (define-key state-map (kbd "shd") 'ccls/derived)
-    (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
-    (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
-    (define-key state-map (kbd "sm") 'ccls/references-macro)
-    (define-key state-map (kbd "sa") 'ccls/references-address)
-    (define-key state-map (kbd "sR") 'ccls/references-read)
-    (define-key state-map (kbd "sw") 'ccls/references-write)
-    (define-key state-map (kbd "sg") 'ccls/references-not-call)
-    (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
-    (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
-    (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
+    ;; (define-key state-map (kbd "s") nil)
+    ;; (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    ;; (define-key state-map (kbd "sd") 'lsp-ui-peek-find-definitions)
+    ;; (define-key state-map (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+    ;; (define-key state-map (kbd "sb") 'ccls/base)
+    ;; (define-key state-map (kbd "sc") 'ccls/callee)
+    ;; (define-key state-map (kbd "sC") 'ccls/caller)
+    ;; (define-key state-map (kbd "shc") 'ccls/callees)
+    ;; (define-key state-map (kbd "shC") 'ccls/callers)
+    ;; (define-key state-map (kbd "shb") 'ccls/bases)
+    ;; (define-key state-map (kbd "shd") 'ccls/derived)
+    ;; (define-key state-map (kbd "shm") 'ccls-member-hierarchy)
+    ;; (define-key state-map (kbd "sr") 'lsp-ui-peek-find-references)
+    ;; (define-key state-map (kbd "sm") 'ccls/references-macro)
+    ;; (define-key state-map (kbd "sa") 'ccls/references-address)
+    ;; (define-key state-map (kbd "sR") 'ccls/references-read)
+    ;; (define-key state-map (kbd "sw") 'ccls/references-write)
+    ;; (define-key state-map (kbd "sg") 'ccls/references-not-call)
+    ;; (define-key state-map (kbd "sn") 'lsp-ui-find-next-reference)
+    ;; (define-key state-map (kbd "sp") 'lsp-ui-find-prev-reference)
+    ;; (define-key state-map (kbd "su") 'lsp-ui-peek-jump-backward)
     )
 
   (defun my-c-ccls-keybindings (mode-map-prefix)
@@ -1645,14 +1680,16 @@ PWD is not in a git repo (or the git command is not found)."
     (define-key mode-map-prefix (kbd "ts") 'helm-gtags-find-files)
     ;; reuse keymap
     (lsp-ccls-xref-navigation mode-map-prefix)
-    (lsp-ccls-xref-navigation evil-normal-state-map)
+    ;; (lsp-ccls-xref-navigation evil-normal-state-map)
+    ;; (lsp-ccls-xref-navigation evil-hybrid-state-map)
+    ;; (lsp-ccls-xref-navigation evil-mc-key-map)
     )
 
-  (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map-prefix) ))
-  (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map-prefix) ))
+  (add-hook 'c-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c-mode-map) ))
+  (add-hook 'c++-mode-hook (lambda () (my-c-ccls-keybindings spacemacs-c++-mode-map) ))
 
-  (add-hook 'c++-mode-hook 'my-c-settings)
   (add-hook 'c-mode-hook 'my-c-settings)
+  (add-hook 'c++-mode-hook 'my-c-settings)
 
   )
 
@@ -1668,6 +1705,7 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(avy-all-windows 'all-frames)
  '(blink-cursor-mode nil)
+ '(ccls-sem-highlight-method nil)
  '(clang-format-executable "clang-format")
  '(column-number-mode t)
  '(company-idle-delay 0)
@@ -1678,7 +1716,7 @@ This function is called at the very end of Spacemacs initialization."
  '(display-time-mode t)
  '(evil-move-cursor-back nil)
  '(evil-want-Y-yank-to-eol nil)
- '(fci-rule-color "#383838" t)
+ '(fci-rule-color "#383838")
  '(fzf/window-height 50)
  '(garbage-collection-messages t)
  '(gc-cons-percentage 0.12)
@@ -1698,13 +1736,18 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-ui-doc-use-childframe nil)
  '(lsp-ui-imenu-enable nil)
  '(lsp-ui-imenu-kind-position 'left)
+ '(lsp-ui-peek-always-show t)
+ '(lsp-ui-peek-fontify 'always)
+ '(lsp-ui-peek-list-width 90)
+ '(lsp-ui-peek-peek-height 60)
  '(lsp-ui-sideline-delay 2.0)
- '(lsp-ui-sideline-ignore-duplicate nil)
+ '(lsp-ui-sideline-ignore-duplicate t)
  '(lsp-ui-sideline-show-code-actions nil)
  '(lsp-ui-sideline-show-hover nil)
  '(menu-bar-mode nil)
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
+ '(org-export-with-sub-superscripts nil)
  '(package-selected-packages
    '(powershell counsel-gtags fzf zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key web-mode web-beautify volatile-highlights vimrc-mode vi-tilde-fringe uuidgen use-package unfill underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-evil toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js popwin plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox ox-gfm overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noflet noctilux-theme naquadah-theme nameless mwim mvn mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modern-cpp-font-lock mmm-mode minimal-theme meghanada maven-test-mode material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-java lsp-elixir lorem-ipsum livid-mode live-py-mode link-hint light-soap-theme kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode ibuffer-projectile hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-mode-manager helm-make helm-gtags helm-gitignore helm-git-grep helm-flx helm-descbinds helm-ctest helm-css-scss helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruvbox-theme gruber-darker-theme groovy-mode groovy-imports grandshell-theme gradle-mode gotham-theme google-translate google-c-style golden-ratio gnuplot gitignore-templates gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-helm flycheck-rtags flycheck-pos-tip flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator fasd farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu espresso-theme eshell-z eshell-prompt-extras esh-help erlang ensime emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes doom-modeline django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme dactyl-mode cython-mode cyberpunk-theme csv-mode cquery counsel-projectile confluence company-web company-tern company-statistics company-shell company-rtags company-lsp company-emacs-eclim company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode cmake-ide clues-theme clojure-snippets clean-aindent-mode clang-format cider-eval-sexp-fu cider cherry-blossom-theme centered-cursor-mode ccls busybee-theme bubbleberry-theme browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-link ace-jump-helm-line ac-ispell))
  '(pdf-view-midnight-colors '("#DCDCCC" . "#383838"))
