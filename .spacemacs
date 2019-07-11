@@ -85,12 +85,14 @@ This function should only modify configuration layer settings."
      (auto-completion
       :variables
       auto-completion-return-key-behavior 'complete
-      auto-completion-complete-with-key-sequence-delay 0.3
       auto-completion-tab-key-behavior 'cycle
       auto-completion-complete-with-key-sequence "jk"
+      auto-completion-complete-with-key-sequence-delay 0.1
       auto-completion-enable-company-help-tooltip t
       auto-completion-enable-sort-by-usage nil
-      auto-completion-idle-delay nil
+      auto-completion-idle-delay 0
+      auto-completion-enable-snippets-in-popup t
+      auto-completion-enable-help-tooltip t
       )
      (better-defaults
       :variables
@@ -181,7 +183,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(alchemist)
+   dotspacemacs-excluded-packages '(lsp-python-ms)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -301,6 +303,7 @@ It should only modify the values of Spacemacs settings."
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
+                         doom-tomorrow-night
                          zenburn
                          doom-dracula
                          spacemacs-dark
@@ -325,7 +328,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 12
+                               :size 13
                                :weight normal
                                :width normal)
 
@@ -652,15 +655,15 @@ before packages are loaded."
   ;; bind evil-jump-out-args
   (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
-  ;; Yasnippet
-  (with-eval-after-load 'yasnippet
-    (define-key yas-keymap (kbd "TAB") nil)
-    (define-key yas-keymap (kbd "<tab>") nil)
-    (define-key yas-keymap (kbd "<S-tab>") nil)
-    (define-key yas-keymap (kbd "<backtab>") nil)
-    (define-key yas-keymap (kbd "C-n") #'yas-next-field)
-    (define-key yas-keymap (kbd "C-p") #'yas-prev-field)
-    )
+  ;; ;; Yasnippet
+  ;; (with-eval-after-load 'yasnippet
+  ;;   (define-key yas-keymap (kbd "TAB") nil)
+  ;;   (define-key yas-keymap (kbd "<tab>") nil)
+  ;;   (define-key yas-keymap (kbd "<S-tab>") nil)
+  ;;   (define-key yas-keymap (kbd "<backtab>") nil)
+  ;;   (define-key yas-keymap (kbd "C-n") #'yas-next-field)
+  ;;   (define-key yas-keymap (kbd "C-p") #'yas-prev-field)
+  ;;   )
 
 
   ;; Realgud
@@ -788,7 +791,8 @@ before packages are loaded."
 
     (require 'helm-fzf)
     (spacemacs/set-leader-keys "fz" 'helm-fzf)
-    ;; (setq helm-buffer-max-length nil)
+    (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
+    (setq helm-buffer-max-length nil)
     ;; (set-face-attribute 'helm-source-header nil :height 0.1)
     )
 
@@ -886,6 +890,8 @@ before packages are loaded."
     (defun helm/eshell-set-keys ()
       (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete))
     (add-hook 'eshell-mode-hook 'helm/eshell-set-keys)
+    (remove-hook 'eshell-directory-change-hook
+                 'spacemacs//toggle-shell-auto-completion-based-on-path)
     )
 
 
@@ -1031,12 +1037,12 @@ PWD is not in a git repo (or the git command is not found)."
 
   (add-hook 'eshell-mode-hook
             (lambda ()
-              (setq company-backends-eshell-mode '((company-capf :with company-yasnippet company-dabbrev-code company-dabbrev company-files)))
+              ;; (setq company-backends-eshell-mode '((company-capf :with company-yasnippet company-dabbrev-code company-dabbrev company-files)))
               ;; (my-eshell-cmpl-initialize)
-              (bind-key "<backtab>" #'company-complete eshell-mode-map)
-              (define-key eshell-mode-map (kbd "M-l") 'helm-eshell-history)
+              ;; (bind-key "<backtab>" #'company-complete eshell-mode-map)
+              ;; (define-key eshell-mode-map (kbd "M-l") 'helm-eshell-history)
               (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
-              ;; (set (make-local-variable 'company-idle-delay) nil)
+              (set (make-local-variable 'company-idle-delay) nil)
               ))
 
   (defun eshell/clear ()
@@ -1191,7 +1197,7 @@ PWD is not in a git repo (or the git command is not found)."
                               )
             )
   (add-hook 'rust-mode-hook #'flycheck-mode)
-  
+
   (defun remove-dos-eol ()
     "Do not show ^M in files containing mixed UNIX and DOS line endings."
     (interactive)
@@ -1823,5 +1829,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-tooltip-common
+   ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection
+   ((t (:inherit company-tooltip-selection :weight bold :underline nil))))
  )
 )
