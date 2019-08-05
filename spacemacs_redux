@@ -69,6 +69,7 @@ This function should only modify configuration layer settings."
       c-c++-lsp-executable "/home/halushko/Projects/ccls-repo/Release/ccls"
       c-c++-lsp-sem-highlight-rainbow t
       c-c++-adopt-subprojects t)
+     html
      emacs-lisp
      elixir
      git
@@ -76,7 +77,7 @@ This function should only modify configuration layer settings."
       :variables
       helm-enable-auto-resize t
       helm-no-header t
-      helm-position 'top)
+      helm-position 'left)
      markdown
      multiple-cursors
      (org
@@ -86,6 +87,8 @@ This function should only modify configuration layer settings."
       org-enable-trello-support t
       org-enable-epub-support t
       org-enable-org-journal-support t)
+     (rust
+      :variables rust-backend 'lsp)
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
@@ -102,6 +105,7 @@ This function should only modify configuration layer settings."
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
      semantic
+     spotify
      (lsp
       :variables
       lsp-navigation 'peek)
@@ -121,7 +125,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(zenburn-theme doom-themes pcmpl-args pcomplete-extension)
+   dotspacemacs-additional-packages '(zenburn-theme doom-themes pcmpl-args pcomplete-extension lsp-elixir)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -249,8 +253,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-tomorrow-night
-                         zenburn
+   dotspacemacs-themes '(zenburn
+                         doom-tomorrow-night
                          spacemacs-dark
                          spacemacs-light)
 
@@ -371,7 +375,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   dotspacemacs-maximized-at-startup nil
 
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
    ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
@@ -539,6 +543,7 @@ before packages are loaded."
   (spacemacs/disable-transparency)
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-auto-fill-mode-off)
+  (spacemacs/toggle-vi-tilde-fringe-off)
 
   ;; helm buffers list
   (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
@@ -573,6 +578,41 @@ before packages are loaded."
   (when (and (executable-find "fish")
              (require 'fish-completion nil t))
     (global-fish-completion-mode))
+
+  ;; Elixir
+  ;; https://elixirforum.com/t/emacs-elixir-setup-configuration-wiki/19196
+
+  ;; (require 'lsp-elixir)
+  ;; (with-eval-after-load 'lsp-elixir
+  ;;   ;; (setq lsp-elixir-ls-command "sh")
+  ;;   (add-hook 'elixir-mode-hook 'lsp)
+  ;;   (setq lsp-clients-elixir-server-executable '("/home/halushko/Documents/Elixir/language_server.sh")))
+
+  ;; (add-hook 'elixir-mode-hook
+  ;;           (lambda ()
+  ;;             ;; (add-hook 'before-save-hook 'lsp-format-buffer)
+  ;;             (setq flycheck-checker 'lsp-ui)
+  ;;             (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
+  ;;             ;; ;; xref elixir
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+  ;;             ;; ;; Lps ui peek
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
+  ;;             ;; ;; Dumb jump
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+  ;;             ))
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -590,9 +630,10 @@ This function is called at the very end of Spacemacs initialization."
  '(clang-format-executable "clang-format-8")
  '(global-company-mode t)
  '(hybrid-style-enable-hjkl-bindings t)
+ '(lsp-ui-peek-peek-height 50)
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
+   '(lsp-elixir spotify helm-spotify-plus multi web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
  '(smartparens-global-mode t)
  '(vc-follow-symlinks t))
 (custom-set-faces
