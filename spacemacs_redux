@@ -69,6 +69,7 @@ This function should only modify configuration layer settings."
       c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
       c-c++-lsp-executable "/home/halushko/bin/ccls.sh"
       c-c++-adopt-subprojects t)
+     html
      emacs-lisp
      elixir
      git
@@ -81,9 +82,7 @@ This function should only modify configuration layer settings."
       helm-enable-auto-resize t
       helm-no-header t
       helm-position 'left)
-     (markdown
-      :variables
-      markdown-live-preview-engine 'vmd)
+     markdown
      multiple-cursors
      (org
       :variables
@@ -98,6 +97,8 @@ This function should only modify configuration layer settings."
       python-fill-column 119
       python-test-runner 'pytest
       python-backend 'lsp
+      python-save-before-test t
+      python-sort-imports-on-save t
       )
      (shell
       :variables shell-default-shell 'eshell
@@ -107,6 +108,7 @@ This function should only modify configuration layer settings."
       shell-default-width 40)
      spell-checking
      syntax-checking
+     systemd
      (evil-snipe
       :variables
       evil-snipe-enable-alternate-f-and-t-behaviors t)
@@ -193,7 +195,7 @@ It should only modify the values of Spacemacs settings."
    ;; This is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
    ;; (default '(100000000 0.1))
-   dotspacemacs-gc-cons '(100000000 0.1)
+   dotspacemacs-gc-cons '(300000000 0.5)
 
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
@@ -273,7 +275,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.05)
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.0)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -552,10 +554,18 @@ before packages are loaded."
   (spacemacs/toggle-display-time-on)
   (spacemacs/toggle-auto-fill-mode-off)
   (spacemacs/toggle-vi-tilde-fringe-off)
+  (spacemacs/toggle-display-time-off)
+  (spacemacs/toggle-mode-line-minor-modes-off)
+  (spacemacs/toggle-mode-line-major-mode-off)
+  (spacemacs/toggle-mode-line-point-position-off)
+  (spacemacs/toggle-mode-line-new-version-off)
+  (spacemacs/toggle-mode-line-version-control-off)
+  (spacemacs/toggle-mode-line-point-position-off)
   (setq-default spacemacs-show-trailing-whitespace nil)
 
   ;; helm buffers list
   (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
+  (bind-key (kbd "<C-tab>") 'helm-buffers-list)
 
   ;; eshell here
   (defun eshell-here ()
@@ -563,11 +573,11 @@ before packages are loaded."
     current buffer's file. The eshell is renamed to match that
     directory to make multiple eshell windows easier."
     (interactive)
-    (let* ((height (/ (window-total-height) 2)))
-      (split-window-vertically (- height))
+    (let* ((width (/ (window-total-width) 2)))
+      (split-window-horizontally (- width))
       (other-window 1)
       (eshell "new")
-      (insert (concat "ls"))
+      (insert (concat "pwd"))
       (eshell-send-input)))
 
   (bind-key "C-!" 'eshell-here)
@@ -583,12 +593,13 @@ before packages are loaded."
     (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
-                (set (make-local-variable 'company-idle-delay) nil)
+                (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
+    (remove-hook 'eshell-mode-hook
+                 'spacemacs//eshell-switch-company-frontend)
     )
-
 
   (defun pcomplete/dpkg ()
     (while (pcomplete-match "^-" 'last)
@@ -625,6 +636,41 @@ before packages are loaded."
 
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+
+  ;; Elixir
+  ;; https://elixirforum.com/t/emacs-elixir-setup-configuration-wiki/19196
+
+  ;; (require 'lsp-elixir)
+  ;; (with-eval-after-load 'lsp-elixir
+  ;;   ;; (setq lsp-elixir-ls-command "sh")
+  ;;   (add-hook 'elixir-mode-hook 'lsp)
+  ;;   (setq lsp-clients-elixir-server-executable '("/home/halushko/Documents/Elixir/language_server.sh")))
+
+  ;; (add-hook 'elixir-mode-hook
+  ;;           (lambda ()
+  ;;             ;; (add-hook 'before-save-hook 'lsp-format-buffer)
+  ;;             (setq flycheck-checker 'lsp-ui)
+  ;;             (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
+  ;;             ;; ;; xref elixir
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
+  ;;             ;; ;; Lps ui peek
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
+  ;;             ;; ;; Dumb jump
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
+  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
+  ;;             ))
+
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -644,6 +690,7 @@ This function is called at the very end of Spacemacs initialization."
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(global-company-mode t)
+ '(helm-swoop-speed-or-color nil)
  '(helm-swoop-use-fuzzy-match nil)
  '(hybrid-style-enable-hjkl-bindings t)
  '(lsp-clients-clangd-executable "clangd-8")
@@ -659,9 +706,10 @@ This function is called at the very end of Spacemacs initialization."
  '(org-export-with-sub-superscripts nil)
  '(org-pomodoro-long-break-length 10)
  '(org-pomodoro-play-sounds nil)
+ '(org-pomodoro-time-format "%.2m")
  '(org-trello-current-prefix-keybinding "C-c o" nil (org-trello))
  '(package-selected-packages
-   '(logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
+   '(systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
  '(projectile-git-command "fd -0 -t f")
  '(projectile-svn-command "fd -0 -t f")
  '(python-shell-interpreter "ipython3")
