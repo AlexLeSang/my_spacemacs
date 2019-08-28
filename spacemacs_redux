@@ -470,7 +470,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of search tool executable names. Spacemacs uses the first installed
    ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
    ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+   dotspacemacs-search-tools '("ag" "rg" "pt" "ack" "grep")
 
    ;; Format specification for setting the frame title.
    ;; %a - the `abbreviated-file-name', or `buffer-name'
@@ -590,6 +590,7 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
+                (set (make-local-variable 'company-idle-delay) 0.6)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
@@ -688,7 +689,7 @@ This function is called at the very end of Spacemacs initialization."
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(global-company-mode t)
- '(helm-swoop-speed-or-color nil)
+ '(helm-swoop-speed-or-color nil t)
  '(helm-swoop-use-fuzzy-match nil)
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
