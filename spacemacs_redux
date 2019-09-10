@@ -633,6 +633,9 @@ before packages are loaded."
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
 
+  (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
+  (require 'clang-refactor)
+
   ;; Elixir
   ;; https://elixirforum.com/t/emacs-elixir-setup-configuration-wiki/19196
 
