@@ -592,6 +592,7 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
+                (set (make-local-variable 'company-idle-delay) 0.6)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
@@ -693,7 +694,7 @@ This function is called at the very end of Spacemacs initialization."
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(global-company-mode t)
- '(helm-swoop-speed-or-color nil)
+ '(helm-swoop-speed-or-color nil t)
  '(helm-swoop-use-fuzzy-match nil)
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
