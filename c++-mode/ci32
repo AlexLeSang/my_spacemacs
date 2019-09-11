@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ci32
-# key: ci32
-# --
-const int32_t ${1:name} = $0;

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: at
-# key: at
-# --
-ASSERT_TRUE(${1:result});

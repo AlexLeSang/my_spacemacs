@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: tref
-# key: tref
-# --
-${1:Type}& ${1:$(my/downcase-first-char yas-text)} = $0;
