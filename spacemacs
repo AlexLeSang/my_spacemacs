@@ -114,6 +114,7 @@ This function should only modify configuration layer settings."
       :variables
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
+     latex 
      (lsp
       :variables
       lsp-navigation 'peek)
