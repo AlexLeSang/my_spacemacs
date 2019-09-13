@@ -68,7 +68,7 @@ This function should only modify configuration layer settings."
       c-c++-backend 'lsp-ccls
       c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
       c-c++-lsp-executable "/usr/bin/ccls"
-      c++-enable-organize-includes-on-save t
+      c++-enable-organize-includes-on-save nil
       c-c++-enable-clang-format-on-save t
       c-c++-adopt-subprojects t)
      html
