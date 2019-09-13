@@ -592,7 +592,7 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
-                (set (make-local-variable 'company-idle-delay) 0.6)
+                (set (make-local-variable 'company-idle-delay) 0.3)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
