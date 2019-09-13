@@ -638,41 +638,6 @@ before packages are loaded."
 
   (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
   (require 'clang-refactor)
-
-  ;; Elixir
-  ;; https://elixirforum.com/t/emacs-elixir-setup-configuration-wiki/19196
-
-  ;; (require 'lsp-elixir)
-  ;; (with-eval-after-load 'lsp-elixir
-  ;;   ;; (setq lsp-elixir-ls-command "sh")
-  ;;   (add-hook 'elixir-mode-hook 'lsp)
-  ;;   (setq lsp-clients-elixir-server-executable '("/home/halushko/Documents/Elixir/language_server.sh")))
-
-  ;; (add-hook 'elixir-mode-hook
-  ;;           (lambda ()
-  ;;             ;; (add-hook 'before-save-hook 'lsp-format-buffer)
-  ;;             (setq flycheck-checker 'lsp-ui)
-  ;;             (setq company-backends-elixir-mode '((company-lsp :with company-dabbrev-code)))
-  ;;             ;; ;; xref elixir
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gd") 'xref-find-definitions)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gD") 'xref-find-definitions-other-frame)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gr") 'xref-find-references)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "gu") 'evil-jump-backward)
-  ;;             ;; ;; Lps ui peek
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sd") 'lsp-ui-peek-find-definitions)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "sr") 'lsp-ui-peek-find-references)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "ss") 'lsp-ui-peek-find-workspace-symbol)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "su") 'evil-jump-backward)
-  ;;             ;; ;; Dumb jump
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dd") 'dumb-jump-go)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dD") 'dumb-jump-go-other-window)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dp") 'dumb-jump-go-prompt)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "du") 'dumb-jump-back)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "de") 'dumb-jump-go-prefer-external)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dE") 'dumb-jump-go-prefer-external-other-window)
-  ;;             ;; (define-key spacemacs-elixir-mode-map-prefix (kbd "dc") 'dumb-jump-go-current-window)
-  ;;             ))
-
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
