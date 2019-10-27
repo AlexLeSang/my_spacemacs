@@ -54,6 +54,7 @@ This function should only modify configuration layer settings."
      (cmake
       :variables
       cmake-enable-cmake-ide-support t)
+     common-lisp
      copy-as-format
      (colors
       :variables
@@ -69,7 +70,7 @@ This function should only modify configuration layer settings."
       c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
       c-c++-lsp-executable "/usr/bin/ccls"
       c++-enable-organize-includes-on-save nil
-      c-c++-enable-clang-format-on-save t
+      c-c++-enable-clang-format-on-save nil
       c-c++-adopt-subprojects t)
      html
      emacs-lisp
@@ -79,6 +80,9 @@ This function should only modify configuration layer settings."
       :variables
       gtags-enable-by-default t)
      html
+     ;; (ivy
+     ;;  :variables
+     ;;  ivy-enable-advanced-buffer-information t)
      (helm
       :variables
       helm-enable-auto-resize t
@@ -114,10 +118,10 @@ This function should only modify configuration layer settings."
       :variables
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
-     latex 
+     latex
      (lsp
       :variables
-      lsp-navigation 'peek)
+      lsp-navigation 'both)
      json
      (javascript
       :variables
@@ -282,7 +286,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 12
                                :weight normal
                                :width normal)
 
@@ -565,6 +569,9 @@ before packages are loaded."
   (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
   (bind-key (kbd "<C-tab>") 'helm-buffers-list)
 
+  ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
+  ;; (bind-key (kbd "<C-tab>") 'switch-to-buffer)
+
   ;; eshell here
   (defun eshell-here ()
     "Opens up a new shell in the directory associated with the
@@ -638,6 +645,8 @@ before packages are loaded."
 
   (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
   (require 'clang-refactor)
+
+  (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -655,6 +664,7 @@ This function is called at the very end of Spacemacs initialization."
  '(blink-cursor-mode nil)
  '(clang-format-executable "clang-format")
  '(company-minimum-prefix-length 2)
+ '(create-lockfiles nil)
  '(evil-want-Y-yank-to-eol nil)
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
@@ -697,7 +707,7 @@ This function is called at the very end of Spacemacs initialization."
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "%.2m")
  '(package-selected-packages
-   '(srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
+   '(helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
  '(projectile-git-command "fd -0 -t f")
  '(projectile-svn-command "fd -0 -t f")
  '(python-shell-interpreter "ipython3" t)
