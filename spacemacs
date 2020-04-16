@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(rust
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -50,6 +50,14 @@ This function should only modify configuration layer settings."
       :variables
       better-defaults-move-to-beginning-of-code-first t)
      bm
+     (docker
+      :variables
+      docker-dockerfile-backend 'lsp)
+     (clojure :variables
+              clojure-enable-sayid t
+              clojure-enable-clj-refactor t
+              clojure-enable-fancify-symbols t
+              clojure-enable-linters '(clj-kondo joker squiggly))
      graphviz
      (cmake
       :variables
@@ -85,9 +93,8 @@ This function should only modify configuration layer settings."
      ;;  ivy-enable-advanced-buffer-information t)
      (helm
       :variables
-      helm-enable-auto-resize t
       helm-no-header t
-      helm-position 'left)
+      helm-position 'bottom)
      markdown
      multiple-cursors
      (org
@@ -108,7 +115,8 @@ This function should only modify configuration layer settings."
       shell-enable-smart-eshell nil
       close-window-with-terminal t
       shell-default-width 40)
-     spell-checking
+     (spell-checking
+      :variables spell-checking-enable-by-default nil)
      syntax-checking
      systemd
      (evil-snipe
@@ -128,7 +136,9 @@ This function should only modify configuration layer settings."
       javascript-backend 'lsp
       javascript-fmt-tool 'web-beautify
       javascript-repl `nodejs)
-     yaml
+     (yaml
+      :variables
+      yaml-enable-lsp t)
      )
 
    ;; List of additional packages that will be installed without being
@@ -138,7 +148,15 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(zenburn-theme nord-theme pcmpl-args pcomplete-extension logview srefactor)
+   dotspacemacs-additional-packages '(fish-completion
+                                      doom-themes
+                                      lsp-java
+                                      nord-theme
+                                      org-mind-map
+                                      pcmpl-args
+                                      pcomplete-extension
+                                      srefactor
+                                      zenburn-theme)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -197,7 +215,7 @@ It should only modify the values of Spacemacs settings."
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
-   dotspacemacs-gc-cons '(100000000 0.1)
+   dotspacemacs-gc-cons '(200000000 0.2)
 
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
@@ -265,10 +283,9 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(nord
-                         zenburn
-                         spacemacs-dark
-                         spacemacs-light)
+   dotspacemacs-themes '(zenburn
+                         doom-nord
+                         spacemacs-dark)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -277,7 +294,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.0)
+   dotspacemacs-mode-line-theme '(spacemacs :separator nil :separator-scale 1.0)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -285,7 +302,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
+   dotspacemacs-default-font '("Fira Code"
                                :size 12
                                :weight normal
                                :width normal)
@@ -636,18 +653,53 @@ before packages are loaded."
                   projectile-project-root-files-top-down-recurring))
     )
 
-  (when (and (executable-find "fish")
-             (require 'fish-completion nil t))
-    (global-fish-completion-mode))
+  (with-eval-after-load 'eshell
+    (when (and (executable-find "fish")
+               (require 'fish-completion nil t))
+      (fish-completion-mode))
+    )
 
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+  (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
 
   (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
-  (require 'clang-refactor)
+  (with-eval-after-load 'projectile
+    (require 'clang-refactor))
 
   (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
-)
+
+  (with-eval-after-load 'eshell
+    (use-package piper
+      :load-path "/home/halushko/my_spacemacs/emacs-piper"
+      :config
+      (spacemacs/declare-prefix "o |" "piper")
+      (spacemacs/set-leader-keys
+        "|"            '("piper-ui" . piper-user-interface)
+        "o | |" '("piper-locally"   . piper)
+        "o | d" '("other-directory" . piper-other)
+        "o | r" '("piper-remotely"  . piper-remote))))
+
+  (with-eval-after-load 'org-mode
+    (use-package org-mind-map
+      :init
+      (require 'ox-org)
+      :ensure t
+      ;; Uncomment the below if 'ensure-system-packages` is installed
+      ;;:ensure-system-package (gvgen . graphviz)
+      :config
+      (setq org-mind-map-engine "dot")       ; Default. Directed Graph
+      ;; (setq org-mind-map-engine "neato")  ; Undirected Spring Graph
+      ;; (setq org-mind-map-engine "twopi")  ; Radial Layout
+      ;; (setq org-mind-map-engine "fdp")    ; Undirected Spring Force-Directed
+      ;; (setq org-mind-map-engine "sfdp")   ; Multiscale version of fdp for the layout of large graphs
+      ;; (setq org-mind-map-engine "twopi")  ; Radial layouts
+      ;; (setq org-mind-map-engine "circo")  ; Circular Layout
+      ))
+
+  ;; (native-compile-async "/home/halushko/.emacs.d/layers" 8 t)
+  ;; (native-compile-async "/home/halushko/.emacs.d/elpa/28.0/develop" 8 t)
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -664,12 +716,13 @@ This function is called at the very end of Spacemacs initialization."
  '(blink-cursor-mode nil)
  '(clang-format-executable "clang-format")
  '(company-minimum-prefix-length 2)
+ '(company-quickhelp-delay 0.1)
  '(create-lockfiles nil)
  '(evil-want-Y-yank-to-eol nil)
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(global-company-mode t)
- '(helm-swoop-speed-or-color nil t)
+ '(helm-swoop-speed-or-color nil)
  '(helm-swoop-use-fuzzy-match nil)
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
@@ -698,7 +751,7 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-ui-peek-list-width 90)
  '(lsp-ui-peek-peek-height 60)
  '(lsp-ui-sideline-delay 2.0)
- '(lsp-ui-sideline-ignore-duplicate t)
+ '(lsp-ui-sideline-ignore-duplicate t t)
  '(lsp-ui-sideline-show-code-actions nil)
  '(lsp-ui-sideline-show-hover nil)
  '(objed-cursor-color "#ff6c6b")
@@ -707,13 +760,14 @@ This function is called at the very end of Spacemacs initialization."
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "%.2m")
  '(package-selected-packages
-   '(helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
- '(projectile-git-command "fd -0 -t f")
+   '(toml-mode racer flycheck-rust counsel-gtags counsel swiper ivy cargo rust-mode dockerfile-mode docker tablist docker-tramp doom-themes treemacs-persp ansi package-build shut-up epl git commander f dash s fish-completion lsp-mode terminal-here lsp-java sayid flycheck-joker flycheck-clojure flycheck-clj-kondo clojure-snippets clj-refactor inflections edn peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a org-mind-map dap-mode bui tree-mode helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
  '(projectile-svn-command "fd -0 -t f")
  '(python-shell-interpreter "ipython3" t)
  '(python-shell-interpreter-args "--simple-prompt -i" t)
  '(smartparens-global-mode t)
- '(vc-follow-symlinks t))
+ '(vc-follow-symlinks t)
+ '(yas-snippet-dirs
+   '("/home/halushko/.emacs.d/private/snippets/" "/home/halushko/.emacs.d/layers/+completion/auto-completion/local/snippets" "/home/halushko/.emacs.d/elpa/27.0/develop/common-lisp-snippets-20180226.1523/snippets" yasnippet-snippets-dir)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
