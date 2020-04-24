@@ -42,14 +42,15 @@ This function should only modify configuration layer settings."
      (auto-completion
       :variables
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-enable-snippets-in-popup t
-      auto-completion-enable-help-tooltip t
-      auto-completion-enable-sort-by-usage t
+      auto-completion-idle-delay nil
       )
      (better-defaults
       :variables
       better-defaults-move-to-beginning-of-code-first t)
      bm
+     (docker
+      :variables
+      docker-dockerfile-backend 'lsp)
      graphviz
      (cmake
       :variables
@@ -626,7 +627,7 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
-                (set (make-local-variable 'company-idle-delay) 0.3)
+                (set (make-local-variable 'company-idle-delay) nil)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
@@ -663,18 +664,51 @@ before packages are loaded."
                   projectile-project-root-files-top-down-recurring))
     )
 
-  (when (and (executable-find "fish")
-             (require 'fish-completion nil t))
-    (global-fish-completion-mode))
+  (with-eval-after-load 'eshell
+    (when (and (executable-find "fish")
+               (require 'fish-completion nil t))
+      (fish-completion-mode))
+    )
 
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
+  (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
 
-  (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
-  (require 'clang-refactor)
+  ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
+  ;; (require 'clang-refactor)
 
   (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
-)
+
+
+  (defun check-expansion ()
+    (save-excursion
+      (if (looking-at "\\_>") t
+        (backward-char 1)
+        (if (looking-at "\\.") t
+          (backward-char 1)
+          (if (looking-at "->") t nil)))))
+
+  (defun do-yas-expand ()
+    (let ((yas/fallback-behavior 'return-nil))
+      (yas/expand)))
+
+  (defun tab-indent-or-complete ()
+    (interactive)
+    (if (minibufferp)
+        (minibuffer-complete)
+      (if (or (not yas/minor-mode)
+              (null (do-yas-expand)))
+          (if (check-expansion)
+              (company-complete-common)
+            (indent-for-tab-command)))))
+
+
+  ;; (add-hook 'c++-mode-hook (lambda () (define-key c++-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
+  ;; (add-hook 'c-mode-hook (lambda () (define-key c-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
+
+  (add-hook 'prog-mode-hook (lambda () (define-key prog-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
+
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
