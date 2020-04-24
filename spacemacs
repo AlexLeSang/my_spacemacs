@@ -277,7 +277,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.0)
+   dotspacemacs-mode-line-theme 'custom
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -533,6 +533,33 @@ It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq-default git-magit-status-fullscreen t)
   (setq-default git-enable-magit-svn-plugin t)
+
+  (defun spaceline-custom-theme (&rest additional-segments)
+    "My custom spaceline theme."
+    (spaceline-compile
+      `((persp-name
+         workspace-number
+         window-number)
+        ((buffer-id remote-host buffer-modified)
+         :priority 98)
+        (process :when active)
+        auto-compile
+        ((flycheck-error flycheck-warning flycheck-info)
+         :when active
+         :priority 89)
+        )
+      `(which-function
+        (selection-info :priority 95)
+        input-method
+        ((buffer-encoding-abbrev
+          point-position
+          line-column)
+         :separator " "
+         :priority 96)
+        (global :when active)
+        ,@additional-segments
+        ))
+    (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main)))))
   )
 
 (defun dotspacemacs/user-load ()
