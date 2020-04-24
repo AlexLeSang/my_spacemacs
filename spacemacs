@@ -51,6 +51,11 @@ This function should only modify configuration layer settings."
      (docker
       :variables
       docker-dockerfile-backend 'lsp)
+     (clojure :variables
+              clojure-enable-sayid t
+              clojure-enable-clj-refactor t
+              clojure-enable-fancify-symbols t
+              clojure-enable-linters '(clj-kondo joker squiggly))
      graphviz
      (cmake
       :variables
@@ -703,8 +708,9 @@ before packages are loaded."
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
   (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
 
-  ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
-  ;; (require 'clang-refactor)
+  (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
+  (with-eval-after-load 'projectile
+    (require 'clang-refactor))
 
   (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
 
