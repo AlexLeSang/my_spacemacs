@@ -86,30 +86,34 @@ This function should only modify configuration layer settings."
      ;;  ivy-enable-advanced-buffer-information t)
      (helm
       :variables
-      helm-enable-auto-resize t
       helm-no-header t
-      helm-position 'left)
+      helm-position 'bottom)
      markdown
      multiple-cursors
      (org
       :variables
       org-enable-sticky-header t
-      org-enable-org-journal-support t)
+      org-enable-github-support t
+      org-enable-org-journal-support t
+      org-journal-dir "~/org/journal/"
+      org-enable-hugo-support t
+      org-projectile-file "TODOs.org"
+      org-enable-verb-support t)
      (python
       :variables
       python-fill-column 119
       python-test-runner 'pytest
       python-backend 'lsp
       python-save-before-test t
-      python-sort-imports-on-save t
-      )
+      python-sort-imports-on-save t)
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
       shell-enable-smart-eshell nil
       close-window-with-terminal t
       shell-default-width 40)
-     spell-checking
+     (spell-checking
+      :variables spell-checking-enable-by-default nil)
      syntax-checking
      systemd
      (evil-snipe
@@ -591,11 +595,27 @@ before packages are loaded."
   (spacemacs/toggle-mode-line-new-version-off)
   (spacemacs/toggle-mode-line-version-control-off)
   (spacemacs/toggle-mode-line-point-position-off)
+
   (setq-default spacemacs-show-trailing-whitespace nil)
+
+  (with-eval-after-load 'org-agenda
+    (require 'org-projectile)
+    (mapcar '(lambda (file)
+               (when (file-exists-p file)
+                 (push file org-agenda-files)))
+            (org-projectile-todo-files)))
 
   ;; helm buffers list
   (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
   (bind-key (kbd "<C-tab>") 'helm-buffers-list)
+
+
+  (with-eval-after-load 'org-brain
+    (setq org-id-track-globally t)
+    (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
+    (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer))
+
+  (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
 
   ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
   ;; (bind-key (kbd "<C-tab>") 'switch-to-buffer)
