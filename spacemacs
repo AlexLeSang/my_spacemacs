@@ -709,9 +709,9 @@ before packages are loaded."
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
   (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
 
-  (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
-  (with-eval-after-load 'projectile
-    (require 'clang-refactor))
+  ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
+  ;; (with-eval-after-load 'projectile
+  ;;   (require 'clang-refactor))
 
   (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
 
