@@ -613,6 +613,7 @@ before packages are loaded."
   (spacemacs/toggle-mode-line-new-version-off)
   (spacemacs/toggle-mode-line-version-control-off)
   (spacemacs/toggle-mode-line-point-position-off)
+  (spacemacs/toggle-which-key-off)
 
   (setq-default spacemacs-show-trailing-whitespace nil)
 
