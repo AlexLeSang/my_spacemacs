@@ -768,6 +768,7 @@ This function is called at the very end of Spacemacs initialization."
    '(company-quickhelp-delay 0.1)
    '(create-lockfiles nil)
    '(evil-want-Y-yank-to-eol nil)
+   '(evil-snipe-repeat-scope 'whole-visible)
    '(flycheck-sh-shellcheck-executable "shellcheck")
    '(fzf/window-height 50)
    '(global-company-mode t)
