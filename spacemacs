@@ -119,7 +119,7 @@ This function should only modify configuration layer settings."
       close-window-with-terminal t
       shell-default-width 40)
      (spell-checking
-      :variables spell-checking-enable-by-default nil)
+      :variables spell-checking-enable-by-default t)
      syntax-checking
      systemd
      (evil-snipe
