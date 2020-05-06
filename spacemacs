@@ -48,14 +48,17 @@ This function should only modify configuration layer settings."
       :variables
       better-defaults-move-to-beginning-of-code-first t)
      bm
+     (dap
+      :variables
+      dap-enable-mouse-support t)
      (docker
       :variables
       docker-dockerfile-backend 'lsp)
-     (clojure :variables
-              clojure-enable-sayid t
-              clojure-enable-clj-refactor t
-              clojure-enable-fancify-symbols t
-              clojure-enable-linters '(clj-kondo joker squiggly))
+     ;; (clojure :variables
+     ;;          clojure-enable-sayid t
+     ;;          clojure-enable-clj-refactor t
+     ;;          clojure-enable-fancify-symbols t
+     ;;          clojure-enable-linters '(clj-kondo joker squiggly))
      graphviz
      (cmake
       :variables
