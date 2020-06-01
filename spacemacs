@@ -162,7 +162,11 @@ This function should only modify configuration layer settings."
                                       pcmpl-args
                                       pcomplete-extension
                                       srefactor
-                                      zenburn-theme)
+                                      zenburn-theme
+                                      (explain-pause-mode :location (recipe
+                                                                     :fetcher github
+                                                                     :repo "lastquestion/explain-pause-mode"))
+                                      )
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -599,6 +603,9 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; Explain Pause Mode
+  (explain-pause-mode t)
+
   ;; Load files from private directory
   (add-to-list 'load-path "~/.emacs.d/private/local")
 
@@ -712,6 +719,7 @@ before packages are loaded."
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
   (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
+  (add-to-list 'auto-mode-alist '("\\conanfile.txt\\'" . conf-mode))
 
   ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
   ;; (with-eval-after-load 'projectile
@@ -757,78 +765,78 @@ before packages are loaded."
 This is an auto-generated function, do not modify its content directly, use
 Emacs customize menu instead.
 This function is called at the very end of Spacemacs initialization."
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(blink-cursor-mode nil)
-   '(clang-format-executable "clang-format")
-   '(company-minimum-prefix-length 2)
-   '(company-quickhelp-delay 0.1)
-   '(create-lockfiles nil)
-   '(evil-want-Y-yank-to-eol nil)
-   '(evil-snipe-repeat-scope 'whole-visible)
-   '(flycheck-sh-shellcheck-executable "shellcheck")
-   '(fzf/window-height 50)
-   '(global-company-mode t)
-   '(helm-swoop-speed-or-color nil t)
-   '(helm-swoop-use-fuzzy-match nil)
-   '(hl-todo-keyword-faces
-     '(("TODO" . "#dc752f")
-       ("NEXT" . "#dc752f")
-       ("THEM" . "#2d9574")
-       ("PROG" . "#4f97d7")
-       ("OKAY" . "#4f97d7")
-       ("DONT" . "#f2241f")
-       ("FAIL" . "#f2241f")
-       ("DONE" . "#86dc2f")
-       ("NOTE" . "#b1951d")
-       ("KLUDGE" . "#b1951d")
-       ("HACK" . "#b1951d")
-       ("TEMP" . "#b1951d")
-       ("FIXME" . "#dc752f")
-       ("XXX+" . "#dc752f")
-       ("\\?\\?\\?+" . "#dc752f")))
-   '(hybrid-style-enable-hjkl-bindings t)
-   '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#51afef"))
-   '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
-   '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
-   '(lsp-clients-clangd-executable "clangd")
-   '(lsp-project-whitelist '("/home/halushko/Projects/*"))
-   '(lsp-ui-peek-always-show t)
-   '(lsp-ui-peek-fontify 'always)
-   '(lsp-ui-peek-list-width 90)
-   '(lsp-ui-peek-peek-height 60)
-   '(lsp-ui-sideline-delay 2.0)
-   '(lsp-ui-sideline-ignore-duplicate t t)
-   '(lsp-ui-sideline-show-code-actions nil)
-   '(lsp-ui-sideline-show-hover nil)
-   '(max-lisp-eval-depth 3200)
-   '(max-specpdl-size 6400)
-   '(objed-cursor-color "#ff6c6b")
-   '(org-export-with-sub-superscripts nil)
-   '(org-journal-dir "~/org/journal/")
-   '(org-pomodoro-long-break-length 10)
-   '(org-pomodoro-play-sounds nil)
-   '(org-pomodoro-time-format "%.2m")
-   '(package-selected-packages
-     '(toml-mode racer flycheck-rust counsel-gtags counsel swiper ivy cargo rust-mode dockerfile-mode docker tablist docker-tramp doom-themes treemacs-persp ansi package-build shut-up epl git commander f dash s fish-completion lsp-mode terminal-here lsp-java sayid flycheck-joker flycheck-clojure flycheck-clj-kondo clojure-snippets clj-refactor inflections edn peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a org-mind-map dap-mode bui tree-mode helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
-   '(projectile-svn-command "fd -0 -t f")
-   '(python-shell-interpreter "ipython3" t)
-   '(python-shell-interpreter-args "--simple-prompt -i" t)
-   '(smartparens-global-mode t)
-   '(vc-follow-symlinks t)
-   '(yas-snippet-dirs
-     '("/home/halushko/.emacs.d/private/snippets/" "/home/halushko/.emacs.d/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
-   '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
-  )
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(blink-cursor-mode nil)
+ '(clang-format-executable "clang-format")
+ '(company-minimum-prefix-length 2)
+ '(company-quickhelp-delay 0.1)
+ '(create-lockfiles nil)
+ '(evil-snipe-repeat-scope 'whole-visible)
+ '(evil-want-Y-yank-to-eol nil)
+ '(flycheck-sh-shellcheck-executable "shellcheck")
+ '(fzf/window-height 50)
+ '(global-company-mode t)
+ '(helm-swoop-speed-or-color nil)
+ '(helm-swoop-use-fuzzy-match nil)
+ '(hl-todo-keyword-faces
+   '(("TODO" . "#dc752f")
+     ("NEXT" . "#dc752f")
+     ("THEM" . "#2d9574")
+     ("PROG" . "#4f97d7")
+     ("OKAY" . "#4f97d7")
+     ("DONT" . "#f2241f")
+     ("FAIL" . "#f2241f")
+     ("DONE" . "#86dc2f")
+     ("NOTE" . "#b1951d")
+     ("KLUDGE" . "#b1951d")
+     ("HACK" . "#b1951d")
+     ("TEMP" . "#b1951d")
+     ("FIXME" . "#dc752f")
+     ("XXX+" . "#dc752f")
+     ("\\?\\?\\?+" . "#dc752f")))
+ '(hybrid-style-enable-hjkl-bindings t)
+ '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#51afef"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
+ '(lsp-clients-clangd-executable "clangd")
+ '(lsp-project-whitelist '("/home/halushko/Projects/*"))
+ '(lsp-ui-peek-always-show t)
+ '(lsp-ui-peek-fontify 'always)
+ '(lsp-ui-peek-list-width 90)
+ '(lsp-ui-peek-peek-height 60)
+ '(lsp-ui-sideline-delay 2.0)
+ '(lsp-ui-sideline-ignore-duplicate t t)
+ '(lsp-ui-sideline-show-code-actions nil)
+ '(lsp-ui-sideline-show-hover nil)
+ '(max-lisp-eval-depth 3200)
+ '(max-specpdl-size 6400)
+ '(objed-cursor-color "#ff6c6b")
+ '(org-export-with-sub-superscripts nil)
+ '(org-journal-dir "~/org/journal/")
+ '(org-pomodoro-long-break-length 10)
+ '(org-pomodoro-play-sounds nil)
+ '(org-pomodoro-time-format "%.2m")
+ '(package-selected-packages
+   '(explain-pause-mode toml-mode racer flycheck-rust counsel-gtags counsel swiper ivy cargo rust-mode dockerfile-mode docker tablist docker-tramp doom-themes treemacs-persp ansi package-build shut-up epl git commander f dash s fish-completion lsp-mode terminal-here lsp-java sayid flycheck-joker flycheck-clojure flycheck-clj-kondo clojure-snippets clj-refactor inflections edn peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a org-mind-map dap-mode bui tree-mode helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
+ '(projectile-svn-command "fd -0 -t f")
+ '(python-shell-interpreter "ipython3" t)
+ '(python-shell-interpreter-args "--simple-prompt -i" t)
+ '(smartparens-global-mode t)
+ '(vc-follow-symlinks t)
+ '(yas-snippet-dirs
+   '("/home/halushko/.emacs.d/private/snippets/" "/home/halushko/.emacs.d/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
