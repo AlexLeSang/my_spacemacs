@@ -157,6 +157,7 @@ This function should only modify configuration layer settings."
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(fish-completion
+                                      hide-mode-line
                                       doom-themes
                                       lsp-java
                                       nord-theme
@@ -663,24 +664,44 @@ before packages are loaded."
 
   (bind-key "C-!" 'eshell-here)
 
+  (require 'doom-company)
+  (require 'doom-eshell)
+
   (with-eval-after-load 'eshell
     (setq eshell-save-history-on-exit t)
     (setq eshell-history-size 10000)
     (require 'pcmpl-args)
     (require 'pcomplete-extension)
-    (defun helm/eshell-set-keys ()
-      (define-key eshell-mode-map [remap eshell-pcomplete] 'helm-esh-pcomplete))
-    (add-hook 'eshell-mode-hook 'helm/eshell-set-keys)
-    (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
-                (set (make-local-variable 'company-idle-delay) nil)
+                (set (make-local-variable 'company-idle-delay) 0.3)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
     (remove-hook 'eshell-mode-hook
                  'spacemacs//eshell-switch-company-frontend)
+    (remove-hook 'eshell-mode-hook
+                 'spacemacs/init-helm-eshell)
+    (add-hook 'eshell-mode-hook
+              (defun +eshell-remove-fringes-h ()
+                (set-window-fringes nil 0 0)
+                (set-window-margins nil 1 nil)))
+    (add-hook 'eshell-mode-hook #'hide-mode-line-mode)
+    (add-hook 'eshell-mode-hook
+              (lambda ()
+                (when (and (executable-find "fish")
+                           (require 'fish-completion nil t))
+                  (fish-completion-mode))))
+    (add-hook 'eshell-mode-hook (lambda ()
+                                  (define-key eshell-mode-map (kbd "<tab>") nil)
+                                  (define-key eshell-mode-map (kbd "<tab>") '+eshell/pcomplete)))
+    (add-hook 'eshell-mode-hook (lambda ()
+                                  (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
+                                    "H" 'spacemacs/helm-eshell-history)
+                                  (define-key eshell-mode-map
+                                    (kbd "M-l") 'spacemacs/helm-eshell-history)
+                                  ))
     )
 
   (defun pcomplete/dpkg ()
@@ -712,11 +733,6 @@ before packages are loaded."
                   projectile-project-root-files-top-down-recurring))
     )
 
-  (with-eval-after-load 'eshell
-    (when (and (executable-find "fish")
-               (require 'fish-completion nil t))
-      (fish-completion-mode))
-    )
 
   (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
