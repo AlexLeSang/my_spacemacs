@@ -798,6 +798,7 @@ This function is called at the very end of Spacemacs initialization."
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(global-company-mode t)
+ '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
  '(helm-swoop-speed-or-color nil)
  '(helm-swoop-use-fuzzy-match nil)
  '(hl-todo-keyword-faces
