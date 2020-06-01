@@ -42,7 +42,7 @@ This function should only modify configuration layer settings."
      (auto-completion
       :variables
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-idle-delay nil
+      auto-completion-idle-delay 0.2
       )
      (better-defaults
       :variables
