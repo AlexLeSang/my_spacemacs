@@ -118,11 +118,13 @@ This function should only modify configuration layer settings."
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
-      shell-enable-smart-eshell nil
+      shell-enable-smart-eshell t
       close-window-with-terminal t
       shell-default-width 40)
      (spell-checking
-      :variables spell-checking-enable-by-default t)
+      :variables
+      spell-checking-enable-by-default t
+      enable-flyspell-auto-completion nil)
      syntax-checking
      systemd
      (evil-snipe
