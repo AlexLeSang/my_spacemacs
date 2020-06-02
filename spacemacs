@@ -672,6 +672,7 @@ before packages are loaded."
     (setq eshell-history-size 10000)
     (require 'pcmpl-args)
     (require 'pcomplete-extension)
+    (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
