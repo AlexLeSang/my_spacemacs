@@ -1,6 +1,6 @@
 ;;; term/eshell/autoload/eshell.el -*- lexical-binding: t; -*-
 
-(defvar eshell-buffer-name "*doom:eshell*")
+(defvar eshell-buffer-name "*eshell*")
 
 (defvar +eshell-buffers (make-ring 25)
   "List of open eshell buffers.")
