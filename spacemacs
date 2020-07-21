@@ -33,7 +33,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(windows-scripts
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -43,6 +43,7 @@ This function should only modify configuration layer settings."
       :variables
       auto-completion-complete-with-key-sequence "jk"
       auto-completion-idle-delay 0.2
+      auto-completion-enable-help-tooltip t
       )
      (better-defaults
       :variables
@@ -54,11 +55,6 @@ This function should only modify configuration layer settings."
      (docker
       :variables
       docker-dockerfile-backend 'lsp)
-     ;; (clojure :variables
-     ;;          clojure-enable-sayid t
-     ;;          clojure-enable-clj-refactor t
-     ;;          clojure-enable-fancify-symbols t
-     ;;          clojure-enable-linters '(clj-kondo joker squiggly))
      graphviz
      (cmake
       :variables
@@ -77,7 +73,7 @@ This function should only modify configuration layer settings."
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-backend 'lsp-ccls
       c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
-      c-c++-lsp-executable "/usr/bin/ccls"
+      c-c++-lsp-executable "/home/halushko/bin/ccls.sh"
       c++-enable-organize-includes-on-save nil
       c-c++-enable-clang-format-on-save nil
       c-c++-adopt-subprojects t)
@@ -87,7 +83,7 @@ This function should only modify configuration layer settings."
      git
      (gtags
       :variables
-      gtags-enable-by-default t)
+      gtags-enable-by-default nil)
      html
      ;; (ivy
      ;;  :variables
@@ -96,8 +92,10 @@ This function should only modify configuration layer settings."
       :variables
       helm-no-header t
       helm-position 'bottom)
+     nginx
      markdown
      multiple-cursors
+     octave
      (org
       :variables
       org-enable-sticky-header t
@@ -113,14 +111,17 @@ This function should only modify configuration layer settings."
       python-test-runner 'pytest
       python-backend 'lsp
       python-save-before-test t
-      python-sort-imports-on-save t)
-     rust
+      python-sort-imports-on-save nil
+      )
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
       shell-enable-smart-eshell t
       close-window-with-terminal t
       shell-default-width 40)
+     (shell-scripts
+      :variables
+      shell-scripts-backend 'lsp)
      (spell-checking
       :variables
       spell-checking-enable-by-default t
@@ -137,8 +138,19 @@ This function should only modify configuration layer settings."
      latex
      (lsp
       :variables
-      lsp-navigation 'both)
+      lsp-navigation 'simple
+      lsp-ui-doc-enable t
+      lsp-ui-sideline-enable nil
+      )
+     (ranger
+      :variables
+      ranger-show-preview t)
      json
+     (plantuml
+      :variables
+      plantuml-jar-path "/usr/share/plantuml/plantuml.jar"
+      org-plantuml-jar-path "/usr/share/plantuml/plantuml.jar"
+      )
      (javascript
       :variables
       javascript-backend 'lsp
@@ -161,15 +173,21 @@ This function should only modify configuration layer settings."
                                       doom-themes
                                       lsp-java
                                       nord-theme
+                                      org-plus-contrib
                                       org-mind-map
                                       pcmpl-args
                                       pcomplete-extension
+                                      logview
                                       srefactor
                                       zenburn-theme
                                       (explain-pause-mode :location (recipe
                                                                      :fetcher github
                                                                      :repo "lastquestion/explain-pause-mode"))
-                                      )
+                                      log4j-mode
+                                      vlf
+                                      material-theme
+                                      fish-completion
+                                      syslog-mode)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -228,7 +246,7 @@ It should only modify the values of Spacemacs settings."
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
-   dotspacemacs-gc-cons '(200000000 0.2)
+   dotspacemacs-gc-cons '(400000000 0.4)
 
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
@@ -275,8 +293,9 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+   ;; dotspacemacs-startup-lists '((recents . 5)
+   ;;                              (projects . 7))
+   dotspacemacs-startup-lists nil
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -296,9 +315,10 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(zenburn
-                         doom-nord
-                         spacemacs-dark)
+   dotspacemacs-themes '(doom-one-light
+                         doom-nord-light
+                         spacemacs-light
+                         )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -307,6 +327,7 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
+   ;; dotspacemacs-mode-line-theme '(spacemacs :separator nil :separator-scale 1.0)
    dotspacemacs-mode-line-theme 'custom
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
@@ -368,7 +389,7 @@ It should only modify the values of Spacemacs settings."
    ;; Size (in MB) above which spacemacs will prompt to open the large file
    ;; literally to avoid performance issues. Opening a file literally means that
    ;; no major mode or minor modes are active. (default is 1)
-   dotspacemacs-large-file-size 50
+   dotspacemacs-large-file-size 100
 
    ;; Location where to auto-save files. Possible values are `original' to
    ;; auto-save the file in-place, `cache' to auto-save the file to another
@@ -448,7 +469,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
-   dotspacemacs-smooth-scrolling t
+   dotspacemacs-smooth-scrolling nil
 
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
@@ -607,7 +628,7 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
   ;; Explain Pause Mode
-  (explain-pause-mode t)
+  ;; (explain-pause-mode t)
 
   ;; Load files from private directory
   (add-to-list 'load-path "~/.emacs.d/private/local")
@@ -624,8 +645,14 @@ before packages are loaded."
   (spacemacs/toggle-mode-line-version-control-off)
   (spacemacs/toggle-mode-line-point-position-off)
   (spacemacs/toggle-which-key-off)
-
   (setq-default spacemacs-show-trailing-whitespace nil)
+
+  ;; plantuml
+  (setq plantuml-default-exec-mode 'jar)
+  (setq plantuml-output-type "png")
+
+  (with-eval-after-load 'org-mode
+    (require 'ox-confluence))
 
   (with-eval-after-load 'org-agenda
     (require 'org-projectile)
@@ -669,14 +696,14 @@ before packages are loaded."
 
   (with-eval-after-load 'eshell
     (setq eshell-save-history-on-exit t)
-    (setq eshell-history-size 10000)
+    (setq eshell-history-size 100000)
     (require 'pcmpl-args)
     (require 'pcomplete-extension)
     (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
-                (set (make-local-variable 'company-idle-delay) 0.3)
+                (set (make-local-variable 'company-idle-delay) nil)
                 ))
     (remove-hook 'eshell-directory-change-hook
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
@@ -739,13 +766,102 @@ before packages are loaded."
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
   (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
   (add-to-list 'auto-mode-alist '("\\conanfile.txt\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("\\.prf\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("\\.ks\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("\\.repo\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("\\.conf\\'" . conf-mode))
 
-  ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
-  ;; (with-eval-after-load 'projectile
-  ;;   (require 'clang-refactor))
+  (add-to-list 'load-path "~/.emacs.d/private/local/clang-refactor")
+  (require 'clang-refactor)
 
-  (spacemacs/toggle-evil-safe-lisp-structural-editing-on-register-hook-common-lisp-mode)
+  (with-eval-after-load 'company-lsp
+    (progn
+      (spacemacs|add-company-backends
+        :backends company-lsp
+        :modes sh-mode)
+      (spacemacs|add-company-backends
+        :backends company-lsp
+        :modes shell-script-mode)))
 
+  (setq auto-mode-alist (cons '("\\.as$" . js-mode) auto-mode-alist))
+
+  (defun remove-dos-eol ()
+    "Do not show ^M in files containing mixed UNIX and DOS line endings."
+    (interactive)
+    (setq buffer-display-table (make-display-table))
+    (aset buffer-display-table ?\^M []))
+
+  (add-hook 'c++-mode-hook #'remove-dos-eol)
+
+  (require 'vlf-setup)
+
+  (require 'logview)
+  (defun spacemacs/helm-gtags-define-keys-for-mode (mode)
+    "Define key bindings for the specific MODE."
+    ;; The functionality of `helm-gtags-mode' is pretty much entirely superseded
+    ;; by `ggtags-mode', so we don't add this hook
+    ;; (let ((hook (intern (format "%S-hook" mode))))
+    ;;   (add-hook hook 'helm-gtags-mode))
+
+    ;; `helm-gtags-dwim' is added to the end of the mode-specific jump handlers
+    ;; Some modes have more sophisticated jump handlers that go to the beginning
+    ;; It might be possible to add `helm-gtags-dwim' instead to the default
+    ;; handlers, if it does a reasonable job in ALL modes.
+    ;; (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
+    ;;   (when (boundp jumpl)
+    ;;     (add-to-list jumpl 'spacemacs/helm-gtags-maybe-dwim 'append)))
+
+    (spacemacs/set-leader-keys-for-major-mode mode
+      "tC" 'helm-gtags-create-tags
+      "td" 'helm-gtags-find-tag
+      "tD" 'helm-gtags-find-tag-other-window
+      "tf" 'helm-gtags-select-path
+      "tg" 'helm-gtags-dwim
+      "tG" 'helm-gtags-dwim-other-window
+      "ti" 'helm-gtags-tags-in-this-function
+      "tl" 'helm-gtags-parse-file
+      "tn" 'helm-gtags-next-history
+      "tp" 'helm-gtags-previous-history
+      "tr" 'helm-gtags-find-rtag
+      "tR" 'helm-gtags-resume
+      "ts" 'helm-gtags-select
+      "tS" 'helm-gtags-show-stack
+      "ty" 'helm-gtags-find-symbol
+      "tu" 'helm-gtags-update-tags))
+
+  (defun gtags/init-helm-gtags ()
+    (use-package helm-gtags
+      :defer t
+      :init
+      (progn
+        (setq helm-gtags-ignore-case t
+              helm-gtags-auto-update t
+              helm-gtags-use-input-at-cursor t
+              helm-gtags-pulse-at-cursor t)
+        ;; modes that do not have a layer, define here
+        (spacemacs/helm-gtags-define-keys-for-mode 'c-c++-modes)
+        (spacemacs/helm-gtags-define-keys-for-mode 'tcl-mode)
+        (spacemacs/helm-gtags-define-keys-for-mode 'vhdl-mode)
+        (spacemacs/helm-gtags-define-keys-for-mode 'awk-mode)
+        (spacemacs/helm-gtags-define-keys-for-mode 'dired-mode)
+        (spacemacs/helm-gtags-define-keys-for-mode 'compilation-mode)
+        (spacemacs/helm-gtags-define-keys-for-mode 'shell-mode))))
+
+  (gtags/init-helm-gtags)
+
+  (require 'syslog-mode)
+  (add-to-list 'auto-mode-alist '("/var/log.*\\'" . syslog-mode))
+
+  (with-eval-after-load 'dap-mode
+    (dap-register-debug-template
+     "GDB::Run feedercontrolstubbed"
+     (list :type "gdb"
+           :request "launch"
+           :name "GDB::Run"
+           :debugger_args ["--command=/home/halushko/Projects/sgs-trunk-local/remote-gdb.txt"]
+           :target "/home/halushko/Projects/sgs-trunk-local/result/debug/feedercontrolstubbed"
+           :cwd nil))
+    )
 
   (defun check-expansion ()
     (save-excursion
@@ -775,10 +891,11 @@ before packages are loaded."
 
   (add-hook 'prog-mode-hook (lambda () (define-key prog-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
 
+  (add-hook 'c++-mode-hook (lambda () (define-key c++-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
+  (add-hook 'c-mode-hook (lambda () (define-key c-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
+
   )
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use
@@ -789,19 +906,29 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
  '(blink-cursor-mode nil)
+ '(ccls-executable "/home/halushko/bin/ccls.sh")
  '(clang-format-executable "clang-format")
- '(company-minimum-prefix-length 2)
+ '(company-minimum-prefix-length 0)
+ '(company-quickhelp-color-background "#4F4F4F")
+ '(company-quickhelp-color-foreground "#DCDCCC")
  '(company-quickhelp-delay 0.1)
  '(create-lockfiles nil)
- '(evil-snipe-repeat-scope 'whole-visible)
+ '(delete-by-moving-to-trash nil)
+ '(evil-snipe-scope 'whole-visible)
  '(evil-want-Y-yank-to-eol nil)
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
+ '(garbage-collection-messages t)
  '(global-company-mode t)
+ '(helm-candidate-number-limit 25)
+ '(helm-completion-style 'emacs)
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
- '(helm-swoop-speed-or-color nil)
+ '(helm-swoop-speed-or-color nil t)
  '(helm-swoop-use-fuzzy-match nil)
+ '(hl-sexp-background-color "#efebe9")
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
@@ -823,9 +950,12 @@ This function is called at the very end of Spacemacs initialization."
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
  '(lsp-clients-clangd-executable "clangd")
+ '(lsp-file-watch-threshold nil)
+ '(lsp-prefer-capf t)
  '(lsp-project-whitelist '("/home/halushko/Projects/*"))
- '(lsp-ui-peek-always-show t)
- '(lsp-ui-peek-fontify 'always)
+ '(lsp-signature-auto-activate nil)
+ '(lsp-ui-doc-include-signature t t)
+ '(lsp-ui-doc-position 'bottom)
  '(lsp-ui-peek-list-width 90)
  '(lsp-ui-peek-peek-height 60)
  '(lsp-ui-sideline-delay 2.0)
@@ -834,9 +964,11 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-ui-sideline-show-hover nil)
  '(max-lisp-eval-depth 3200)
  '(max-specpdl-size 6400)
+ '(nrepl-message-colors
+   '("#CC9393" "#DFAF8F" "#F0DFAF" "#7F9F7F" "#BFEBBF" "#93E0E3" "#94BFF3" "#DC8CC3"))
  '(objed-cursor-color "#ff6c6b")
  '(org-export-with-sub-superscripts nil)
- '(org-journal-dir "~/org/journal/")
+ '(org-journal-dir "~/org/journal/" t)
  '(org-pomodoro-long-break-length 10)
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "%.2m")
@@ -846,6 +978,8 @@ This function is called at the very end of Spacemacs initialization."
  '(python-shell-interpreter "ipython3" t)
  '(python-shell-interpreter-args "--simple-prompt -i" t)
  '(smartparens-global-mode t)
+ '(tramp-default-proxies-alist nil)
+ '(tramp-save-ad-hoc-proxies t)
  '(vc-follow-symlinks t)
  '(yas-snippet-dirs
    '("/home/halushko/.emacs.d/private/snippets/" "/home/halushko/.emacs.d/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
