@@ -42,8 +42,9 @@ This function should only modify configuration layer settings."
      (auto-completion
       :variables
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-idle-delay 0.2
+      auto-completion-idle-delay 0.3
       auto-completion-enable-help-tooltip t
+      auto-completion-minimum-prefix-length 3
       )
      (better-defaults
       :variables
@@ -115,7 +116,6 @@ This function should only modify configuration layer settings."
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
-      shell-enable-smart-eshell t
       close-window-with-terminal t
       shell-default-width 40)
      (shell-scripts
@@ -134,7 +134,6 @@ This function should only modify configuration layer settings."
       :variables
       version-control-diff-tool 'diff-hl
       version-control-global-margin t)
-     latex
      (lsp
       :variables
       lsp-navigation 'simple
@@ -145,6 +144,7 @@ This function should only modify configuration layer settings."
       :variables
       ranger-show-preview t)
      json
+     themes-megapack
      (plantuml
       :variables
       plantuml-jar-path "/usr/share/plantuml/plantuml.jar"
@@ -250,7 +250,7 @@ It should only modify the values of Spacemacs settings."
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
-   dotspacemacs-gc-cons '(400000000 0.4)
+   dotspacemacs-gc-cons '(250000000 0.25)
 
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
@@ -319,8 +319,7 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(material-light
-                         doom-one-light
+   dotspacemacs-themes '(apropospriate-light
                          spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -937,10 +936,12 @@ This function is called at the very end of Spacemacs initialization."
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   ["#212337" "#ff757f" "#c3e88d" "#ffc777" "#82aaff" "#c099ff" "#b4f9f8" "#c8d3f5"])
  '(blink-cursor-mode nil)
  '(ccls-executable "/home/halushko/bin/ccls.sh")
  '(clang-format-executable "clang-format")
- '(company-minimum-prefix-length 0)
+ '(company-minimum-prefix-length 3)
  '(company-quickhelp-color-background "#4F4F4F")
  '(company-quickhelp-color-foreground "#DCDCCC")
  '(company-quickhelp-delay 0.1)
@@ -948,6 +949,7 @@ This function is called at the very end of Spacemacs initialization."
  '(delete-by-moving-to-trash nil)
  '(evil-snipe-scope 'whole-visible)
  '(evil-want-Y-yank-to-eol nil)
+ '(fci-rule-color "#383a42")
  '(flycheck-sh-shellcheck-executable "shellcheck")
  '(fzf/window-height 50)
  '(garbage-collection-messages t)
@@ -955,7 +957,7 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-candidate-number-limit 25)
  '(helm-completion-style 'emacs)
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
- '(helm-swoop-speed-or-color nil t)
+ '(helm-swoop-speed-or-color nil)
  '(helm-swoop-use-fuzzy-match nil)
  '(hl-sexp-background-color "#efebe9")
  '(hl-todo-keyword-faces
@@ -979,11 +981,11 @@ This function is called at the very end of Spacemacs initialization."
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
  '(lsp-clients-clangd-executable "clangd")
+ '(lsp-completion-provider t)
  '(lsp-file-watch-threshold nil)
- '(lsp-prefer-capf t)
  '(lsp-project-whitelist '("/home/halushko/Projects/*"))
  '(lsp-signature-auto-activate nil)
- '(lsp-ui-doc-include-signature t t)
+ '(lsp-ui-doc-include-signature t)
  '(lsp-ui-doc-position 'bottom)
  '(lsp-ui-peek-list-width 90)
  '(lsp-ui-peek-peek-height 60)
