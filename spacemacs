@@ -610,8 +610,11 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; Native compile
+  ;; (native-compile-async "/home/halushko/.emacs.d/elpa" t t)
+
   ;; Explain Pause Mode
-  (explain-pause-mode t)
+  ;; (explain-pause-mode t)
 
   ;; Load files from private directory
   (add-to-list 'load-path "~/.emacs.d/private/local")
