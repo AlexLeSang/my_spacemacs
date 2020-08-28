@@ -848,7 +848,6 @@ This function is called at the very end of Spacemacs initialization."
  '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#51afef"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
- '(lsp-clients-clangd-executable "clangd")
  '(lsp-project-whitelist '("/home/halushko/Projects/*"))
  '(lsp-ui-peek-always-show t)
  '(lsp-ui-peek-fontify 'always)
