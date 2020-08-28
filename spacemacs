@@ -62,15 +62,13 @@ This function should only modify configuration layer settings."
      graphviz
      (cmake
       :variables
-      cmake-enable-cmake-ide-support t)
+      cmake-enable-cmake-ide-support t
+      cmake-backend 'lsp)
      copy-as-format
      (colors
       :variables
       colors-colorize-identifiers 'all)
      csv
-     (cmake
-      :variables
-      cmake-enable-cmake-ide-support t)
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
