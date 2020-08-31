@@ -59,15 +59,13 @@ This function should only modify configuration layer settings."
      graphviz
      (cmake
       :variables
-      cmake-enable-cmake-ide-support t)
+      cmake-enable-cmake-ide-support t
+      cmake-backend 'lsp)
      copy-as-format
      (colors
       :variables
       colors-colorize-identifiers 'all)
      csv
-     (cmake
-      :variables
-      cmake-enable-cmake-ide-support t)
      (c-c++
       :variables
       c-c++-default-mode-for-headers 'c++-mode
@@ -629,6 +627,9 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
 
+  ;; Native compile
+  ;; (native-compile-async "/home/halushko/.emacs.d/elpa" t t)
+
   ;; Explain Pause Mode
   ;; (explain-pause-mode t)
 
@@ -783,10 +784,9 @@ before packages are loaded."
     )
 
 
-  (add-hook 'helm-minibuffer-set-up-hook (lambda () (setq helm-buffer-max-length nil)))
   (add-to-list 'auto-mode-alist '("\\.xslt\\'" . nxml-mode))
   (add-to-list 'auto-mode-alist '("\\Dockerfile-build\\'" . dockerfile-mode))
-  (add-to-list 'auto-mode-alist '("\\conanfile.txt\\'" . conf-mode))
+  (add-to-list 'auto-mode-alist '("conanfile.txt" . conf-mode))
   (add-to-list 'auto-mode-alist '("\\.prf\\'" . conf-mode))
   (add-to-list 'auto-mode-alist '("\\.ks\\'" . conf-mode))
   (add-to-list 'auto-mode-alist '("\\.repo\\'" . conf-mode))
@@ -955,6 +955,7 @@ This function is called at the very end of Spacemacs initialization."
  '(garbage-collection-messages t)
  '(global-company-mode t)
  '(helm-candidate-number-limit 25)
+ '(helm-buffer-max-length nil)
  '(helm-completion-style 'emacs)
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
  '(helm-swoop-speed-or-color nil)
