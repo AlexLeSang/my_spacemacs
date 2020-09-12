@@ -50,9 +50,9 @@ This function should only modify configuration layer settings."
       :variables
       better-defaults-move-to-beginning-of-code-first t)
      bm
-     (dap
-      :variables
-      dap-enable-mouse-support t)
+     ;; (dap
+     ;;  :variables
+     ;;  dap-enable-mouse-support t)
      (docker
       :variables
       docker-dockerfile-backend 'lsp)
@@ -873,16 +873,16 @@ before packages are loaded."
   (require 'syslog-mode)
   (add-to-list 'auto-mode-alist '("/var/log.*\\'" . syslog-mode))
 
-  (with-eval-after-load 'dap-mode
-    (dap-register-debug-template
-     "GDB::Run feedercontrolstubbed"
-     (list :type "gdb"
-           :request "launch"
-           :name "GDB::Run"
-           :debugger_args ["--command=/home/halushko/Projects/sgs-trunk-local/remote-gdb.txt"]
-           :target "/home/halushko/Projects/sgs-trunk-local/result/debug/feedercontrolstubbed"
-           :cwd nil))
-    )
+  ;; (with-eval-after-load 'dap-mode
+  ;;   (dap-register-debug-template
+  ;;    "GDB::Run feedercontrolstubbed"
+  ;;    (list :type "gdb"
+  ;;          :request "launch"
+  ;;          :name "GDB::Run"
+  ;;          :debugger_args ["--command=/home/halushko/Projects/sgs-trunk-local/remote-gdb.txt"]
+  ;;          :target "/home/halushko/Projects/sgs-trunk-local/result/debug/feedercontrolstubbed"
+  ;;          :cwd nil))
+  ;;   )
 
   ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
   ;; (with-eval-after-load 'projectile
