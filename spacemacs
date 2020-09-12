@@ -71,7 +71,7 @@ This function should only modify configuration layer settings."
       c-c++-default-mode-for-headers 'c++-mode
       c-c++-backend 'lsp-ccls
       c-c++-lsp-cache-dir "/home/halushko/ccls-cache"
-      c-c++-lsp-executable "/home/halushko/bin/ccls.sh"
+      c-c++-lsp-executable "ccls"
       c++-enable-organize-includes-on-save nil
       c-c++-enable-clang-format-on-save nil
       c-c++-adopt-subprojects t)
@@ -939,7 +939,6 @@ This function is called at the very end of Spacemacs initialization."
  '(ansi-color-names-vector
    ["#212337" "#ff757f" "#c3e88d" "#ffc777" "#82aaff" "#c099ff" "#b4f9f8" "#c8d3f5"])
  '(blink-cursor-mode nil)
- '(ccls-executable "/home/halushko/bin/ccls.sh")
  '(clang-format-executable "clang-format")
  '(company-minimum-prefix-length 3)
  '(company-quickhelp-color-background "#4F4F4F")
