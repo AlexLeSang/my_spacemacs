@@ -107,7 +107,7 @@ This function should only modify configuration layer settings."
       :variables
       python-fill-column 119
       python-test-runner 'pytest
-      python-backend 'lsp
+      python-backend 'lsp python-lsp-server 'pyls
       python-save-before-test t
       python-sort-imports-on-save nil
       )
