@@ -83,15 +83,13 @@ This function should only modify configuration layer settings."
       :variables
       gtags-enable-by-default nil)
      html
-     ;; (ivy
+     ivy
+     ;; (helm
      ;;  :variables
-     ;;  ivy-enable-advanced-buffer-information t)
-     (helm
-      :variables
-      helm-no-header t
-      helm-position 'bottom
-      helm-enable-auto-resize t
-      )
+     ;;  helm-no-header t
+     ;;  helm-position 'bottom
+     ;;  helm-enable-auto-resize t
+     ;;  )
      nginx
      markdown
      multiple-cursors
@@ -686,8 +684,11 @@ before packages are loaded."
             (org-projectile-todo-files)))
 
   ;; helm buffers list
-  (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
-  (bind-key (kbd "<C-tab>") 'helm-buffers-list)
+  ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
+  ;; (bind-key (kbd "<C-tab>") 'helm-buffers-list)
+
+  (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
+  (bind-key (kbd "<C-tab>") 'switch-to-buffer)
 
 
   (with-eval-after-load 'org-brain
@@ -695,7 +696,7 @@ before packages are loaded."
     (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
     (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer))
 
-  (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
+  ;; (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
 
   ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
   ;; (bind-key (kbd "<C-tab>") 'switch-to-buffer)
@@ -723,7 +724,7 @@ before packages are loaded."
     (setq eshell-history-size 100000)
     (require 'pcmpl-args)
     (require 'pcomplete-extension)
-    (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
+    ;; (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
@@ -733,8 +734,8 @@ before packages are loaded."
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
     (remove-hook 'eshell-mode-hook
                  'spacemacs//eshell-switch-company-frontend)
-    (remove-hook 'eshell-mode-hook
-                 'spacemacs/init-helm-eshell)
+    ;; (remove-hook 'eshell-mode-hook
+    ;;              'spacemacs/init-helm-eshell)
     (add-hook 'eshell-mode-hook
               (defun +eshell-remove-fringes-h ()
                 (set-window-fringes nil 0 0)
@@ -748,12 +749,12 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook (lambda ()
                                   (define-key eshell-mode-map (kbd "<tab>") nil)
                                   (define-key eshell-mode-map (kbd "<tab>") '+eshell/pcomplete)))
-    (add-hook 'eshell-mode-hook (lambda ()
-                                  (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
-                                    "H" 'spacemacs/helm-eshell-history)
-                                  (define-key eshell-mode-map
-                                    (kbd "M-l") 'spacemacs/helm-eshell-history)
-                                  ))
+    ;; (add-hook 'eshell-mode-hook (lambda ()
+    ;;                               (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
+    ;;                                 "H" 'spacemacs/helm-eshell-history)
+    ;;                               (define-key eshell-mode-map
+    ;;                                 (kbd "M-l") 'spacemacs/helm-eshell-history)
+    ;;                               ))
     )
 
   (defun pcomplete/dpkg ()
@@ -819,58 +820,59 @@ before packages are loaded."
   (require 'vlf-setup)
 
   (require 'logview)
-  (defun spacemacs/helm-gtags-define-keys-for-mode (mode)
-    "Define key bindings for the specific MODE."
-    ;; The functionality of `helm-gtags-mode' is pretty much entirely superseded
-    ;; by `ggtags-mode', so we don't add this hook
-    ;; (let ((hook (intern (format "%S-hook" mode))))
-    ;;   (add-hook hook 'helm-gtags-mode))
 
-    ;; `helm-gtags-dwim' is added to the end of the mode-specific jump handlers
-    ;; Some modes have more sophisticated jump handlers that go to the beginning
-    ;; It might be possible to add `helm-gtags-dwim' instead to the default
-    ;; handlers, if it does a reasonable job in ALL modes.
-    ;; (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
-    ;;   (when (boundp jumpl)
-    ;;     (add-to-list jumpl 'spacemacs/helm-gtags-maybe-dwim 'append)))
+  ;; (defun spacemacs/helm-gtags-define-keys-for-mode (mode)
+  ;;   "Define key bindings for the specific MODE."
+  ;;   ;; The functionality of `helm-gtags-mode' is pretty much entirely superseded
+  ;;   ;; by `ggtags-mode', so we don't add this hook
+  ;;   ;; (let ((hook (intern (format "%S-hook" mode))))
+  ;;   ;;   (add-hook hook 'helm-gtags-mode))
 
-    (spacemacs/set-leader-keys-for-major-mode mode
-      "tC" 'helm-gtags-create-tags
-      "td" 'helm-gtags-find-tag
-      "tD" 'helm-gtags-find-tag-other-window
-      "tf" 'helm-gtags-select-path
-      "tg" 'helm-gtags-dwim
-      "tG" 'helm-gtags-dwim-other-window
-      "ti" 'helm-gtags-tags-in-this-function
-      "tl" 'helm-gtags-parse-file
-      "tn" 'helm-gtags-next-history
-      "tp" 'helm-gtags-previous-history
-      "tr" 'helm-gtags-find-rtag
-      "tR" 'helm-gtags-resume
-      "ts" 'helm-gtags-select
-      "tS" 'helm-gtags-show-stack
-      "ty" 'helm-gtags-find-symbol
-      "tu" 'helm-gtags-update-tags))
+  ;;   ;; `helm-gtags-dwim' is added to the end of the mode-specific jump handlers
+  ;;   ;; Some modes have more sophisticated jump handlers that go to the beginning
+  ;;   ;; It might be possible to add `helm-gtags-dwim' instead to the default
+  ;;   ;; handlers, if it does a reasonable job in ALL modes.
+  ;;   ;; (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
+  ;;   ;;   (when (boundp jumpl)
+  ;;   ;;     (add-to-list jumpl 'spacemacs/helm-gtags-maybe-dwim 'append)))
 
-  (defun gtags/init-helm-gtags ()
-    (use-package helm-gtags
-      :defer t
-      :init
-      (progn
-        (setq helm-gtags-ignore-case t
-              helm-gtags-auto-update t
-              helm-gtags-use-input-at-cursor t
-              helm-gtags-pulse-at-cursor t)
-        ;; modes that do not have a layer, define here
-        (spacemacs/helm-gtags-define-keys-for-mode 'c-c++-modes)
-        (spacemacs/helm-gtags-define-keys-for-mode 'tcl-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'vhdl-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'awk-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'dired-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'compilation-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'shell-mode))))
+  ;;   (spacemacs/set-leader-keys-for-major-mode mode
+  ;;     "tC" 'helm-gtags-create-tags
+  ;;     "td" 'helm-gtags-find-tag
+  ;;     "tD" 'helm-gtags-find-tag-other-window
+  ;;     "tf" 'helm-gtags-select-path
+  ;;     "tg" 'helm-gtags-dwim
+  ;;     "tG" 'helm-gtags-dwim-other-window
+  ;;     "ti" 'helm-gtags-tags-in-this-function
+  ;;     "tl" 'helm-gtags-parse-file
+  ;;     "tn" 'helm-gtags-next-history
+  ;;     "tp" 'helm-gtags-previous-history
+  ;;     "tr" 'helm-gtags-find-rtag
+  ;;     "tR" 'helm-gtags-resume
+  ;;     "ts" 'helm-gtags-select
+  ;;     "tS" 'helm-gtags-show-stack
+  ;;     "ty" 'helm-gtags-find-symbol
+  ;;     "tu" 'helm-gtags-update-tags))
 
-  (gtags/init-helm-gtags)
+  ;; (defun gtags/init-helm-gtags ()
+  ;;   (use-package helm-gtags
+  ;;     :defer t
+  ;;     :init
+  ;;     (progn
+  ;;       (setq helm-gtags-ignore-case t
+  ;;             helm-gtags-auto-update t
+  ;;             helm-gtags-use-input-at-cursor t
+  ;;             helm-gtags-pulse-at-cursor t)
+  ;;       ;; modes that do not have a layer, define here
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'c-c++-modes)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'tcl-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'vhdl-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'awk-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'dired-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'compilation-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'shell-mode))))
+
+  ;; (gtags/init-helm-gtags)
 
   (require 'syslog-mode)
   (add-to-list 'auto-mode-alist '("/var/log.*\\'" . syslog-mode))
@@ -955,8 +957,8 @@ This function is called at the very end of Spacemacs initialization."
  '(fzf/window-height 50)
  '(garbage-collection-messages t)
  '(global-company-mode t)
- '(helm-candidate-number-limit 25)
  '(helm-buffer-max-length nil)
+ '(helm-candidate-number-limit 25)
  '(helm-completion-style 'emacs)
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
  '(helm-swoop-speed-or-color nil)
