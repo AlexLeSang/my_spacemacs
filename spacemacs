@@ -249,7 +249,7 @@ It should only modify the values of Spacemacs settings."
    ;; Set `gc-cons-threshold' and `gc-cons-percentage' when startup finishes.
    ;; This is an advanced option and should not be changed unless you suspect
    ;; performance issues due to garbage collection operations.
-   dotspacemacs-gc-cons '(250000000 0.25)
+   dotspacemacs-gc-cons '(120000000 0.12)
 
    ;; If non-nil then Spacelpa repository is the primary source to install
    ;; a locked version of packages. If nil then Spacemacs will install the
