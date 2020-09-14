@@ -89,7 +89,8 @@ This function should only modify configuration layer settings."
      (helm
       :variables
       helm-no-header t
-      helm-position 'bottom)
+      helm-position 'bottom
+      helm-enable-auto-resize t)
      nginx
      markdown
      multiple-cursors
