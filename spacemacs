@@ -1013,12 +1013,7 @@ This function is called at the very end of Spacemacs initialization."
  '(rustic-ansi-faces
    ["#fafafa" "#e45649" "#50a14f" "#986801" "#4078f2" "#a626a4" "#0184bc" "#383a42"])
  '(smartparens-global-mode t)
- '(tramp-default-proxies-alist
-   '(("^fmt0019$"
-      #("^root$" 1 5
-        (tramp-default t))
-      #("/ssh:fmt0019:" 0 13
-        (tramp-ad-hoc t)))))
+ '(tramp-default-proxies-alist nil)
  '(tramp-save-ad-hoc-proxies t)
  '(vc-annotate-background "#fafafa")
  '(vc-annotate-color-map
