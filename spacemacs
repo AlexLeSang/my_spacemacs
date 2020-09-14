@@ -50,9 +50,9 @@ This function should only modify configuration layer settings."
       :variables
       better-defaults-move-to-beginning-of-code-first t)
      bm
-     (dap
-      :variables
-      dap-enable-mouse-support t)
+     ;; (dap
+     ;;  :variables
+     ;;  dap-enable-mouse-support t)
      (docker
       :variables
       docker-dockerfile-backend 'lsp)
@@ -83,14 +83,18 @@ This function should only modify configuration layer settings."
       :variables
       gtags-enable-by-default nil)
      html
-     ;; (ivy
-     ;;  :variables
-     ;;  ivy-enable-advanced-buffer-information t)
-     (helm
+     (ivy
       :variables
-      helm-no-header t
-      helm-position 'bottom
-      helm-enable-auto-resize t)
+      ivy-enable-advanced-buffer-information t
+      ivy-use-virtual-buffers nil
+      ivy-height 24
+      )
+     ;; (helm
+     ;;  :variables
+     ;;  helm-no-header t
+     ;;  helm-position 'bottom
+     ;;  helm-enable-auto-resize t
+     ;;  )
      nginx
      markdown
      multiple-cursors
@@ -685,8 +689,11 @@ before packages are loaded."
             (org-projectile-todo-files)))
 
   ;; helm buffers list
-  (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
-  (bind-key (kbd "<C-tab>") 'helm-buffers-list)
+  ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'helm-buffers-list)
+  ;; (bind-key (kbd "<C-tab>") 'helm-buffers-list)
+
+  (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
+  (bind-key (kbd "<C-tab>") 'switch-to-buffer)
 
 
   (with-eval-after-load 'org-brain
@@ -694,7 +701,7 @@ before packages are loaded."
     (setq org-id-locations-file "~/.emacs.d/.org-id-locations")
     (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer))
 
-  (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
+  ;; (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
 
   ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
   ;; (bind-key (kbd "<C-tab>") 'switch-to-buffer)
@@ -722,7 +729,7 @@ before packages are loaded."
     (setq eshell-history-size 100000)
     (require 'pcmpl-args)
     (require 'pcomplete-extension)
-    (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
+    ;; (setq helm-show-completion-display-function #'spacemacs//display-helm-window)
     (add-hook 'eshell-mode-hook
               (lambda ()
                 (set (make-local-variable 'company-frontends) '(company-pseudo-tooltip-frontend))
@@ -732,8 +739,8 @@ before packages are loaded."
                  'spacemacs//toggle-shell-auto-completion-based-on-path)
     (remove-hook 'eshell-mode-hook
                  'spacemacs//eshell-switch-company-frontend)
-    (remove-hook 'eshell-mode-hook
-                 'spacemacs/init-helm-eshell)
+    ;; (remove-hook 'eshell-mode-hook
+    ;;              'spacemacs/init-helm-eshell)
     (add-hook 'eshell-mode-hook
               (defun +eshell-remove-fringes-h ()
                 (set-window-fringes nil 0 0)
@@ -747,12 +754,12 @@ before packages are loaded."
     (add-hook 'eshell-mode-hook (lambda ()
                                   (define-key eshell-mode-map (kbd "<tab>") nil)
                                   (define-key eshell-mode-map (kbd "<tab>") '+eshell/pcomplete)))
-    (add-hook 'eshell-mode-hook (lambda ()
-                                  (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
-                                    "H" 'spacemacs/helm-eshell-history)
-                                  (define-key eshell-mode-map
-                                    (kbd "M-l") 'spacemacs/helm-eshell-history)
-                                  ))
+    ;; (add-hook 'eshell-mode-hook (lambda ()
+    ;;                               (spacemacs/set-leader-keys-for-major-mode 'eshell-mode
+    ;;                                 "H" 'spacemacs/helm-eshell-history)
+    ;;                               (define-key eshell-mode-map
+    ;;                                 (kbd "M-l") 'spacemacs/helm-eshell-history)
+    ;;                               ))
     )
 
   (defun pcomplete/dpkg ()
@@ -818,72 +825,73 @@ before packages are loaded."
   (require 'vlf-setup)
 
   (require 'logview)
-  (defun spacemacs/helm-gtags-define-keys-for-mode (mode)
-    "Define key bindings for the specific MODE."
-    ;; The functionality of `helm-gtags-mode' is pretty much entirely superseded
-    ;; by `ggtags-mode', so we don't add this hook
-    ;; (let ((hook (intern (format "%S-hook" mode))))
-    ;;   (add-hook hook 'helm-gtags-mode))
 
-    ;; `helm-gtags-dwim' is added to the end of the mode-specific jump handlers
-    ;; Some modes have more sophisticated jump handlers that go to the beginning
-    ;; It might be possible to add `helm-gtags-dwim' instead to the default
-    ;; handlers, if it does a reasonable job in ALL modes.
-    ;; (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
-    ;;   (when (boundp jumpl)
-    ;;     (add-to-list jumpl 'spacemacs/helm-gtags-maybe-dwim 'append)))
+  ;; (defun spacemacs/helm-gtags-define-keys-for-mode (mode)
+  ;;   "Define key bindings for the specific MODE."
+  ;;   ;; The functionality of `helm-gtags-mode' is pretty much entirely superseded
+  ;;   ;; by `ggtags-mode', so we don't add this hook
+  ;;   ;; (let ((hook (intern (format "%S-hook" mode))))
+  ;;   ;;   (add-hook hook 'helm-gtags-mode))
 
-    (spacemacs/set-leader-keys-for-major-mode mode
-      "tC" 'helm-gtags-create-tags
-      "td" 'helm-gtags-find-tag
-      "tD" 'helm-gtags-find-tag-other-window
-      "tf" 'helm-gtags-select-path
-      "tg" 'helm-gtags-dwim
-      "tG" 'helm-gtags-dwim-other-window
-      "ti" 'helm-gtags-tags-in-this-function
-      "tl" 'helm-gtags-parse-file
-      "tn" 'helm-gtags-next-history
-      "tp" 'helm-gtags-previous-history
-      "tr" 'helm-gtags-find-rtag
-      "tR" 'helm-gtags-resume
-      "ts" 'helm-gtags-select
-      "tS" 'helm-gtags-show-stack
-      "ty" 'helm-gtags-find-symbol
-      "tu" 'helm-gtags-update-tags))
+  ;;   ;; `helm-gtags-dwim' is added to the end of the mode-specific jump handlers
+  ;;   ;; Some modes have more sophisticated jump handlers that go to the beginning
+  ;;   ;; It might be possible to add `helm-gtags-dwim' instead to the default
+  ;;   ;; handlers, if it does a reasonable job in ALL modes.
+  ;;   ;; (let ((jumpl (intern (format "spacemacs-jump-handlers-%S" mode))))
+  ;;   ;;   (when (boundp jumpl)
+  ;;   ;;     (add-to-list jumpl 'spacemacs/helm-gtags-maybe-dwim 'append)))
 
-  (defun gtags/init-helm-gtags ()
-    (use-package helm-gtags
-      :defer t
-      :init
-      (progn
-        (setq helm-gtags-ignore-case t
-              helm-gtags-auto-update t
-              helm-gtags-use-input-at-cursor t
-              helm-gtags-pulse-at-cursor t)
-        ;; modes that do not have a layer, define here
-        (spacemacs/helm-gtags-define-keys-for-mode 'c-c++-modes)
-        (spacemacs/helm-gtags-define-keys-for-mode 'tcl-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'vhdl-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'awk-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'dired-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'compilation-mode)
-        (spacemacs/helm-gtags-define-keys-for-mode 'shell-mode))))
+  ;;   (spacemacs/set-leader-keys-for-major-mode mode
+  ;;     "tC" 'helm-gtags-create-tags
+  ;;     "td" 'helm-gtags-find-tag
+  ;;     "tD" 'helm-gtags-find-tag-other-window
+  ;;     "tf" 'helm-gtags-select-path
+  ;;     "tg" 'helm-gtags-dwim
+  ;;     "tG" 'helm-gtags-dwim-other-window
+  ;;     "ti" 'helm-gtags-tags-in-this-function
+  ;;     "tl" 'helm-gtags-parse-file
+  ;;     "tn" 'helm-gtags-next-history
+  ;;     "tp" 'helm-gtags-previous-history
+  ;;     "tr" 'helm-gtags-find-rtag
+  ;;     "tR" 'helm-gtags-resume
+  ;;     "ts" 'helm-gtags-select
+  ;;     "tS" 'helm-gtags-show-stack
+  ;;     "ty" 'helm-gtags-find-symbol
+  ;;     "tu" 'helm-gtags-update-tags))
 
-  (gtags/init-helm-gtags)
+  ;; (defun gtags/init-helm-gtags ()
+  ;;   (use-package helm-gtags
+  ;;     :defer t
+  ;;     :init
+  ;;     (progn
+  ;;       (setq helm-gtags-ignore-case t
+  ;;             helm-gtags-auto-update t
+  ;;             helm-gtags-use-input-at-cursor t
+  ;;             helm-gtags-pulse-at-cursor t)
+  ;;       ;; modes that do not have a layer, define here
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'c-c++-modes)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'tcl-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'vhdl-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'awk-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'dired-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'compilation-mode)
+  ;;       (spacemacs/helm-gtags-define-keys-for-mode 'shell-mode))))
+
+  ;; (gtags/init-helm-gtags)
 
   (require 'syslog-mode)
   (add-to-list 'auto-mode-alist '("/var/log.*\\'" . syslog-mode))
 
-  (with-eval-after-load 'dap-mode
-    (dap-register-debug-template
-     "GDB::Run feedercontrolstubbed"
-     (list :type "gdb"
-           :request "launch"
-           :name "GDB::Run"
-           :debugger_args ["--command=/home/halushko/Projects/sgs-trunk-local/remote-gdb.txt"]
-           :target "/home/halushko/Projects/sgs-trunk-local/result/debug/feedercontrolstubbed"
-           :cwd nil))
-    )
+  ;; (with-eval-after-load 'dap-mode
+  ;;   (dap-register-debug-template
+  ;;    "GDB::Run feedercontrolstubbed"
+  ;;    (list :type "gdb"
+  ;;          :request "launch"
+  ;;          :name "GDB::Run"
+  ;;          :debugger_args ["--command=/home/halushko/Projects/sgs-trunk-local/remote-gdb.txt"]
+  ;;          :target "/home/halushko/Projects/sgs-trunk-local/result/debug/feedercontrolstubbed"
+  ;;          :cwd nil))
+  ;;   )
 
   ;; (add-to-list 'load-path "/home/halushko/projects/clang-refactor")
   ;; (with-eval-after-load 'projectile
@@ -949,7 +957,6 @@ This function is called at the very end of Spacemacs initialization."
  '(ansi-color-names-vector
    ["#212337" "#ff757f" "#c3e88d" "#ffc777" "#82aaff" "#c099ff" "#b4f9f8" "#c8d3f5"])
  '(blink-cursor-mode nil)
- '(ccls-executable "/home/halushko/bin/ccls.sh")
  '(clang-format-executable "clang-format")
  '(company-minimum-prefix-length 3)
  '(company-quickhelp-color-background "#4F4F4F")
@@ -964,7 +971,7 @@ This function is called at the very end of Spacemacs initialization."
  '(fzf/window-height 50)
  '(garbage-collection-messages nil)
  '(global-company-mode t)
- '(helm-buffer-max-length 128)
+ '(helm-buffer-max-length nil)
  '(helm-candidate-number-limit 25)
  '(helm-completion-style 'emacs)
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
@@ -1014,8 +1021,6 @@ This function is called at the very end of Spacemacs initialization."
  '(org-pomodoro-long-break-length 10)
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "%.2m")
- '(package-selected-packages
-   '(zen-and-art-theme white-sand-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme seti-theme reverse-theme rebecca-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme modus-vivendi-theme modus-operandi-theme minimal-theme majapahit-theme madhat2r-theme lush-theme light-soap-theme kaolin-themes jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme gandalf-theme flatui-theme flatland-theme farmhouse-theme eziam-theme exotica-theme espresso-theme dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized clues-theme chocolate-theme autothemer cherry-blossom-theme busybee-theme bubbleberry-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme verb org-journal magit-section lsp-ui lsp-treemacs magit git-commit hydra hide-mode-line explain-pause-mode toml-mode racer flycheck-rust counsel-gtags counsel swiper ivy cargo rust-mode dockerfile-mode docker tablist docker-tramp doom-themes treemacs-persp ansi package-build shut-up epl git commander f dash s fish-completion lsp-mode terminal-here lsp-java sayid flycheck-joker flycheck-clojure flycheck-clj-kondo clojure-snippets clj-refactor inflections edn peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a org-mind-map dap-mode bui tree-mode helm-rtags helm-pydoc helm-org-rifle helm-org helm-lsp helm-gitignore helm-git-grep helm-ctest helm-company helm-c-yasnippet flyspell-correct-helm helm helm-core slime-company slime common-lisp-snippets srefactor nord-theme systemd logview helm-gtags ggtags datetime extmap org-jira vmd-mode web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode company-web web-completion-data graphviz-dot-mode zenburn-theme ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon symbol-overlay string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flycheck-package flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish devdocs define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))
  '(pdf-view-midnight-colors (cons "#c8d3f5" "#212337"))
  '(projectile-svn-command "fd -0 -t f")
  '(python-shell-interpreter "ipython3")
