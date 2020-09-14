@@ -923,6 +923,15 @@ before packages are loaded."
   (add-hook 'c++-mode-hook (lambda () (define-key c++-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
   (add-hook 'c-mode-hook (lambda () (define-key c-mode-map (kbd "<tab>") 'tab-indent-or-complete)))
 
+  ;; garbage collections
+  (defun my-minibuffer-setup-hook ()
+    (setq gc-cons-threshold most-positive-fixnum))
+
+  (defun my-minibuffer-exit-hook ()
+    (setq gc-cons-threshold 800000))
+
+  (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+  (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
   )
 
 (defun dotspacemacs/emacs-custom-settings ()
