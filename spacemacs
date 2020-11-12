@@ -42,9 +42,9 @@ This function should only modify configuration layer settings."
      (auto-completion
       :variables
       auto-completion-complete-with-key-sequence "jk"
-      auto-completion-idle-delay 0.3
+      auto-completion-idle-delay 0.1
       auto-completion-enable-help-tooltip t
-      auto-completion-minimum-prefix-length 3
+      auto-completion-minimum-prefix-length 1
       )
      (better-defaults
       :variables
