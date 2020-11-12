@@ -85,7 +85,7 @@ This function should only modify configuration layer settings."
      html
      (ivy
       :variables
-      ivy-enable-advanced-buffer-information t
+      ivy-enable-advanced-buffer-information nil
       ivy-use-virtual-buffers nil
       ivy-height 24
       )
@@ -126,7 +126,7 @@ This function should only modify configuration layer settings."
       shell-scripts-backend 'lsp)
      (spell-checking
       :variables
-      spell-checking-enable-by-default t
+      spell-checking-enable-by-default nil
       enable-flyspell-auto-completion nil)
      syntax-checking
      systemd
@@ -136,7 +136,7 @@ This function should only modify configuration layer settings."
      (version-control
       :variables
       version-control-diff-tool 'diff-hl
-      version-control-global-margin t)
+      version-control-global-margin nil)
      (lsp
       :variables
       lsp-navigation 'simple
@@ -322,8 +322,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(apropospriate-light
-                         spacemacs-light)
+   dotspacemacs-themes '(doom-one-light
+                         zenburn)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -502,7 +502,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
-   dotspacemacs-smartparens-strict-mode t
+   dotspacemacs-smartparens-strict-mode nil
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc…
@@ -593,13 +593,10 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (defun spaceline-custom-theme (&rest additional-segments)
     "My custom spaceline theme."
     (spaceline-compile
-      `((persp-name
-         workspace-number
-         window-number)
-        ((buffer-id remote-host buffer-modified)
+      `((window-number)
+        ((buffer-id buffer-modified)
          :priority 98)
         (process :when active)
-        auto-compile
         ((flycheck-error flycheck-warning flycheck-info)
          :when active
          :priority 89)
@@ -607,8 +604,7 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
       `(which-function
         (selection-info :priority 95)
         input-method
-        ((buffer-encoding-abbrev
-          point-position
+        ((point-position
           line-column)
          :separator " "
          :priority 96)
@@ -653,6 +649,9 @@ before packages are loaded."
   (spacemacs/toggle-mode-line-version-control-off)
   (spacemacs/toggle-mode-line-point-position-off)
   (spacemacs/toggle-which-key-off)
+  (spacemacs/toggle-spelling-checking-off)
+  ;; (spacemacs/toggle-version-control-margin-off)
+  ;; (spacemacs/toggle-version-control-margin-globally-off)
   (setq-default spacemacs-show-trailing-whitespace nil)
 
   ;; plantuml
@@ -702,6 +701,7 @@ before packages are loaded."
     (add-hook 'before-save-hook #'org-brain-ensure-ids-in-buffer))
 
   ;; (define-key evil-normal-state-map (kbd "gs") 'helm-swoop)
+  (define-key evil-normal-state-map (kbd "gs") 'swiper)
 
   ;; (define-key evil-normal-state-map (kbd "<C-tab>") 'switch-to-buffer)
   ;; (bind-key (kbd "<C-tab>") 'switch-to-buffer)
