@@ -194,7 +194,9 @@ This function should only modify configuration layer settings."
                                       vlf
                                       material-theme
                                       fish-completion
-                                      syslog-mode)
+                                      syslog-mode
+                                      eshell-prompt-extras
+                                      )
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -760,6 +762,10 @@ before packages are loaded."
     ;;                               (define-key eshell-mode-map
     ;;                                 (kbd "M-l") 'spacemacs/helm-eshell-history)
     ;;                               ))
+    (progn
+      (require 'custom-eshell-prompt)
+      (setq eshell-highlight-prompt nil
+            eshell-prompt-function 'epe-theme-multiline-with-status-custom))
     )
 
   (defun pcomplete/dpkg ()
