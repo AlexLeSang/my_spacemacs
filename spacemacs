@@ -108,6 +108,7 @@ This function should only modify configuration layer settings."
       org-enable-hugo-support t
       org-projectile-file "TODOs.org"
       org-enable-verb-support t)
+     pdf
      (python
       :variables
       python-fill-column 119
@@ -116,6 +117,7 @@ This function should only modify configuration layer settings."
       python-save-before-test t
       python-sort-imports-on-save nil
       )
+     restclient
      (shell
       :variables shell-default-shell 'eshell
       shell-default-position 'right
@@ -148,6 +150,7 @@ This function should only modify configuration layer settings."
       ranger-show-preview t)
      json
      themes-megapack
+     pandoc
      (plantuml
       :variables
       plantuml-jar-path "/usr/share/plantuml/plantuml.jar"
@@ -161,6 +164,9 @@ This function should only modify configuration layer settings."
      (yaml
       :variables
       yaml-enable-lsp t)
+     (latex
+      :variables
+      latex-enable-auto-fill t)
      )
 
    ;; List of additional packages that will be installed without being
@@ -324,8 +330,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-one-light
-                         zenburn)
+   dotspacemacs-themes '(zenburn
+                         doom-one-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
@@ -632,12 +638,11 @@ before packages are loaded."
 
   ;; Native compile
   ;; (native-compile-async "/home/halushko/.emacs.d/elpa" t t)
-
   ;; Explain Pause Mode
   ;; (explain-pause-mode t)
 
   ;; Load files from private directory
-  (add-to-list 'load-path "~/.emacs.d/private/local")
+  (add-to-list 'load-path "~/.spacemacs.emacs.d/private/local")
 
   (spacemacs/disable-transparency)
   (spacemacs/toggle-display-time-on)
@@ -806,7 +811,7 @@ before packages are loaded."
   (add-to-list 'auto-mode-alist '("\\.repo\\'" . conf-mode))
   (add-to-list 'auto-mode-alist '("\\.conf\\'" . conf-mode))
 
-  (add-to-list 'load-path "~/.emacs.d/private/local/clang-refactor")
+  (add-to-list 'load-path "~/.spacemacs.emacs.d/private/local/clang-refactor")
   (require 'clang-refactor)
 
   (with-eval-after-load 'company-lsp
@@ -946,6 +951,8 @@ before packages are loaded."
 
   (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
   (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
+
+  (add-hook 'doc-view-mode-hook 'auto-revert-mode)
   )
 
 (defun dotspacemacs/emacs-custom-settings ()
@@ -962,6 +969,7 @@ This function is called at the very end of Spacemacs initialization."
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#212337" "#ff757f" "#c3e88d" "#ffc777" "#82aaff" "#c099ff" "#b4f9f8" "#c8d3f5"])
+ '(beacon-color "#F8BBD0")
  '(blink-cursor-mode nil)
  '(clang-format-executable "clang-format")
  '(company-minimum-prefix-length 3)
@@ -970,7 +978,12 @@ This function is called at the very end of Spacemacs initialization."
  '(company-quickhelp-delay 0.1)
  '(create-lockfiles nil)
  '(delete-by-moving-to-trash nil)
+ '(electric-indent-mode nil)
+ '(evil-emacs-state-cursor '("#D50000" hbar) t)
+ '(evil-insert-state-cursor '("#D50000" bar) t)
+ '(evil-normal-state-cursor '("#F57F17" box) t)
  '(evil-snipe-scope 'whole-visible)
+ '(evil-visual-state-cursor '("#66BB6A" box) t)
  '(evil-want-Y-yank-to-eol nil)
  '(fci-rule-color "#383a42")
  '(flycheck-sh-shellcheck-executable "shellcheck")
@@ -983,6 +996,11 @@ This function is called at the very end of Spacemacs initialization."
  '(helm-mini-default-sources '(helm-source-buffers-list helm-source-buffer-not-found))
  '(helm-swoop-speed-or-color nil)
  '(helm-swoop-use-fuzzy-match nil)
+ '(highlight-indent-guides-auto-enabled nil)
+ '(highlight-symbol-colors
+   '("#F57F17" "#66BB6A" "#0097A7" "#42A5F5" "#7E57C2" "#D84315"))
+ '(highlight-symbol-foreground-color "#546E7A")
+ '(highlight-tail-colors '(("#F8BBD0" . 0) ("#FAFAFA" . 100)))
  '(hl-sexp-background-color "#efebe9")
  '(hl-todo-keyword-faces
    '(("TODO" . "#dc752f")
@@ -1001,6 +1019,7 @@ This function is called at the very end of Spacemacs initialization."
      ("XXX+" . "#dc752f")
      ("\\?\\?\\?+" . "#dc752f")))
  '(hybrid-style-enable-hjkl-bindings t)
+ '(indent-guide-global-mode nil)
  '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#51afef"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#98be65"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#3f444a"))
@@ -1009,12 +1028,12 @@ This function is called at the very end of Spacemacs initialization."
  '(lsp-file-watch-threshold nil)
  '(lsp-project-whitelist '("/home/halushko/Projects/*"))
  '(lsp-signature-auto-activate nil)
- '(lsp-ui-doc-include-signature t t)
+ '(lsp-ui-doc-include-signature t)
  '(lsp-ui-doc-position 'bottom)
  '(lsp-ui-peek-list-width 90)
  '(lsp-ui-peek-peek-height 60)
  '(lsp-ui-sideline-delay 2.0)
- '(lsp-ui-sideline-ignore-duplicate t t)
+ '(lsp-ui-sideline-ignore-duplicate t)
  '(lsp-ui-sideline-show-code-actions nil)
  '(lsp-ui-sideline-show-hover nil)
  '(max-lisp-eval-depth 3200)
@@ -1027,13 +1046,18 @@ This function is called at the very end of Spacemacs initialization."
  '(org-pomodoro-long-break-length 10)
  '(org-pomodoro-play-sounds nil)
  '(org-pomodoro-time-format "%.2m")
+ '(package-selected-packages
+   '(pandoc-mode ox-pandoc zenburn-theme zen-and-art-theme yasnippet-snippets yapfify yaml-mode xterm-color ws-butler writeroom-mode winum white-sand-theme which-key wgrep web-mode web-beautify vterm volatile-highlights vlf vi-tilde-fringe verb uuidgen use-package unfill undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toxi-theme toc-org terminal-here tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit systemd syslog-mode symon symbol-overlay sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection srefactor sphinx-doc spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smex smeargle slim-mode shell-pop seti-theme scss-mode sass-mode reverse-theme restart-emacs rebecca-theme ranger rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme pug-mode professional-theme prettier-js powershell popwin plantuml-mode planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme pdf-tools pcre2el pcomplete-extension pcmpl-args password-generator paradox ox-hugo ox-gfm overseer orgit organic-green-theme org-superstar org-sticky-header org-rich-yank org-projectile org-present org-pomodoro org-mind-map org-mime org-journal org-download org-cliplink org-brain open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme ob-restclient ob-http ob-elixir nord-theme nodejs-repl noctilux-theme nginx-mode naquadah-theme nameless mwim mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme moe-theme modus-vivendi-theme modus-operandi-theme mmm-mode minimal-theme material-theme markdown-toc majapahit-theme magit-svn magit-section magit-gitflow madhat2r-theme macrostep lush-theme lsp-ui lsp-python-ms lsp-pyright lsp-origami lsp-java lsp-ivy lorem-ipsum logview log4j-mode livid-mode live-py-mode link-hint light-soap-theme kaolin-themes json-navigator js2-refactor js-doc journalctl-mode jbeans-theme jazz-theme ivy-yasnippet ivy-xref ivy-rtags ivy-rich ivy-purpose ivy-hydra ivy-avy ir-black-theme insert-shebang inkpot-theme indent-guide importmagic impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-mode-line heroku-theme hemisu-theme helm-make hc-zenburn-theme gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate google-c-style golden-ratio gnuplot gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-ivy flycheck-ycmd flycheck-rtags flycheck-pos-tip flycheck-package flycheck-elsa flycheck-credo flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fish-completion farmhouse-theme fancy-battery eziam-theme eyebrowse explain-pause-mode expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-snipe evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help emr emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes dockerfile-mode docker django-theme disaster diminish diff-hl devdocs define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode cyberpunk-theme csv-mode cpp-auto-include counsel-projectile counsel-gtags counsel-css copy-as-format company-ycmd company-web company-shell company-rtags company-restclient company-reftex company-quickhelp company-org-roam company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmake-mode cmake-ide clues-theme clean-aindent-mode chocolate-theme cherry-blossom-theme centered-cursor-mode ccls busybee-theme bubbleberry-theme browse-at-remote bm blacken birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes alchemist aggressive-indent afternoon-theme ace-link ac-ispell))
  '(pdf-view-midnight-colors (cons "#c8d3f5" "#212337"))
+ '(pos-tip-background-color "#ffffffffffff")
+ '(pos-tip-foreground-color "#78909C")
  '(projectile-svn-command "fd -0 -t f")
  '(python-shell-interpreter "ipython3" t)
  '(python-shell-interpreter-args "--simple-prompt -i" t)
  '(rustic-ansi-faces
    ["#fafafa" "#e45649" "#50a14f" "#986801" "#4078f2" "#a626a4" "#0184bc" "#383a42"])
  '(smartparens-global-mode t)
+ '(tabbar-background-color "#ffffffffffff")
  '(tramp-default-proxies-alist nil)
  '(tramp-save-ad-hoc-proxies t)
  '(vc-annotate-background "#fafafa")
@@ -1060,7 +1084,7 @@ This function is called at the very end of Spacemacs initialization."
  '(vc-annotate-very-old-color nil)
  '(vc-follow-symlinks t)
  '(yas-snippet-dirs
-   '("/home/halushko/.emacs.d/private/snippets/" "/home/halushko/.emacs.d/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
+   '("/home/halushko/.spacemacs.emacs.d/private/snippets/" "/home/halushko/.spacemacs.emacs.d/layers/+completion/auto-completion/local/snippets" yasnippet-snippets-dir)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
